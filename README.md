@@ -1,1 +1,2 @@
-# ibs-phyton
+# Inverse binomial sampling (IBS)
+Implementation in Python
