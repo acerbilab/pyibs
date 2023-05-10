@@ -3,22 +3,23 @@ from scipy.stats import norm
 
 
 def psycho_nll(theta, S, R):
-    """Computes negative log-likelihood for psychometric function model
-    (simple orientation discrimination task).
+    """
+    Computes negative log-likelihood for psychometric function model (simple orientation discrimination task).
 
-    Inputs:
+    Parameters:
+    ----------
     S: np.array
-        stimulus orientation (in deg) for each trial
-    theta: np.array with 3 elements
-        model parameter vector, with theta(0) as eta=log(sigma), the log of the sensory noise,
-        theta(1) as the bias term,
-        theta(2) as the lapse rate
+        The stimulus orientation in degrees for each trial.
+    theta: np.array
+        The parameter vector, with theta(0) as eta=log(sigma), the log of the sensory noise,
+        theta(1) as the bias term, theta(2) as the lapse rate.
     R: np.array
-        vector of responses, 1 for "rightwards" and -1 for "leftwards"
+        The responses for each trial, 1 for "rightwards" and -1 for "leftwards".
 
     Returns:
+    ----------
     L: float
-        negative log-likelihood
+        The negative log-likelihood.
     """
 
     # Extract model parameters

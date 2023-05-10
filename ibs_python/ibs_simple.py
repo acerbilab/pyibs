@@ -1,34 +1,33 @@
 import numpy as np
 
 
-def ibs_basic(fun, theta, R, S=None):
-    """Returns an unbiased estimate L of the log-likelihood for the
-    simulated model and data, calculated using inverse binomial sampling.
-    This is a slow, bare bone implementation of IBS which should be used only
-    for didactic purposes.
+def ibs_basic(sample_from_model, theta, R, S=None):
+    """
+    Calculates an unbiased estimate of the log-likelihood for the simulated model and data using inverse binomial sampling.
+    This is a slow, bare bone implementation of IBS which should be used only for didactic purposes.
 
-    Input:
-    fun: function
-        A function handle to a function that simulates the model's responses. Takes as input
-        a vector of parameters 'theta' and a row of 'S', and generates one row of the
-        response matrix.
+    Parameters
+    ----------
+    sample_from_model: callable
+        Callable that simulates the model's responses. Takes as input a vector of parameters theta and a row of the stimulus matrix,
+        and generates one row of the response matrix.
     theta: np.array
-        used as input to fun to generate the response
+        The parameter vector.
     R: np.array
-        response matrix, each row corrisponds to one observation and
-        each column to a response feature
+        The response matrix, each row corresponds to one observation and each column to a response feature.
     S: np.array, optional
-        stimulus matrix, each row corrisponds to one observation
+        The stimulus matrix, each row corresponds to one observation, default = None.
 
-    Returns:
-    L : float
+    Returns
+    ----------
+    L: float
         The log-likelihood.
     """
     N = len(R)
     L = np.zeros(N)
     for i in range(N):
         K = 1
-        while not (fun(theta, S[i]) == R[i]).all():
+        while not (sample_from_model(theta, S[i]) == R[i]).all():
             K += 1  # Sample until the generated response is a match
         L[i] = -np.sum(1 / np.arange(1, K))  # IBS estimator for the i-th trial
 
