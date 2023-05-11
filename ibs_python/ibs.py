@@ -508,7 +508,7 @@ class IBS:
                     The exit flag (0 = correct termination, 1 = negative log-likelihood threshold reached, 2 = maximum runtime reached, 3 = maximum iterations reached).
                 """
 
-                num_trials = self.resp_mat.shape[0]
+                num_trials = self.response_matrix.shape[0]
 
                 trials = np.arange(num_trials)  # enumerate the trials
                 max_iter = self.max_iter
