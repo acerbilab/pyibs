@@ -11,6 +11,6 @@ This folder contains Python implementations and examples of IBS.
   - If you want to run  with [PyVBMC](https://github.com/acerbilab/pyvbmc), note that you need to pass the following arguments when calling the IBS object
     - `return_positive = true` to return the *positive* log-likelihood;
     - `additinal_output = std` to return as second output the standard deviation of the estimate.
--`ibs_simple_example.ipynb` is an example notebook for running `ibs_basic.py`. It is only for didactic purposes.
--`ibs_example_1_basic_use.ipynb` is an example notebook for running `ibs.py`. It contains an example on how to run the estimations and how to obtain different output types. It contains examples using the orientation discrimination model and one using a binomial model. The unbiasedness of the estimator is checked; this notebook is only for didactic purposes.
--`ibs_example_2_parameter_estimation.ipynb` is a full working example usage of IBS. It requires the installation of [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc).
+- `ibs_simple_example.ipynb` is an example notebook for running `ibs_basic.py`. It is only for didactic purposes.
+- `ibs_example_1_basic_use.ipynb` is an example notebook for running `ibs.py`. It contains an example on how to run the estimations and how to obtain different output types. It contains examples using the orientation discrimination model and one using a binomial model. The unbiasedness of the estimator is checked; this notebook is only for didactic purposes.
+- `ibs_example_2_parameter_estimation.ipynb` is a full working example usage of IBS. It requires the installation of [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc).
