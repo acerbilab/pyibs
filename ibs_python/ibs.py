@@ -188,7 +188,9 @@ class IBS:
                         params, np.arange(num_trials)
                     )
                 else:
-                    simulated_data = self.sample_from_model(params, self.design_matrix)
+                    simulated_data = self.sample_from_model(
+                        params, self.design_matrix
+                    )
                 elapsed_time = time.time() - start
                 vectorized_flag = elapsed_time < self.vectorized_threshold
             else:
@@ -217,10 +219,13 @@ class IBS:
                     psi_table = np.concatenate(
                         (
                             psi_table,
-                            psi(1) - psi(np.arange(len(psi_table) + 1, K_max + 1)),
+                            psi(1)
+                            - psi(np.arange(len(psi_table) + 1, K_max + 1)),
                         )
                     )
-                logl_matrix = psi_table[np.maximum(1, K_matrix.astype(int)) - 1]
+                logl_matrix = psi_table[
+                    np.maximum(1, K_matrix.astype(int)) - 1
+                ]
                 return logl_matrix, psi_table
 
             def vectorized_ibs_sampling(
@@ -269,7 +274,9 @@ class IBS:
                 K_matrix = np.zeros((num_reps, num_trials), dtype=int)
 
                 # Matrix of rep counts
-                K_place0 = np.tile(np.arange(num_reps)[:, np.newaxis], (1, num_trials))
+                K_place0 = np.tile(
+                    np.arange(num_reps)[:, np.newaxis], (1, num_trials)
+                )
 
                 # Current rep being sampled for each trial
                 Ridx = np.zeros(num_trials)
@@ -307,13 +314,19 @@ class IBS:
                         break
                     num_considered_trials = len(T)
                     # With accelerated sampling, might request multiple samples at once
-                    num_samples = min(max(1, np.round(samples_level)), self.max_samples)
+                    num_samples = min(
+                        max(1, np.round(samples_level)), self.max_samples
+                    )
                     max_samples = np.ceil(self.max_mem / num_considered_trials)
                     num_samples = min(num_samples, max_samples)
                     T_matrix = np.tile(T, (int(num_samples), 1))
 
                     # Simulate trials
-                    if iter == 0 and num_samples == 1 and simulated_data0 is not None:
+                    if (
+                        iter == 0
+                        and num_samples == 1
+                        and simulated_data0 is not None
+                    ):
                         simulated_data = simulated_data0
                         elapsed_time = elapsed_time0
                     else:
@@ -324,7 +337,8 @@ class IBS:
                             )
                         else:
                             simulated_data = self.sample_from_model(
-                                params, self.design_matrix[T_matrix.reshape(-1)]
+                                params,
+                                self.design_matrix[T_matrix.reshape(-1)],
                             )
                         fun_count += 1
                         elapsed_time = time.time() - start
@@ -346,7 +360,8 @@ class IBS:
 
                     # Check for hits
                     hits_temp = (
-                        self.response_matrix[T_matrix.reshape(-1)] == simulated_data
+                        self.response_matrix[T_matrix.reshape(-1)]
+                        == simulated_data
                     )
 
                     def get_K_from_hits(hits_temp):
@@ -385,7 +400,12 @@ class IBS:
                     index_last = (
                         np.argmin(
                             np.hstack(
-                                (K_iter, np.zeros(num_considered_trials).reshape(-1, 1))
+                                (
+                                    K_iter,
+                                    np.zeros(num_considered_trials).reshape(
+                                        -1, 1
+                                    ),
+                                )
                             ),
                             axis=1,
                         )
@@ -393,7 +413,9 @@ class IBS:
                     )
                     row_index = np.arange(len(T))
                     # Subtract one hit from last K (it was added)
-                    K_iter[row_index, index_last] = K_iter[row_index, index_last] - 1
+                    K_iter[row_index, index_last] = (
+                        K_iter[row_index, index_last] - 1
+                    )
                     K_open[T] = K_iter[row_index, index_last]
 
                     # For each trial, ignore entries of K_iter past max number of reps
@@ -410,7 +432,12 @@ class IBS:
                     index_last2 = (
                         np.argmin(
                             np.hstack(
-                                (K_iter, np.zeros(num_considered_trials).reshape(-1, 1))
+                                (
+                                    K_iter,
+                                    np.zeros(num_considered_trials).reshape(
+                                        -1, 1
+                                    ),
+                                )
                             ),
                             axis=1,
                         )
@@ -418,13 +445,18 @@ class IBS:
                     )
 
                     # Add current K to full K matrix
-                    K_iter_place = (K_place0[:, :num_considered_trials] >= Ridx[T]) & (
-                        K_place0[:, :num_considered_trials] <= Ridx[T] + index_last2
+                    K_iter_place = (
+                        K_place0[:, :num_considered_trials] >= Ridx[T]
+                    ) & (
+                        K_place0[:, :num_considered_trials]
+                        <= Ridx[T] + index_last2
                     )
                     K_place = np.zeros_like(K_place0, dtype=bool)
                     K_place[:, T] = K_iter_place
                     K_mat_flat = K_matrix.flatten("F")
-                    K_mat_flat[K_place.flatten("F")] = K_iter[K_iter > 0].flatten()
+                    K_mat_flat[K_place.flatten("F")] = K_iter[
+                        K_iter > 0
+                    ].flatten()
                     K_matrix = K_mat_flat.reshape(K_matrix.shape, order="F")
                     Ridx[T] = Ridx[T] + index_last
 
@@ -546,7 +578,11 @@ class IBS:
                         T = trials[hits == False]
                         if len(T) == 0:
                             break
-                        if iter == 0 and i_Rep == 0 and simulated_data0 is not None:
+                        if (
+                            iter == 0
+                            and i_Rep == 0
+                            and simulated_data0 is not None
+                        ):
                             simulated_data = simulated_data0
                             fun_count += 1
                         elif self.design_matrix is None:
@@ -559,7 +595,9 @@ class IBS:
                             )
                             fun_count += 1
 
-                        if np.shape(np.atleast_1d(simulated_data))[0] != len(T):
+                        if np.shape(np.atleast_1d(simulated_data))[0] != len(
+                            T
+                        ):
                             raise ValueError(
                                 "IBS: number of rows of returned simulated data does not match the number of requested trials"
                             )

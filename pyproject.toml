@@ -1,0 +1,44 @@
+[project]
+name = "IBS"
+version = "0.1.0"
+description = "Inverse Binomial Sampling in Python."
+readme = "README.md"
+dependencies = [
+    "cma >= 3.1.0",
+    "corner >= 2.2.1",
+    "dill >= 0.3.5.1",
+    "gpyreg >= 0.1.0",
+    "imageio >= 2.13.5",
+    "matplotlib >= 3.5.1",
+    "numpy >= 1.22.1",
+    "plotly >= 5.11.0",
+    "pytest >= 6.2.5",
+    "pytest-mock >= 3.6.1",
+    "pytest-rerunfailures >= 10.2",
+    "scipy >= 1.7.3",
+]
+requires-python = ">=3.9"
+
+[build-system]
+requires = [
+    "setuptools >= 45",
+    "setuptools_scm[toml] >= 6.2",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+skip_glob = []
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+profile = "black"
+
+[tool.pycln]
+all = true
+
+[tool.setuptools_scm]
