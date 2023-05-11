@@ -56,26 +56,28 @@ class IBS:
         The observed responses.
     design_matrix: np.array
         The design matrix used as input to sample from the model.
-    vectorized: boolean
-        Indicates whether to use a vectorized sampling algorithm with acceleration.
-    acceleration: float
-        The acceleration factor for vectorized sampling.
-    num_samples_per_call: int
-        The number of starting samples per trial per function call.  If equal to 0 the number of starting samples is chosen automatically.
-    max_iter: int
-        The maximum number of iterations (per trial and estimate).
-    max_time: int
-        The maximum time for an IBS call (in seconds).
-    max_samples: int
-        The maximum number of samples per function call.
-    acceleration_threshold: float
-        The threshold at which to stop accelerating (in seconds).
-    vectorized_threshold: float
-        The maximum threshold for using the vectorized algorithm (in seconds).
-    max_mem: int
-        The maximum number of samples for the vectorized implementation.
-    neg_logl_threshold: float
-        The threshold for the negative log-likelihood (works differently in vectorized version).
+    vectorized: boolean, optional
+        Indicates whether to use a vectorized sampling algorithm with acceleration, default = None.
+        If None, the vectorized algorithm is used if the time to generate samples for each trial is less than vectorized_threshold.
+    acceleration: float, optional
+        The acceleration factor for vectorized sampling, default = 1,5.
+    num_samples_per_call: int, optional
+        The number of starting samples per trial per function call.
+        If equal to 0 the number of starting samples is chosen automatically, default = 0.
+    max_iter: int, optional
+        The maximum number of iterations (per trial and estimate), default = 1e5.
+    max_time: float, optional
+        The maximum time for an IBS call (in seconds), default = np.inf.
+    max_samples: int, optional
+        The maximum number of samples per function call, default = 1e4.
+    acceleration_threshold: float, optional
+        The threshold at which to stop accelerating (in seconds), default = 0.1.
+    vectorized_threshold: float, optional
+        The maximum threshold for using the vectorized algorithm (in seconds), default = 0.1.
+    max_mem: int, optional
+        The maximum number of samples for the vectorized implementation, default = 1e6.
+    neg_logl_threshold: float, optional
+        The threshold for the negative log-likelihood (works differently in vectorized version), default = np.inf.
 
     """
 
@@ -129,7 +131,7 @@ class IBS:
         trial_weights: np.array, optional
             The trial weights vector, default = None.
         additional_output: str, optional
-            The output type, if equal to None then only the negative log-likelihood is returned.
+            The output type, if equal to None then only the negative log-likelihood is returned, default = None.
             If equal to 'var' then the negative log-likelihood and the variance of the negative log-likelihood estimate is returned.
             If equal to 'std' then the negative log-likelihood and the standard deviation of the negative log-likelihood estimate is returned.
             If equal to 'full' then a dictionary type output is returned with following additional information about the sampling:
