@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import norm
 
 
-def psycho_nll(theta, S, R):
+def psycho_neg_logl(theta, S, R):
     """
     Computes negative log-likelihood for psychometric function model (simple orientation discrimination task).
 

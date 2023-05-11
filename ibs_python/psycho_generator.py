@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as npr
 
 
-def psycho_gen(theta, S):
+def psycho_generator(theta, S):
     """
     Generate responses for psychometric function model (simple orientation discrimination task).
 
