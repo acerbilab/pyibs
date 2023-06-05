@@ -60,7 +60,7 @@ class IBS:
         Indicates whether to use a vectorized sampling algorithm with acceleration, default = None.
         If None, the vectorized algorithm is used if the time to generate samples for each trial is less than vectorized_threshold.
     acceleration: float, optional
-        The acceleration factor for vectorized sampling, default = 1,5.
+        The acceleration factor for vectorized sampling, default = 1.5.
     num_samples_per_call: int, optional
         The number of starting samples per trial per function call.
         If equal to 0 the number of starting samples is chosen automatically, default = 0.
@@ -89,7 +89,7 @@ class IBS:
         vectorized=None,
         acceleration=1.5,
         num_samples_per_call=0,
-        max_iter=1e5,
+        max_iter=10 ^ 5,
         max_time=np.inf,
         max_samples=1e4,
         acceleration_threshold=0.1,
@@ -148,9 +148,9 @@ class IBS:
         neg_logl: float
             The negative log-likelihood (if return_positive is False else positive log-likelihood).
         neg_logl_var: float
-            The variance of negative log-likelihood estimate (if additional_output is 'var').
+            The variance of the negative log-likelihood estimate (if additional_output is 'var').
         neg_logl_std: float
-            The standard deviation of negative log-likelihood estimate (if additional_output is 'std').
+            The standard deviation of the negative log-likelihood estimate (if additional_output is 'std').
         If additional_output is 'full' then a dictionary type output is returned with following additional information about the sampling:
         exit_flag: int
             The exit flag (0 = correct termination, 1 = negative log-likelihood threshold reached, 2 = maximum runtime reached, 3 = maximum iterations reached).
@@ -280,8 +280,8 @@ class IBS:
                     np.arange(num_reps)[:, np.newaxis], (1, num_trials)
                 )
 
-                # Current rep being sampled for each trial
-                Ridx = np.zeros(num_trials)
+                # Current repetition being sampled for each trial
+                repetition = np.zeros(num_trials)
 
                 # Current vector of "open" K values per trial (not reached a "hit" yet)
                 K_open = np.zeros(num_trials)
@@ -296,7 +296,7 @@ class IBS:
 
                 for iter in range(max_iter):
                     # Pick trials that need more hits, sample multiple times
-                    T = trials[Ridx < target_hits]
+                    T = trials[repetition < target_hits]
 
                     # Check if max time has been reached
                     if (
@@ -426,7 +426,7 @@ class IBS:
                             np.arange(K_iter.shape[1])[:, np.newaxis],
                             (1, num_considered_trials),
                         )
-                        + Ridx[T]
+                        + repetition[T]
                     )
                     K_iter[index_mat.T >= num_reps] = 0
 
@@ -448,10 +448,10 @@ class IBS:
 
                     # Add current K to full K matrix
                     K_iter_place = (
-                        K_place0[:, :num_considered_trials] >= Ridx[T]
+                        K_place0[:, :num_considered_trials] >= repetition[T]
                     ) & (
                         K_place0[:, :num_considered_trials]
-                        <= Ridx[T] + index_last2
+                        <= repetition[T] + index_last2
                     )
                     K_place = np.zeros_like(K_place0, dtype=bool)
                     K_place[:, T] = K_iter_place
@@ -460,11 +460,12 @@ class IBS:
                         K_iter > 0
                     ].flatten()
                     K_matrix = K_mat_flat.reshape(K_matrix.shape, order="F")
-                    Ridx[T] = Ridx[T] + index_last
+                    # update current repetitions
+                    repetition[T] = repetition[T] + index_last
 
                     # Compute log-likelihood only if a threshold is set
                     if np.isfinite(self.neg_logl_threshold):
-                        R_min = np.min(Ridx[T])
+                        R_min = np.min(repetition[T])
                         if R_min >= K_matrix.shape[0]:
                             continue
                         logl_temp, psi_table = get_logl_from_K(
@@ -472,8 +473,8 @@ class IBS:
                         )
                         nLL_temp = -np.sum(logl_temp, axis=0)
                         if nLL_temp > self.neg_logl_threshold:
-                            index_move = Ridx == R_min
-                            Ridx[index_move] = R_min + 1
+                            index_move = repetition == R_min
+                            repetition[index_move] = R_min + 1
                             K_open[index_move] = 0
                             exit_flag = 1
 
@@ -608,7 +609,6 @@ class IBS:
                         hits[T] = hits_new
 
                         K[np.atleast_1d(T)[hits_new], i_Rep] = offset
-                        offset += 1
 
                         if np.isfinite(self.neg_logl_threshold):
                             K[hits == False, i_Rep] = offset
@@ -622,6 +622,8 @@ class IBS:
                                 T = []
                                 exit_flag = 1
                                 break
+                        offset += 1
+
                         # Terminate if above maximum allowed runtime
                         if (
                             np.isfinite(self.max_time)
