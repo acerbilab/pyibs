@@ -1433,8 +1433,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   saved estimates rather than draw them again: every verdict stands, and
   the gates added since pass. The integration tests ran again at
   `55af9e2`. Fixed in the record: three values of the timing table; the
-  decision of `vectorized=None`, which `num_reps=1` does not make; the growth of the slow simulator's gain,
-  which at N = 100 does not grow with `num_reps`; claims of unbiasedness
+  decision of `vectorized=None`, which `num_reps=1` does not make; the
+  growth of the slow simulator's gain, which at N = 100 does not grow with
+  `num_reps`; claims of unbiasedness
   and calibration, now stated as what the evidence resolves, with the
   `num_reps=1` cells and the threshold cells' variance estimates, which
   overstate the variance about 2 to 3 times where the threshold acts; the
