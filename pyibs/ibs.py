@@ -34,15 +34,16 @@ _ZERO_VARIANCE = (
     f"refuse an SD of 0 for a noisy target: see {_FAQ_ZERO_SD}"
 )
 
+# The messages of the exit flags, after those of ibslike.m.
 _EXIT_MESSAGES = {
-    0: "Correct termination (the estimate is unbiased).",
+    0: "Correct run of IBS; the estimate is unbiased.",
     1: (
-        "Termination after negative log-likelihood threshold was reached "
-        "(the estimate is biased)."
+        "The negative log-likelihood threshold ended a repeat; the estimate "
+        "is biased."
     ),
     2: (
-        "Termination after maximum execution time was reached (the "
-        "estimate can be arbitrarily biased)."
+        "The sampling stopped at max_time; the estimate can be arbitrarily "
+        "biased."
     ),
 }
 
@@ -108,8 +109,8 @@ class EstimateResult(dict):
     def __getattr__(self, name):
         try:
             return self[name]
-        except KeyError:
-            raise AttributeError(name)
+        except KeyError as err:
+            raise AttributeError(name) from err
 
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__

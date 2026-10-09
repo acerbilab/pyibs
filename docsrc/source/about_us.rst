@@ -28,8 +28,9 @@ PyIBS is developed by members (past and current) of the
 `Machine and Human Intelligence Group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__
 at the University of Helsinki and
 `ELLIS Institute Finland <https://www.ellisinstitute.fi/>`__, led by
-`Luigi Acerbi <https://lacerbi.github.io/>`__. Julia Maria Perathoner wrote
-PyIBS 0.1.0, its first release. Development of PyIBS 1.5 was assisted by
+`Luigi Acerbi <https://lacerbi.github.io/>`__. We thank Julia Maria
+Perathoner for her work on PyIBS 0.1.0, an earlier Python port of IBS.
+Development of PyIBS 1.5 was assisted by
 coding agents, including Anthropic's `Claude <https://www.anthropic.com/claude>`__.
 
 Join the team

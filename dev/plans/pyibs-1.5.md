@@ -1482,7 +1482,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   (step 4), `e5c2166` (step 2), `e17d74d` (step 5), `3458698` (step 6),
   `cf30448` (step 8); `4d0e573` (Phase 3's note on `test_examples.py`);
   `60ae967` (docstrings that numpydoc misread); after the review of the
-  phase, `90e4852` and `68b46c1`, and the commit after them (this entry).
+  phase, `90e4852` and `68b46c1`; `674039d` (this entry); and the commit
+  after it (the 0.1.0 text that remained, and `LICENSE`).
 - Verification: the documentation builds with no warning
   (`make -C docsrc github` after `make -C docsrc clean`), and every link
   into it from the README, the changelog, the skill, the notebooks and the
@@ -1508,18 +1509,24 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   include `examples/`, which they left out although `pyibs.examples` is
   tested (`90e4852`). The links to PyVBMC's documentation take its 1.5
   address, `https://acerbilab.org/pyvbmc/`, which PyVBMC's README and
-  `html_baseurl` give. Step 3 expected no text of 0.1.0 to remain: the
-  three exit messages of `EstimateResult` keep 0.1.0's wording, so
-  `LICENSE` keeps 0.1.0's copyright line, Julia Maria Perathoner's, beside
-  the lab's, as the step asks then. The README's acknowledgments credit her
-  with 0.1.0, take the grants of PyBADS's and PyVBMC's READMEs, and name
-  the coding agents' maker without a model. Example 2 evaluates the
-  solution with 1,000 repeats, ten times its target's, as `ibs_example.m`
-  does; Example 3 checks the ELBO and the posterior against an exact grid
-  integration. The Positioning's "unbiased, with a calibrated variance, for
-  every dataset" is written as "unbiased on every dataset, with an estimate
-  of their variance", since the calibration is shown in general ([1],
-  Section 4.6) and fails where nearly every count is 1 (the validation).
+  `html_baseurl` give. Step 3 expected no text of 0.1.0 to remain: a
+  comparison of 8-word sequences with 0.1.0's tree found the three exit
+  messages of `EstimateResult` in 0.1.0's wording, now reworded after
+  `ibslike.m`'s, and a sentence of the example model's docstring, now
+  rewritten; the rest of what the two share is the interface that D2 keeps,
+  bibliographic text, PyBADS's templates, SciPy's idiom of a dictionary
+  read as attributes, and comments of `ibs_basic.m` and `psycho_gen.m`.
+  `LICENSE` names the lab alone, and the README's acknowledgments thank
+  Julia Maria Perathoner for her work on 0.1.0, an earlier Python port of
+  IBS (PI, 2026-10-09). The acknowledgments take the grants of PyBADS's and
+  PyVBMC's READMEs, and name the coding agents' maker without a model.
+  Example 2 evaluates the solution with 1,000 repeats, ten times its
+  target's, as `ibs_example.m` does; Example 3 checks the ELBO and the
+  posterior against an exact grid integration. The Positioning's
+  "unbiased, with a calibrated variance, for every dataset" is written as
+  "unbiased on every dataset, with an estimate of their variance", since
+  the calibration is shown in general ([1], Section 4.6) and fails where
+  nearly every count is 1 (the validation).
 - Review (`/doublecheck`, four read-only Opus reviewers: the code, tests,
   packaging and tooling; the FAQ; the README, the documentation's pages,
   the skill and the notebooks; the records and conventions). Fixed in
@@ -1528,7 +1535,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   calibrated variance on every dataset; the examples' install command named
   no versions, though Example 3 needs PyVBMC 1.5; the FAQ said that PyVBMC
   requires the SD, and that neural likelihood estimation gives posteriors at
-  once; the 0.1.0 text of the exit messages (above); the CI's path filters;
+  once; the 0.1.0 text that remained (above, reworded in the last commit
+  of the phase); the CI's path filters;
   `AGENTS.md` on the text that the README shares, on the labels of PyBADS's
   and PyVBMC's FAQs that PyIBS links, and on the generation of the scripts;
   smaller corrections to the FAQ (a bound rounded down, a sizing snippet
@@ -1544,8 +1552,7 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   by `exp(-(num_reps * sd) ** 2)`: the FAQ's own derivation, checked by two
   agents, not taken from [1] or the wiki. `ibslike.m`, which PyIBS ports,
   carries the copyright of Luigi Acerbi and Bas van Opheusden under MATLAB
-  IBS's MIT licence, which `LICENSE` does not name. Rewording the three exit
-  messages would let `LICENSE` name the lab alone.
+  IBS's MIT licence, which `LICENSE` does not name.
 - For Phase 5: the README, `installation.rst` and `development.rst` install
   `pyvbmc>=1.5`, and the links to PyVBMC's FAQ resolve, once PyVBMC 1.5.0 is
   on PyPI and its documentation published (2026-10-13); the README's badges

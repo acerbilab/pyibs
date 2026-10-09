@@ -210,5 +210,5 @@ PyIBS is released under the terms of the [BSD 3-Clause License](https://github.c
 
 ### Acknowledgments
 
-PyIBS is developed by members (past and current) of the [Machine and Human Intelligence Group](https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence) at the University of Helsinki and [ELLIS Institute Finland](https://www.ellisinstitute.fi/). Julia Maria Perathoner wrote PyIBS 0.1.0, its first release. Development of PyIBS 1.5 was assisted by coding agents, including Anthropic's [Claude](https://www.anthropic.com/claude).
+PyIBS is developed by members (past and current) of the [Machine and Human Intelligence Group](https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence) at the University of Helsinki and [ELLIS Institute Finland](https://www.ellisinstitute.fi/). We thank Julia Maria Perathoner for her work on PyIBS 0.1.0, an earlier Python port of IBS. Development of PyIBS 1.5 was assisted by coding agents, including Anthropic's [Claude](https://www.anthropic.com/claude).
 Work on the PyIBS package is supported by the Research Council of Finland (grants 356498 and 358980 to Luigi Acerbi) and its Flagship programme: [Finnish Center for Artificial Intelligence FCAI](https://fcai.fi/).

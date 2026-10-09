@@ -23,16 +23,16 @@ THETA = np.zeros(1)
 W = np.linspace(0, 2, P.size)
 EXACT = dict(rtol=1e-12, atol=1e-12)
 
-# 0.1.0's messages of the exit flags.
+# The messages of the exit flags.
 EXIT_MESSAGES = {
-    0: "Correct termination (the estimate is unbiased).",
+    0: "Correct run of IBS; the estimate is unbiased.",
     1: (
-        "Termination after negative log-likelihood threshold was reached "
-        "(the estimate is biased)."
+        "The negative log-likelihood threshold ended a repeat; the estimate "
+        "is biased."
     ),
     2: (
-        "Termination after maximum execution time was reached (the "
-        "estimate can be arbitrarily biased)."
+        "The sampling stopped at max_time; the estimate can be arbitrarily "
+        "biased."
     ),
 }
 

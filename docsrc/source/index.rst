@@ -171,7 +171,7 @@ You may also want to check out `PyBADS <https://acerbilab.github.io/pybads/>`__ 
 Acknowledgments
 ###############
 
-PyIBS is developed by members (past and current) of the `Machine and Human Intelligence Group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki and `ELLIS Institute Finland <https://www.ellisinstitute.fi/>`__. Julia Maria Perathoner wrote PyIBS 0.1.0, its first release. Development of PyIBS 1.5 was assisted by coding agents, including Anthropic's `Claude <https://www.anthropic.com/claude>`__. Work on the PyIBS package is supported by the Research Council of Finland (grants 356498 and 358980 to Luigi Acerbi) and its Flagship programme: `Finnish Center for Artificial Intelligence FCAI <https://fcai.fi/>`__.
+PyIBS is developed by members (past and current) of the `Machine and Human Intelligence Group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki and `ELLIS Institute Finland <https://www.ellisinstitute.fi/>`__. We thank Julia Maria Perathoner for her work on PyIBS 0.1.0, an earlier Python port of IBS. Development of PyIBS 1.5 was assisted by coding agents, including Anthropic's `Claude <https://www.anthropic.com/claude>`__. Work on the PyIBS package is supported by the Research Council of Finland (grants 356498 and 358980 to Luigi Acerbi) and its Flagship programme: `Finnish Center for Artificial Intelligence FCAI <https://fcai.fi/>`__.
 
 .. toctree::
    :maxdepth: 1

@@ -1,13 +1,14 @@
 """The orientation discrimination model of the IBS paper.
 
-A psychometric function model of a simple orientation discrimination task
-([1], "Orientation discrimination" in Results), after ``psycho_gen.m`` and
-``psycho_nll.m`` of MATLAB IBS (https://github.com/acerbilab/ibs). On each
-trial, an observer sees a stimulus of orientation S (in degrees) and reports
-whether it is tilted rightwards (1) or leftwards (-1). The observer's
-measurement is S plus Gaussian noise of SD ``sigma``; the observer reports
-rightwards when the measurement is at least ``bias``, and on a fraction
-``lapse`` of the trials responds at random.
+A model of the responses of an observer in a simple orientation
+discrimination task ([1], "Orientation discrimination" in Results), after
+``psycho_gen.m`` and ``psycho_nll.m`` of MATLAB IBS
+(https://github.com/acerbilab/ibs). On each trial, an observer sees a
+stimulus of orientation S (in degrees) and reports whether it is tilted
+rightwards (1) or leftwards (-1). The observer's measurement is S plus
+Gaussian noise of SD ``sigma``; the observer reports rightwards when the
+measurement is at least ``bias``, and on a fraction ``lapse`` of the
+trials responds at random.
 
 The parameter vector is ``theta = (log(sigma), bias, lapse)``.
 :func:`psycho_generator` simulates responses, and :func:`psycho_neg_logl`
