@@ -382,7 +382,9 @@ def test_unreachable_threshold_changes_nothing(initial, acceleration):
             acceleration=acceleration,
             neg_loglik_threshold=threshold,
         )
-        # Draws of 1, 3, 10 and 50 repeats from one generator.
+        # Draws of 1, 3, 10 and 50 repeats from one generator: a threshold
+        # that ends no repeat changes neither a draw nor what the generator
+        # gives the draws after it.
         rng = np.random.default_rng(SEED)
         return [
             _sampler.sample(settings, np.zeros(1), k, rng)
@@ -410,7 +412,11 @@ def exact_values(seed):
 
 
 def simulator_draws(threshold, seed):
-    """20 000 repeats, as 2000 draws of 10 repeats from one generator."""
+    """20 000 repeats, as 2000 draws of 10 repeats from one generator.
+
+    Each draw's per-trial sums are checked on their own, at the size of
+    an estimate with ``ibslike.m``'s default number of repeats.
+    """
     settings = _Settings(
         bernoulli, np.ones(P.size), neg_loglik_threshold=threshold
     )

@@ -43,11 +43,12 @@ from pyibs import _estimates
 class IBSSamplingError(RuntimeError):
     """IBS sampling exceeded its cap on the samples of a trial.
 
-    IBS gives no estimate for a repeat in which some trial has not matched:
-    its partial count would bias the estimate. A draw that exceeds its cap
-    therefore raises rather than return an estimate. The usual cause is an
-    observed response that the simulator never, or almost never, produces
-    at the parameter vector.
+    A draw raises it once a trial has drawn more samples than its cap
+    allows, after the simulator call that crossed the cap, even when that
+    call completed the draw. IBS gives no estimate for a repeat in which
+    some trial has not matched: its partial count would bias the estimate.
+    The usual cause is an observed response that the simulator never, or
+    almost never, produces at the parameter vector.
     """
 
 
@@ -121,9 +122,10 @@ class _Settings:
         so the simulated rows must be of the responses' kind; an object
         array on either side is compared element by element.
     design : array_like of shape (N, ...), optional
-        Per-trial design, passed to the simulator row by row.
+        Per-trial design; the simulator receives its rows for the
+        requested trials.
     trial_weights : None, float or array_like of shape (N,), optional
-        Trial weights, finite and >= 0, as ``ibslike.m``'s ``TrialWeights``;
+        Trial weights (``ibslike.m``'s ``TrialWeights``), finite and >= 0;
         checked by :func:`pyibs._estimates.trial_weights`. None gives unit
         weights and a scalar applies to every trial.
     initial_samples : int or None, optional
@@ -590,8 +592,9 @@ def sample(settings, theta, n, rng):
 
     **Checks.** After every simulator call, a draw raises ``ValueError``
     if the simulator returned an array whose shape is not that of the
-    requested responses; ``TypeError`` if the simulated rows are text and
-    the responses bytes or numbers, or the other way round; and
+    requested responses; ``TypeError`` if the simulated rows and the
+    responses are of two different kinds among text, bytes, and numbers or
+    booleans, which NumPy never finds equal; and
     :class:`IBSSamplingError` if a trial has drawn more than
     ``max_samples_per_trial * n`` samples in the draw.
 
@@ -634,12 +637,15 @@ def sample(settings, theta, n, rng):
     trial's log p_i, and their sum over the trials differs from the mean
     of the repeat values.
 
-    ``ibslike.m`` checks only the lowest repeat still being sampled, its
-    vectorized sampler leaves the trials still sampling that repeat out of
-    the bound, and it keeps the partial counts of an ended repeat in its
-    estimate, whose value then depends on the sampling schedule. It also
+    ``ibslike.m`` keeps the partial counts of an ended repeat in its
+    estimate, whose value then depends on the sampling schedule, and
     compares the unweighted sum of the trials' terms with
-    ``NegLogLikeThreshold``. This sampler checks every repeat, bounds the
+    ``NegLogLikeThreshold``. Its vectorized path checks only the lowest
+    repeat still being sampled, and leaves the trials still sampling that
+    repeat out of the bound; its loop path samples one repeat at a time
+    and checks it after every call, with ``c_i + 1`` for the trials still
+    sampling it, as here. The bound of [1] takes ``c_i`` for those trials,
+    one term less. This sampler checks every repeat, bounds the
     weighted sum, which is on the scale of a repeat's value, and returns
     -T for an ended repeat, as [1] does, so that every value is exactly
     ``max(Y_r, -T)``.

@@ -59,7 +59,7 @@ def ibs_var(K):
 
 
 def trial_weights(weights, n_trials):
-    """Validate per-trial weights, as ``ibslike.m``'s ``TrialWeights``.
+    """Validate per-trial weights (``ibslike.m``'s ``TrialWeights``).
 
     Parameters
     ----------
@@ -134,9 +134,10 @@ def repeat_estimates(K, weights):
     Notes
     -----
     The count formulas are tabulated at the counts 1 to
-    ``min(max(K), K.size // 2)``, as in ``ibslike.m``, and looked up for
-    the counts in that range when there are at least as many of them as
-    table entries; the other counts are evaluated directly.
+    ``max(1, min(max(K), K.size // 2))``, and looked up for the counts in
+    that range when there are at least as many of them as table entries;
+    the other counts are evaluated directly. ``ibslike.m`` tabulates them
+    at the counts 1 to ``max(K)`` and looks every count up.
 
     Every term equals :func:`ibs_loglik` or :func:`ibs_var` of its count
     bitwise, whether looked up or evaluated directly, and rows are reduced

@@ -89,6 +89,13 @@ $PY -m pre_commit install
 The version comes from git tags through setuptools_scm, which writes the
 gitignored `pyibs/_version.py`.
 
+`pyproject.toml` is authoritative; `setup.py` is a shim. The `packages` of
+`pyproject.toml` lists every directory of the package, so a new
+subpackage is added there; the build warns "Package would be ignored" for
+one that is missing. The tests ship in the wheel and run from an installed
+package as `pytest --pyargs pyibs`; what they need is the `test` extra,
+and no module of the package imports pytest.
+
 ```console
 $PY -m pytest                                           # CI adds -x -vv
 $PY -m pytest pyibs/testing/test_sampler.py::test_cost
@@ -106,7 +113,7 @@ base touch `pyibs/`, `pyproject.toml` or `setup.py`; a pull request that
 changes anything else, the workflows included, runs no tests. `tests.yml`
 runs the full matrix on dispatch, and a smoke run (Ubuntu, Python 3.14) on
 each push to a `dev*` branch that touches the package, `pyproject.toml`,
-`setup.py` or the two workflows of the test job.
+`setup.py`, `tests.yml` or `test-matrix.yml`.
 
 Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
@@ -127,13 +134,18 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
   `pyibs/_estimates.py` turns matching counts into per-repeat values,
   variance estimates and per-trial sums, for the sampler and for the exact
   draws of the tests (`pyibs/testing/_exact.py`). Two of its properties
-  keep its results bitwise equal whether it reduces the counts in one
-  block or in several, and with the likelihood threshold or without, and
-  tests rely on them: its sum over the trials is
+  make each repeat's value and variance estimate depend, bitwise, on that
+  repeat's counts alone: its sum over the trials is
   `np.sum(... * w, axis=1)`, never `@`; and each term equals `ibs_loglik`
   or `ibs_var` of its count bitwise, whether looked up in its table of the
   formulas, whose extent depends on the size of the count matrix, or
-  evaluated directly.
+  evaluated directly. Its callers rely on them when they reduce some of
+  the repeats at a time: the exact draws reduce their counts in blocks,
+  and the sampler, under the likelihood threshold, only the repeats that
+  the threshold did not end. `test_chunking_is_bitwise_invariant`
+  (`test_exact.py`), `test_unreachable_threshold_changes_nothing`
+  (`test_threshold.py`) and the bitwise tests of `test_estimates.py` check
+  them.
 
 ## Conventions
 

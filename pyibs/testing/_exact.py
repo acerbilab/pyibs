@@ -167,9 +167,8 @@ def exact_draw(p, n, rng, weights=None):
     rng : numpy.random.Generator
         The generator of the counts.
     weights : None, float or array_like of shape (N,), optional
-        Trial weights, finite and >= 0, as ``ibslike.m``'s
-        ``TrialWeights``, validated by
-        :func:`pyibs._estimates.trial_weights`.
+        Trial weights (``ibslike.m``'s ``TrialWeights``), finite and >= 0,
+        validated by :func:`pyibs._estimates.trial_weights`.
 
     Returns
     -------
