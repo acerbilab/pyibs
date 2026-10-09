@@ -1360,9 +1360,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   with its evidence in
   [`dev/experiments/validation_20261009/`](../experiments/validation_20261009/).
   Every cell of step 1 passes its gates, under the PI's ruling below; both
-  integration files pass; PyIBS 1.5 is faster than 0.1.0 run to completion
-  in every timing cell, 1.3 to 2.1 times with the fast simulator and 1.2 to
-  3.8 times with the slow one.
+  integration files pass; PyIBS 1.5 is faster than 0.1.0 in every timing
+  cell, 1.3 to 2.1 times with the fast simulator and 1.2 to 3.8 times with
+  the slow one.
 - The smoke passes and the PI's rulings (2026-10-09). The validation's
   smoke pass, 100 estimates per cell, projected its full run at 1.5 h on
   the container's 4 workers, and found six cells failing the calibration
@@ -1432,16 +1432,18 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   --restat` recomputed the full run's statistics at `55af9e2` from its
   saved estimates rather than draw them again: every verdict stands, and
   the gates added since pass. The integration tests ran again at
-  `55af9e2`. Fixed in the record: the changelog's speed-up, which holds
-  against 0.1.0 run to completion and not at its default `max_iter`; three
-  values of the timing table; the decision of `vectorized=None`, which
-  `num_reps=1` does not make; the growth of the slow simulator's gain,
+  `55af9e2`. Fixed in the record: three values of the timing table; the
+  decision of `vectorized=None`, which `num_reps=1` does not make; the growth of the slow simulator's gain,
   which at N = 100 does not grow with `num_reps`; claims of unbiasedness
   and calibration, now stated as what the evidence resolves, with the
   `num_reps=1` cells and the threshold cells' variance estimates, which
   overstate the variance about 2 to 3 times where the threshold acts; the
   data set, drawn as `ibs_example.m` draws its own; the README's commands,
   environments, seeds and the smoke passes' outputs, which are not kept.
+  Not taken (PI): a reviewer's point that 0.1.0 at its default `max_iter`
+  can take less time than 1.5 with a slow simulator; that default is the
+  defect `10 ^ 5` = 15, so the record compares only with
+  `max_iter=10**5`.
 - For Phase 4: the FAQ and the examples can cite the record on the noise
   of an estimate (100 repeats give an SD of about 1.1 on the example's 600
   trials at its generating parameters), on the variance estimate under a

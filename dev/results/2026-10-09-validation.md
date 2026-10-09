@@ -110,8 +110,8 @@ drawn as in `ibs_example.m`, the responses at its generating parameters),
 0.2 s per call, for PyIBS 1.5 and for PyIBS 0.1.0 from PyPI in a venv of
 its own. Each version runs at its defaults, with a new `IBS` object per
 estimate, so that `vectorized=None` decides at each, and 0.1.0 with
-`max_iter=10**5`, so that both sample every repeat to completion (0.1.0's
-default, 15, cuts a repeat short after 15 rounds and biases the estimate).
+`max_iter=10**5`, the value that its documentation gives (its default,
+written `10 ^ 5`, evaluates to 15, a defect that 1.5 fixes).
 Both call the same two-argument simulator, which counts its calls and
 rows. A fast cell takes at least 5 estimates and 2 s, up to 50, and
 reports their median; a slow cell, one estimate. The fast cells ran
@@ -186,8 +186,8 @@ projected 4.4 h for them one at a time.
   0.15. Its posterior mean `(0.0631, 0.2335, 0.0408)`, with SDs `(0.115,
   0.100, 0.016)`, lies 0.22, 0.08 and 0.63 SDs from the exact
   maximum-likelihood point. The test takes about 70 s.
-- **Timing.** PyIBS 1.5 is faster than 0.1.0 run to completion in every
-  cell (seconds per estimate, the median of the estimates given; calls and
+- **Timing.** PyIBS 1.5 is faster than 0.1.0 in every cell (seconds per
+  estimate, the median of the estimates given; calls and
   simulated rows per trial are means):
 
   | Simulator | N | `num_reps` | 1.5 (s) | 0.1.0 (s) | 0.1.0 / 1.5 | Calls, 1.5 | Calls, 0.1.0 | Rows per trial, 1.5 | Rows per trial, 0.1.0 | Estimates |
@@ -232,7 +232,7 @@ target unchanged: PyBADS reaches the exact maximum likelihood to 0.01,
 and PyVBMC's posterior holds the exact maximum-likelihood point well
 within its spread.
 
-PyIBS 1.5 is faster than 0.1.0 run to completion everywhere tested. With
+PyIBS 1.5 is faster than 0.1.0 everywhere tested. With
 a fast simulator the gain, 1.3 to 2.1 times on the same number of calls,
 is mostly in the sampler's own work; 0.1.0 also simulates up to 11% more
 rows. With a slow simulator the time is the number of calls, and 1.5
@@ -240,10 +240,8 @@ needs fewer: it samples all repeats of a trial as one stream, so that a
 call takes one sample of each trial that still needs a match in any
 repeat, where 0.1.0 runs the repeats one after the other and waits in
 each for its slowest trial. The gain grows with N, to 3.8 times at 10,000
-trials and 100 repeats, and with `num_reps` from 1,000 trials on. At its
-default `max_iter`, 15, 0.1.0 stops a repeat after 15 rounds, which can
-take less time than 1.5 with a slow simulator, at the price of a biased
-estimate. In absolute terms, an estimate of 100 repeats with a simulator
+trials and 100 repeats, and with `num_reps` from 1,000 trials on. In
+absolute terms, an estimate of 100 repeats with a simulator
 of 0.2 s per call takes 15.5 to 27 minutes at `vectorized=None`, which
 decides False for any simulator whose call takes 0.1 s or more. The
 accelerated schedule makes 9 to 12 calls in these cells, so a simulator

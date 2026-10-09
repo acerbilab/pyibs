@@ -109,14 +109,11 @@ says where PyIBS differs from it, and why.
   `ValueError` (0.1.0 returned None).
 - **Requirements.** PyIBS needs Python 3.10, NumPy 2.0 and SciPy 1.13 or
   later, the versions that PyBADS 1.5 needs, and no other package.
-- **Speed.** An estimate takes less time than with 0.1.0 sampling every
-  repeat to completion: in [timings of the example
+- **Speed.** An estimate takes less time: in [timings of the example
   model](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
-  0.1.0 with `max_iter=10**5` took 1.3 to 2.1 times as long with a fast
-  simulator, and up to 3.8 times as long with one of 0.2 s per call, which
-  PyIBS 1.5 calls fewer times by sampling all the repeats of a trial
-  together. At its default `max_iter`, 0.1.0 cut repeats short, faster but
-  biased ("Upgrading from 0.1.0").
+  0.1.0 took 1.3 to 2.1 times as long with a fast simulator, and up to 3.8
+  times as long with one of 0.2 s per call, which PyIBS 1.5 calls fewer
+  times by sampling all the repeats of a trial together.
 
 ### Fixed
 
