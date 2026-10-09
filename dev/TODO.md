@@ -23,17 +23,21 @@ title stays as it is while its item is open.
     one trial that needed a second sample in one repeat. The floor
     therefore changes no other SD. With trial weights, the smallest
     positive weight divided by `num_reps` plays its role.
-  - Its size: with `S = sum_i (1 - p_i)`, a call returns 0 with probability
+  - Its size, with unit trial weights and `p_i` the probability that the
+    simulator produces trial i's response: with `S = sum_i (1 - p_i)`, a
+    call returns 0 with probability
     `prod_i p_i ** num_reps ≈ exp(-num_reps * S)`, and the true variance of
-    its estimate is `sum_i Li₂(1 - p_i) / num_reps ≈ S / num_reps` ([1],
-    Section 4.3). Since `Li₂(1 - p) ≤ -log p`, the probability of a 0 is
-    at most `exp(-(num_reps * sd) ** 2)`, `sd` the true SD, whatever the
-    number of trials: 0.37 at `sd = 1 / num_reps`, 0.018 at `2 / num_reps`.
-    A 0 thus points to a true SD below about `2 / num_reps`.
+    its estimate is `sum_i Li₂(1 - p_i) / num_reps ≈ S / num_reps` (van
+    Opheusden, Acerbi & Ma, 2020, PLOS Computational Biology 16(12):
+    e1008483, Section 4.3). Since `Li₂(1 - p) ≤ -log p`, the probability
+    of a 0 is at most `exp(-(num_reps * sd) ** 2)`, `sd` the true SD,
+    whatever the number of trials: 0.37 at `sd = 1 / num_reps`, 0.018 at
+    `2 / num_reps`. A 0 thus points to a true SD below about
+    `2 / num_reps`.
   - Open: whether the advice holds up in practice. Fits with PyBADS and
     PyVBMC on a model whose trials match with probability near 1, with
     and without the floor, would show whether the floor changes their
     results; a much smaller floor, such as `1e-8`, would let PyBADS's
     precision-weighted final estimate rest on that one evaluation. The
-    derivation was checked numerically, in the session that wrote the FAQ
-    (Phase 4 of `plans/pyibs-1.5.md`), and by one reviewer.
+    derivation has been checked numerically, but no fit has used the
+    floor.

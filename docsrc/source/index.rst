@@ -20,10 +20,11 @@ What's new in PyIBS 1.5
   differs from it on purpose, and why.
 - **Validated.** On 16 models with an exact log-likelihood, under every
   setting of ``vectorized`` and ``num_reps`` that was tested, 2,000
-  estimates each, no bias was detected, and the variance estimates are
-  calibrated as those of exact IBS draws are; under the likelihood
-  threshold, the estimates agree with the expected value of a thresholded
-  estimate (:mainbranch:`the record <dev/results/2026-10-09-validation.md>`).
+  estimates each, no bias was detected, and without the likelihood
+  threshold the variance estimates are calibrated as those of exact IBS
+  draws are; under the threshold, the estimates agree with the expected
+  value of a thresholded estimate
+  (:mainbranch:`the record <dev/results/2026-10-09-validation.md>`).
 - **Ready for PyBADS and PyVBMC.** ``additional_output="std"`` returns the
   tuple of the estimate and its standard deviation, as Python floats, which
   PyBADS 1.5 and PyVBMC 1.5 take from a noisy target. A standard deviation
@@ -87,8 +88,8 @@ PyIBS suits a model that you can simulate but whose likelihood you cannot comput
   neural network trained once on simulations, as in neural posterior
   estimation, then gives the posterior of each new dataset almost at once
   [`3 <#references>`__].
-- **IBS remains the method of choice where amortization is hard, because the
-  trials' contexts are many and richly structured.** An amortized estimator
+- **IBS remains the method of choice where the trials' contexts are many and
+  richly structured, which makes amortization hard.** An amortized estimator
   has to learn the model's behaviour across every context it may meet, while
   IBS only simulates the model in the contexts of the data. For example, a
   model of how people play a board game chooses each move from the current

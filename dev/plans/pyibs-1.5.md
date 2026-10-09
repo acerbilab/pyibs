@@ -414,7 +414,8 @@ examples/
      `ibslike.m`, `return_positive` changes the sign of the total only.
      `trial_weights` refuse booleans and numeric strings, as the settings
      do.
-   - Exit flags 0, 1 and 2, with 0.1.0's messages for them; reaching
+   - Exit flags 0, 1 and 2, each with a message (0.1.0's until Phase 4
+     reworded them after `ibslike.m`'s descriptions); reaching
      `max_time` also issues a `UserWarning` (D3). The cap raises
      `IBSSamplingError`, a `RuntimeError` naming the trials over the cap
      by their 0-based indices and the cap as `max_iter * num_reps`, where
@@ -647,17 +648,20 @@ knows the alternatives would, every claim cited:
 - Amortized simulation-based inference (neural posterior or likelihood
   estimation) is often the better choice when one model is fitted to many
   datasets and its simulations are cheap; the text says so plainly.
-- IBS remains the method of choice where amortization is hard, because
-  each trial's context can be unique: the board positions of a model of
-  game play, each of which may occur once ([1], Section 5.4; B. van
+- IBS remains the method of choice where the trials' contexts are many
+  and richly structured, which makes amortization hard: an amortized
+  estimator has to learn the model's behaviour across every context it
+  may meet, while IBS only simulates the model in the contexts of the
+  data. Its one example is a model of how people play a board game, which
+  chooses each move from the current position on the board, a position
+  that may occur only once in the data ([1], Section 5.4; B. van
   Opheusden et al., 2023, "Expertise increases planning depth in human
-  gameplay", Nature). And it serves where per-dataset guarantees matter:
-  amortized estimates can fail on a given dataset, and need diagnostics
-  and a fallback (C. Li et al., 2026, "Amortized Bayesian Workflow",
-  Transactions on Machine Learning Research,
+  gameplay", Nature 618: 1000–1005). And it serves where per-dataset
+  guarantees matter: amortized estimates can fail on a given dataset, and
+  need diagnostics and a fallback (C. Li et al., 2026, "Amortized Bayesian
+  Workflow", Transactions on Machine Learning Research,
   https://openreview.net/forum?id=osV7adJlKD), while IBS's estimates are
-  unbiased, with a calibrated variance, for every dataset, without
-  training.
+  unbiased on every dataset, without training (PI, 2026-10-09).
 - Its costs: about 1/p_i samples for trial i, so improbable responses are
   expensive (the likelihood threshold bounds the cost at poor
   parameters); responses must be discrete, or binned.
@@ -1482,8 +1486,11 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   (step 4), `e5c2166` (step 2), `e17d74d` (step 5), `3458698` (step 6),
   `cf30448` (step 8); `4d0e573` (Phase 3's note on `test_examples.py`);
   `60ae967` (docstrings that numpydoc misread); after the review of the
-  phase, `90e4852` and `68b46c1`; `674039d` (this entry); and the commit
-  after it (the 0.1.0 text that remained, and `LICENSE`).
+  phase, `90e4852` and `68b46c1`; `674039d` (this entry); after the PI's
+  decisions below, `7fb53fd` (the 0.1.0 text that remained, and
+  `LICENSE`), `1fdf1e7` and `b7b2cfa` (when IBS fits) and `cda9de4` (the
+  floor on the SD, to `dev/TODO.md`); after their review, the commit that
+  follows `cda9de4`.
 - Verification: the documentation builds with no warning
   (`make -C docsrc github` after `make -C docsrc clean`), and every link
   into it from the README, the changelog, the skill, the notebooks and the
@@ -1535,8 +1542,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   calibrated variance on every dataset; the examples' install command named
   no versions, though Example 3 needs PyVBMC 1.5; the FAQ said that PyVBMC
   requires the SD, and that neural likelihood estimation gives posteriors at
-  once; the 0.1.0 text that remained (above, reworded in the last commit
-  of the phase); the CI's path filters;
+  once; the 0.1.0 text that remained (above, reworded in `7fb53fd`); the
+  CI's path filters;
   `AGENTS.md` on the text that the README shares, on the labels of PyBADS's
   and PyVBMC's FAQs that PyIBS links, and on the generation of the scripts;
   smaller corrections to the FAQ (a bound rounded down, a sizing snippet
@@ -1546,12 +1553,26 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   script. Not taken: positioning IBS against non-amortized neural
   simulation-based inference too, beyond the plan's Positioning; a
   `make.bat` that stops on a failed build, which PyBADS's does not either.
-- Decided after the phase (PI, 2026-10-09): `LICENSE` names the lab
-  alone, without the notice of MATLAB IBS's MIT licence on `ibslike.m`;
-  the README keeps the grants of PyBADS's and PyVBMC's READMEs; and the
-  FAQ's answer on a zero SD no longer advises a floor on the SD in the
-  user's target, `max(sd, 1 / num_reps)`, which the FAQ's writer derived:
-  `dev/TODO.md` keeps it, with its derivation, to be studied.
+- Decided after the phase (PI, 2026-10-09): `LICENSE` carries no notice
+  of MATLAB IBS's MIT licence on `ibslike.m`; the README keeps the grants
+  of PyBADS's and PyVBMC's READMEs; the FAQ's answer on a zero SD no
+  longer advises a floor on the SD in the user's target,
+  `max(sd, 1 / num_reps)`, which the FAQ's writer derived: `dev/TODO.md`
+  keeps it, with its derivation, to be studied; and "When should I use
+  PyIBS?", its copies and the Positioning state the condition, contexts
+  many and richly structured, with the board game as its one example.
+- Review of the commits after the first review (`/doublecheck`, two
+  read-only Opus reviewers: the code, CI and packaging; the documents and
+  records). Fixed in the commit that follows `cda9de4`: the message of
+  exit flag 0, which claimed an unbiased estimate also under a finite
+  `max_time`; the README and `index.rst`, which read as if the variance
+  estimates were calibrated under the threshold too; the FAQ's claim of a
+  calibrated variance on every data set, and its sentence on the cost
+  under the threshold; the Positioning and this entry; `dev/TODO.md`,
+  which did not stand alone; `AGENTS.md` on the slug rule, on the skill's
+  citations and on what `about_us.rst` repeats; smaller corrections. Left
+  for Phase 5: the README's badge of `tests.yml` names `main`, where
+  nothing runs that workflow.
 - For Phase 5: the README, `installation.rst` and `development.rst` install
   `pyvbmc>=1.5`, and the links to PyVBMC's FAQ resolve, once PyVBMC 1.5.0 is
   on PyPI and its documentation published (2026-10-13); the README's badges

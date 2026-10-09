@@ -261,9 +261,10 @@ gave.
   PyVBMC's interfaces and messages, and nothing runs its snippets or checks
   them against the code: a change to one of those is made in the FAQ by
   hand. Its table of contents is written out by hand, each question carries
-  a label `(faq-<slug>)=`, the slug the question's text lowercased with its
-  punctuation but underscores dropped and its spaces as hyphens, `skills/pyibs/SKILL.md`
-  names its sections and questions by their titles, and other files link
+  a label `(faq-<slug>)=`, the slug the question's text lowercased, its
+  punctuation dropped but for hyphens and underscores, and its spaces as
+  hyphens; `skills/pyibs/SKILL.md` names its sections and questions by
+  their titles, and other files link
   its labels, so a question added or renamed, or a label changed, is
   updated there as well:
   - `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`:
@@ -286,12 +287,13 @@ gave.
 - **When IBS fits.** What PyIBS is for, and when amortized
   simulation-based inference or a closed-form likelihood serves better, is
   stated, with its citations, in the README's "When should I use PyIBS?",
-  its copy in `index.rst`, the FAQ's "General" section and the skill's
-  "When PyIBS fits", so a change to it is made in all four.
+  its copy in `index.rst` and the FAQ's "General" section, and without them
+  in the skill's "When PyIBS fits", so a change to it is made in all four.
 - **Text that the README shares.** `index.rst` restates the README's "What
   is it?", "What's new in PyIBS 1.5", "How does it work?" and "When should
-  I use PyIBS?", its references, citation and acknowledgments (the grants
-  also in `about_us.rst`); `installation.rst` and `quickstart.rst` copy its
+  I use PyIBS?", its references, citation and acknowledgments, which
+  `about_us.rst` repeats in part (the thanks to 0.1.0's author, the coding
+  agents and the grants); `installation.rst` and `quickstart.rst` copy its
   Installation and Quick start; and the skill quotes its section titles. The
   requirements, Python 3.10, NumPy 2.0 and SciPy 1.13, are stated in the
   README, `index.rst`, `installation.rst`, `development.rst`, the FAQ and

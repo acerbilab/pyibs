@@ -2,8 +2,7 @@
 
 This FAQ is curated by [Luigi Acerbi](https://lacerbi.github.io/), and in constant expansion.
 It is adapted for PyIBS 1.5 from the [MATLAB IBS FAQ](https://github.com/acerbilab/ibs/wiki),
-with further questions on the Python package. MATLAB IBS is, with PyIBS, one
-of the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+with further questions on the Python package.
 
 For a tutorial with detailed examples, see the [Jupyter notebook examples](examples.rst).
 
@@ -133,8 +132,9 @@ computed, and each is the better tool for a different kind of problem.
 
 **What IBS gives.** IBS estimates the log-likelihood of one data set at one
 parameter vector, by simulating each trial in its own context. The estimate
-is unbiased, for every data set and every parameter vector, and comes with a
-calibrated estimate of its variance ([1], Sections 2.4, 4.3 and 4.6). It needs
+is unbiased, for every data set and every parameter vector, and comes with an
+estimate of its variance, which [1] shows to be calibrated (Sections 2.4, 4.3
+and 4.6). It needs
 no training and no summary statistics of the data. Any method that takes a
 noisy log-likelihood can then use it: maximum-likelihood or
 maximum-a-posteriori estimation with PyBADS, the posterior and the model
@@ -1000,9 +1000,10 @@ warning, and raises `IBSSamplingError` for a trial without a completed
 repeat. A finite limit biases the estimates, also those of the calls that
 complete in time, since completing in time favours few samples, which give
 high log-likelihoods. Leave it at its default, `np.inf`, for estimates that
-you will use. The cap bounds the cost without a bias, and so does the
-likelihood threshold where the log-likelihood lies well above `-T`. A finite limit also makes the sampling depend on timing, so that
-a seed no longer reproduces a run.
+you will use. The cap bounds the cost without adding a bias, and the
+likelihood threshold biases only the estimates at parameter vectors whose
+log-likelihood lies near or below `-T`. A finite limit also makes the
+sampling depend on timing, so that a seed no longer reproduces a run.
 
 (faq-troubleshooting)=
 ## Troubleshooting
@@ -1192,8 +1193,7 @@ repeats, with a warning; and `ibslike('test')` is the test suite,
 lists each difference between PyIBS and `ibslike.m`, and the didactic
 `ibs_basic.m`, with its reason. Runs of PyIBS and of `ibslike` do not match
 draw for draw, even with the same simulator: they draw their random numbers
-differently. MATLAB IBS and PyIBS are among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+differently.
 
 (faq-i-used-pyibs-010-what-do-i-need-to-change)=
 ### I used PyIBS 0.1.0. What do I need to change?

@@ -40,7 +40,8 @@ To install or upgrade PyIBS with its test dependencies and run the tests::
 
 When PyBADS 1.5.1 or later, or PyVBMC 1.5 or later, is installed, the tests
 also fit the example model with it, which takes a few minutes;
-``pytest --pyargs pyibs -m "not integration"`` leaves those tests out.
+``python -m pytest --pyargs pyibs -m "not integration"`` leaves those tests
+out.
 
 If you wish to install directly from the latest source code, please see the
 :doc:`instructions for developers and contributors <development>`.
