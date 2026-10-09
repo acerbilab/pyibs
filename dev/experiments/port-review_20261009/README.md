@@ -9,9 +9,12 @@ the bias of finding F-1.
 ## Provenance
 
 - PyIBS at `b6fe6fb361614995345580bc13acbdcf3ac08550`, a clean tree (`git
-  status --porcelain` empty). The package code is that of `40e7d77`; the
-  installed version string, `0.1.dev54+g40e7d7748`, is that of the editable
-  install made there.
+  status --porcelain` empty), for `octave_checks.txt` and
+  `first_call_bias.txt`: the package code is that of `40e7d77`, the code
+  that the review read. `first_call_bias_after_fix.txt` is the same run at
+  `27e321c144a88a44902241313ce2e4f0a776c78d`, a clean tree, which fixes
+  F-1. The installed version string, `0.1.dev54+g40e7d7748`, is that of
+  the editable install made at `40e7d77`, whatever the commit.
 - Python 3.12.3, NumPy 2.5.3, SciPy 1.18.1, on
   Linux-6.18.44-fc-v80-x86_64-with-glibc2.39.
 - MATLAB IBS (`../ibs`) at `2229c00c4a19eb9f236f9f257100dab9e87b6f92`,
@@ -30,7 +33,8 @@ the bias of finding F-1.
   loop limit is infinite", for `MaxIter = Inf`) and blank lines are removed.
 - `first_call_bias.py`: 3,000 first calls of new `IBS` objects with
   `vectorized=None` on a fake clock, generator seed 12345. Output:
-  `first_call_bias.txt`.
+  `first_call_bias.txt` before the fix of F-1, and
+  `first_call_bias_after_fix.txt` after it.
 
 ## Commands
 

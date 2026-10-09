@@ -56,9 +56,12 @@ source or the argument otherwise.
 
 ## Ledger
 
-Proposed verdicts and outcomes, and the PI's rulings of 2026-10-09.
+The verdicts and outcomes proposed, and the PI's rulings of 2026-10-09.
+Every outcome is carried out: the fixes of F-1 and F-2 in `27e321c` and
+`cf0ed60`, each with a test that fails before it, and the catalogue
+entries and documentation of the others in `16790c6`.
 
-| ID | Finding | Reported by | Proposed verdict | Proposed outcome | Ruling |
+| ID | Finding | Reported by | Verdict | Outcome | Ruling |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | F-1 | The first call with `vectorized=None` keeps the timing call's samples only when it decides False | B | Defect | Fix: the timing call is always the first round; KD-8, KD-11, D19 | Accepted, outcome 1 |
 | F-2 | `ibs_basic` loops forever on responses of a kind that never matches | A, B | Defect | Fix: the kind check of `IBS`; KD-16, KD-18; changelog | Accepted, the fix |
@@ -114,10 +117,11 @@ outcomes are dependent, and the call is biased.
   and 0 s otherwise, `num_reps=2`, 3,000 new objects: the mean estimate is
   0.5076 ± 0.0090, against the exact log 2 = 0.6931 (z = -20.5) and the
   0.75 log 2 = 0.5199 that keeping the timing call exactly when it matched
-  predicts. No existing test can see it: the fake clocks of the tests
-  advance independently of the outcomes.
+  predicts. No test could see it: the fake clocks of the tests advance
+  independently of the outcomes. After the fix,
+  `first_call_bias_after_fix.txt` gives 0.6794 ± 0.0098 (z = -1.4).
 
-Verdict proposed: defect. Outcomes, for the PI to choose:
+Verdict: defect. The outcomes considered, of which the PI chose the first:
 
 1. Recommended: the timing call is always the draw's first round. When the
    schedule's first round requests one sample per trial, it is that round,
@@ -130,7 +134,8 @@ Verdict proposed: defect. Outcomes, for the PI to choose:
    says that `ibslike.m` discards the timing call when its first round
    requests more than one sample per trial (lines 287-289), KD-11 loses
    its sentence on a discarded call, and D19 states the rule. A regression
-   test repeats the evidence's case with 4.5 standard errors.
+   test repeats the evidence's case with 2,000 objects, against 4.5
+   standard errors.
 2. The timing call is always discarded: the same effect, at the cost of an
    extra simulation of every trial, which lasts `vectorized_threshold` or
    more when the decision is False, and a departure from `ibslike.m`'s loop
@@ -149,7 +154,7 @@ raises `TypeError` after the first such simulator call (KD-16), and
 response that cannot match. `ibs_basic.m` compares characters with numbers
 by their codes (line 33), so this endless loop belongs to Python alone.
 
-Verdict proposed: defect. Outcome: `ibs_basic` checks every simulated
+Verdict: defect. Outcome: `ibs_basic` checks every simulated
 response with the check of `IBS` (`_sampler._check_kinds`), at the cost of
 one comparison of dtypes per sample; a test whose simulator returns `"1"`
 for numeric responses and raises `RuntimeError` after 50 calls, which
@@ -157,8 +162,8 @@ fails with that error before the fix and gets `TypeError` after it. KD-16
 names `ibs_basic` too; KD-18 adds the check and `ibs_basic`'s checks of `R`
 and `S`, which `ibs_basic.m` does not make. The changelog's entry on
 `ibs_basic` under Fixed adds the `TypeError`, since 0.1.0's `ibs_basic`
-looped forever too. The alternative, keeping `ibs_basic` bare, records the
-endless loop in KD-18.
+looped forever too. The alternative, keeping `ibs_basic` bare and
+recording the endless loop in KD-18, was not chosen.
 
 ### F-3. With one trial, `ibslike.m`'s per-trial arrays have one entry per repeat
 
@@ -175,7 +180,7 @@ vector gives the orientation of the indexed vector, and `sum(A, dim)` over
 a singleton dimension returns `A`. Evidence: `octave_checks.txt`, the lines
 "N = 1".
 
-PyIBS's arrays have shape (N,) at every N. Verdict proposed: deliberate
+PyIBS's arrays have shape (N,) at every N. Verdict: deliberate
 difference, catalogue entry missing. Outcome: KD-3 states it, with the
 lines; `test_scalar_responses_are_one_trial` (`test_ibs.py`) also asserts
 the shape of `neg_logl_var_trials`.
@@ -193,13 +198,14 @@ the control. `IBS` raises `ValueError` for `max_iter=np.inf` and
 (`test_invalid_settings_raise`), although the sampler can run without a
 cap (`max_samples_per_trial=None`).
 
-Verdict proposed: deliberate difference, catalogue entry missing; D3 keeps
+Verdict: deliberate difference, catalogue entry missing; D3 keeps
 the cap as the guard against an observed response that the simulator
 cannot produce, which would otherwise sample forever with nothing to name
 the cause. Outcome: KD-11 states that `MaxIter = Inf` disables
 `ibslike.m`'s cap and that `max_iter` is finite; KD-6 states that the
 counts are finite, where `ibslike.m` takes `MaxIter` and `NsamplesPerCall`
-of `Inf`. The alternative ruling maps `max_iter=np.inf` to no cap.
+of `Inf`. The alternative, mapping `max_iter=np.inf` to no cap, was not
+chosen.
 
 ### F-5. A finite `max_time` biases the calls that complete in time too
 
@@ -223,7 +229,7 @@ threshold ends, and, since the cap counts the samples drawn after a
 trial's last match, whether a call reaches the cap. KD-9 and D4 list the
 first two effects of the schedule and not the third.
 
-Verdict proposed: documentation error. Outcome: the `max_time` docstring
+Verdict: documentation error. Outcome: the `max_time` docstring
 of `IBS`, `EstimateResult.exit_flag` and KD-14 say that only an infinite
 `max_time` gives unbiased estimates, since completing in time favours small
 counts; the message of exit flag 0 stays `ibslike.m`'s. KD-9 and D4 add the
@@ -241,7 +247,7 @@ lines "MaxTime = 1e-9", which show it on both paths. KD-14, the parity
 table's row "Time limit" and D3 give NaN for the loop path only.
 
 PyIBS checks the time only after a simulator call (`sample`), and raises
-for a trial without a completed count, as KD-14 says. Verdict proposed:
+for a trial without a completed count, as KD-14 says. Verdict:
 documentation error. Outcome: KD-14, the parity table and D3 state the
 vectorized path's NaN, with lines 210-213 and 396-398.
 
@@ -258,7 +264,7 @@ results for 2 and 3 repeats. Evidence: `octave_checks.txt`, the lines
 "Nreps = [2; 3]". Semantics: implicit expansion, shared by MATLAB since
 R2016b and Octave.
 
-Verdict proposed: documentation error. Outcome: KD-6 says that its code
+Verdict: documentation error. Outcome: KD-6 says that its code
 runs a vector only in special cases: the loop path fails at line 413; the
 vectorized path at line 284 unless `NsamplesPerCall` is set, and otherwise
 at line 361 once a round's open trials are neither all of them nor one.
@@ -268,7 +274,7 @@ at line 361 once a round's open trials are neither all of them nor one.
 D23 says that `ibslike.m`'s own examples pass a NaN design (lines 57,
 511). They call their simulator with a NaN array to generate the responses
 (lines 57, 511, 587), and call `ibslike` without a design or with `[]`
-(lines 58, 523, 588, 646). KD-17 states it correctly. Verdict proposed:
+(lines 58, 523, 588, 646). KD-17 states it correctly. Verdict:
 documentation error in the plan. Outcome: D23 says that the examples call
 their simulator with a design of NaN, so that a port passing such a design
 to `IBS` keeps working.
@@ -285,7 +291,7 @@ weight of 0 is a natural way to hold a trial out. Separately, the
 N binary choices, while the bound is weighted: the chance level is
 `sum_i w_i log 2`, as the Notes of `sample` say.
 
-Verdict proposed: documentation error. Outcome: the `trial_weights`
+Verdict: documentation error. Outcome: the `trial_weights`
 docstring says that a trial of weight 0 is still sampled, and can reach
 the cap or the time limit, so that a trial to leave out is better removed
 from the data; the `neg_logl_threshold` docstring gives the weighted chance
@@ -297,7 +303,7 @@ A JIT-compiled simulator, or one that fills caches at its first call, can
 exceed `vectorized_threshold` at the timing call and never again, and D19
 then keeps the one-sample schedule for every later call of the object.
 This costs time, not accuracy, and follows from D19, where `ibslike.m`
-decides at every call. Verdict proposed: no issue in the code. Outcome: the
+decides at every call. Verdict: no issue in the code. Outcome: the
 `vectorized` docstring says that the timing includes any warm-up, so that
 such a simulator is given `vectorized=True` or called once before.
 
@@ -307,16 +313,16 @@ such a simulator is given `vectorized=True` or called once before.
 acceleration under its time rule (lines 517-518, 578, 639-641); the ports
 (`test_ibslike_ports.py`) run with `vectorized=True` and growth after
 every call, so that a seed alone decides their draws. Their criteria are
-`ibslike.m`'s, but for `<` against `<=` at the tolerances. Verdict
-proposed: deliberate difference, catalogue entry incomplete. Outcome:
-KD-19 states the settings and their reason.
+`ibslike.m`'s, but for `<` against `<=` at the tolerances. Verdict:
+deliberate difference, catalogue entry incomplete. Outcome: KD-19 states
+the settings and their reason.
 
 ### F-12. Responses mixing numbers and text become text in a NumPy array
 
 `np.array([[1, "a"], [2, "b"]])` is an array of text. A simulator that
 returns such rows as an object array compares `1 == "1"`, never matches,
 and samples until the cap; `_check_kinds` leaves object arrays unchecked,
-as KD-16 says. Verdict proposed: documentation gap. Outcome: the
+as KD-16 says. Verdict: documentation gap. Outcome: the
 `response_matrix` docstring says that responses mixing numbers and text
 are given as an object array, and returned by the simulator as one.
 

@@ -1244,3 +1244,52 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   the new examples replace, and its README describes 0.1.0; the FAQ's
   answer on a zero SD carries the label of `_FAQ_ZERO_SD`
   (`AGENTS.md`, "What spans files").
+
+### Phase 2 — 2026-10-09
+
+- References: `../ibs` at `2229c00c4a19eb9f236f9f257100dab9e87b6f92`,
+  Phase 1's commit; `../pubs-llms` at
+  `a25f58be92111a4c1bb3c3dd3d496605e23b1e98`; GNU Octave 8.4.0.
+- Commits: `cf8d732` (the phase's status), `6df6409` (`ibslike.m` under
+  Octave), `b6fe6fb` (the checks of the review), `9221a1e` (the ledger and
+  its evidence, step 3), `27e321c` (F-1), `cf0ed60` (F-2), `16790c6` (the
+  catalogue and documentation, step 4), and the commit after it (the
+  records and this entry).
+- The review (steps 1 to 3): two read-only Opus reviewers, A against
+  `ibslike.m` and `ibs_basic.m` and B against [1] and for internal
+  correctness. The ledger,
+  [`dev/results/2026-10-09-port-review.md`](../results/2026-10-09-port-review.md),
+  holds twelve findings and four items of no issue. Two are defects: F-1,
+  an object's first call with `vectorized=None` biased when the
+  simulator's running time depends on its outcomes, since the timing
+  call's samples were used only when it decided False; and F-2,
+  `ibs_basic` looping forever on simulated responses of a kind that NumPy
+  never finds equal to the observed ones. The PI's rulings: for F-1, the
+  timing call is always the first round (D19 states it); for F-2, the
+  kind check of `IBS`; for F-4, `max_iter` stays finite; the others as
+  proposed. The points that Phase 1 left: F-1 and N-1 to N-3, and the
+  shapes of `ibslike.m`'s per-trial arrays with one trial, F-3, which
+  Octave settled.
+- Tests (step 4): F-1 adds
+  `test_first_call_is_unbiased_when_the_timing_tracks_the_outcomes`
+  (`test_ibs.py`, about 15 standard errors off before the fix) and
+  replaces `test_first_round_is_ignored_on_more_samples_per_trial` by
+  `test_first_round_precedes_more_samples_per_trial` (`test_sampler.py`);
+  it changes `test_max_time_counts_the_timing_call` (the timing call's
+  miss is now the first sample of a count of 3, where the count was 2),
+  the parameters of `test_vectorized_none_counts_the_timing_call`, and the
+  name of `test_cap_counts_the_timing_call`, whose draw is unchanged. F-2
+  adds `test_responses_that_never_match_raise` (`test_ibs_basic.py`), F-3
+  an assertion on the shape of `neg_logl_var_trials`. The ports of the
+  self-tests run with `vectorized=True`, which F-1 does not reach, and
+  draw as before.
+- Verification: `$PY -m pytest`, 457 tests passed in about 8 s; the
+  pre-commit hooks pass.
+- Deviations: GNU Octave was installed at the PI's request, and
+  `ibslike.m`, unmodified, runs under it with two directories of shims;
+  `AGENTS.md` states how ("Sibling repositories"), and the shims are in
+  `dev/scripts/octave/`. The reviewers and the orchestrator ran small
+  checks of `ibslike.m` under it where the steps planned reading only, and
+  Reviewer B ran one check of PyIBS on a fake clock, about 1 s, for F-1;
+  the record cites the checks from
+  `dev/experiments/port-review_20261009/`.
