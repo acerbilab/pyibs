@@ -184,7 +184,8 @@ from the original maintainer on 2026-10-09.
   names, once its verification passes; conventional commits, as
   `AGENTS.md` states. Nothing is pushed, and no pull request, tag or
   release is made, without the PI's instruction.
-- One heavy process at a time (`AGENTS.md`, "Setup and commands"). Long
+- On the PI's workstation, one heavy process at a time (`AGENTS.md`,
+  "Setup and commands"); a cloud session may run them in parallel. Long
   runs are unbuffered and logged as `dev/scripts/runs/<name>_$(date
   +%s).log`.
 - Every random draw goes through an explicit `numpy.random.Generator`;
@@ -534,7 +535,8 @@ listed in the catalogue with its reason or fixed.
 ### Phase 3: statistical validation, PyBADS and PyVBMC, timing
 
 **Status**: pending
-**Executor**: Opus (orchestrator), running one heavy process at a time.
+**Executor**: Opus (orchestrator), running one heavy process at a time on
+the PI's workstation.
 **Needs**: PyBADS and PyVBMC as step 2 installs them.
 **Goal**: evidence that PyIBS 1.5's estimates are unbiased and calibrated
 across models and settings, that PyBADS 1.5 and PyVBMC 1.5 run with it as
@@ -619,7 +621,7 @@ their target, and how its speed compares with 0.1.0's.
 **Status**: pending
 **Executor**: Opus (orchestrator); the documentation site, the FAQ and the
 notebooks may each go to an Opus sub-agent, one at a time for anything
-that runs code.
+that runs code on the PI's workstation.
 **Needs**: `../pybads`, `../ibs`, `../ibs.wiki`, `../pubs-llms`; the
 packages that the notebooks import, installed with
 `uv pip install nbconvert ipykernel matplotlib "pybads>=1.5.1"` and PyVBMC
@@ -1295,7 +1297,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   ports of the self-tests run with `vectorized=True`, which F-1 does not
   reach, and draw as before.
 - Verification: `$PY -m pytest`, 468 tests passed in about 8 s; the
-  pre-commit hooks pass.
+  pre-commit hooks pass. After the push, with `911dc5c` at the head of
+  `dev-next`, the smoke run of `tests.yml` passed
+  ([run 37937327184](https://github.com/acerbilab/pyibs/actions/runs/37937327184)).
 - Deviations: GNU Octave was installed at the PI's request, and
   `ibslike.m`, unmodified, runs under it with two directories of shims;
   `AGENTS.md` states how ("Sibling repositories"), and the shims are in
@@ -1323,3 +1327,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   output; the Octave paragraph of `AGENTS.md`; and this entry. A
   self-review before it rewrote the docstrings, comments and catalogue
   entries of the phase that read badly (`463880f`).
+- For Phase 3: under `vectorized=None`, an `IBS` object decides at its
+  first call with `num_reps > 1` and keeps the decision (D19), so the
+  validation's cells of `None` create an object per estimate if they are to
+  sample the deciding call, whose first round is the timing call (F-1);
+  with one object, every estimate after the first samples as `True` or
+  `False` does.

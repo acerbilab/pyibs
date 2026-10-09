@@ -144,9 +144,10 @@ Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
 profile, pycln); no CI job checks it, and the whole tree passes them.
 
-Run one heavy process at a time (the test suite, a validation or timing
-run, a PyBADS or PyVBMC run): concurrent runs, each multi-threaded, can
-bring a workstation down. A long run writes its output unbuffered
+On the PI's workstation, run one heavy process at a time (the test suite,
+a validation or timing run, a PyBADS or PyVBMC run): concurrent runs, each
+multi-threaded, can bring it down. A cloud session's container has no such
+limit. A long run writes its output unbuffered
 (`python -u`) to a uniquely named log under `dev/scripts/runs/`, which a
 fresh clone creates first (`mkdir -p dev/scripts/runs`).
 
