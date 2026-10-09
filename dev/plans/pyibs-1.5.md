@@ -578,7 +578,7 @@ their target, and how its speed compares with 0.1.0's.
    Separately, a model whose trials all have p = 1 returns a value and a
    variance of exactly 0. Report every failing cell to the PI before
    going on.
-2. [ ] Integration tests, `pyibs/testing/integration/test_pybads.py` and
+2. [x] Integration tests, `pyibs/testing/integration/test_pybads.py` and
    `test_pyvbmc.py`, with the marker `integration`, and each skipping
    through `pytest.importorskip` when its package is absent (the wheel
    ships the tests, and `pytest --pyargs pyibs` ignores `addopts`);
@@ -595,7 +595,7 @@ their target, and how its speed compares with 0.1.0's.
    each file alone, unbuffered, logged under `dev/scripts/runs/`:
    `$PY -u -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v > dev/scripts/runs/it_pybads_$(date +%s).log 2>&1`.
    `AGENTS.md` gains the procedure.
-3. [ ] `dev/scripts/timing.py`: the wall time of one estimate at N = 100,
+3. [~] `dev/scripts/timing.py`: the wall time of one estimate at N = 100,
    1,000 and 10,000 trials and `num_reps` 10 and 100, with a fast
    simulator and one that sleeps 0.2 s per call, for PyIBS 1.5 and for
    0.1.0, installed from PyPI in a separate venv (`uv venv --python 3.12
