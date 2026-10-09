@@ -25,7 +25,10 @@ EXACT = dict(rtol=1e-12, atol=1e-12)
 
 # The messages of the exit flags.
 EXIT_MESSAGES = {
-    0: "Correct run of IBS; the estimate is unbiased.",
+    0: (
+        "Correct run of IBS; the estimate is unbiased unless max_time is "
+        "finite."
+    ),
     1: (
         "The negative log-likelihood threshold ended a repeat; the estimate "
         "is biased."

@@ -34,9 +34,13 @@ _ZERO_VARIANCE = (
     f"refuse an SD of 0 for a noisy target: see {_FAQ_ZERO_SD}"
 )
 
-# The messages of the exit flags, after those of ibslike.m.
+# The messages of the exit flags, after ibslike.m's descriptions of its
+# exit flags.
 _EXIT_MESSAGES = {
-    0: "Correct run of IBS; the estimate is unbiased.",
+    0: (
+        "Correct run of IBS; the estimate is unbiased unless max_time is "
+        "finite."
+    ),
     1: (
         "The negative log-likelihood threshold ended a repeat; the estimate "
         "is biased."
