@@ -1385,6 +1385,11 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   with stand-ins for PyBADS 1.0.4 and a PyVBMC without `seed`); collected
   from outside the checkout, they raise no warning on their marker; the
   wheel holds `pyibs/testing/integration`; the pre-commit hooks pass.
+  After the push, with `d279d9e` at the head of `dev-next`, the smoke run
+  of `tests.yml` passed
+  ([run 37956627875](https://github.com/acerbilab/pyibs/actions/runs/37956627875)),
+  both its jobs: on Ubuntu with Python 3.14, 468 tests passed and the two
+  integration tests skipped, their packages being absent.
 - Deviations: the phase ran in a cloud container (Linux, 4 CPUs), not on
   the PI's workstation, and the validation and the timing ran together as
   the PI approved. Where the steps are silent: the threshold cells cover
