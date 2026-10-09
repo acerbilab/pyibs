@@ -625,7 +625,7 @@ their target, and how its speed compares with 0.1.0's.
 
 ### Phase 4: documentation, examples, update check and skill
 
-**Status**: in progress
+**Status**: done
 **Executor**: Opus (orchestrator); the documentation site, the FAQ and the
 notebooks may each go to an Opus sub-agent, one at a time for anything
 that runs code on the PI's workstation.
@@ -722,9 +722,9 @@ the other two.
    in `../pybads/AGENTS.md`. Commit.
 
 **Verification**:
-- [ ] The documentation builds without warnings.
-- [ ] `make -C examples/scripts run` reruns every notebook without error.
-- [ ] The suite and the pre-commit hooks pass.
+- [x] The documentation builds without warnings.
+- [x] `make -C examples/scripts run` reruns every notebook without error.
+- [x] The suite and the pre-commit hooks pass.
 
 ### Phase 5: release
 
@@ -1464,3 +1464,93 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   `pyibs/testing/test_examples.py` seeds its `IBS` objects with the seed of
   its data, as the integration tests did. For Phase 5: once PyVBMC 1.5.0 is
   on PyPI, `AGENTS.md` ("PyBADS and PyVBMC") installs it from there.
+
+### Phase 4 — 2026-10-09
+
+- References: `../ibs` at `2229c00`, `../ibs.wiki` at `15d62f2`, Phase 0's
+  commits; `../pybads` at `b64b4230`; `../pubs-llms` at `a25f58b`. PyBADS
+  1.5.1 from PyPI with gpyreg 1.4.0; PyVBMC from
+  `feat-release-1.5-preparation` at `89007a4`, as in Phase 3. The Nature
+  reference of the Positioning (van Opheusden et al., 2023, Nature 618:
+  1000–1005, doi 10.1038/s41586-023-06124-2) agrees with the reference list
+  of PyBADS's JOSS paper in `../pubs-llms` for its authors and DOI; its
+  volume and pages rest on search results and a RePEc listing, since the
+  container's network policy refused doi.org, Crossref, nature.com and
+  PubMed.
+- Commits: `f7f9434` (step 1), `0f87b73` (step 3, with `LICENSE`, the
+  changelog's entries and the network rule of `AGENTS.md`), `1630d03`
+  (step 4), `e5c2166` (step 2), `e17d74d` (step 5), `3458698` (step 6),
+  `cf30448` (step 8); `4d0e573` (Phase 3's note on `test_examples.py`);
+  `60ae967` (docstrings that numpydoc misread); after the review of the
+  phase, `90e4852` and `68b46c1`, and the commit after them (this entry).
+- Verification: the documentation builds with no warning
+  (`make -C docsrc github` after `make -C docsrc clean`), and every link
+  into it from the README, the changelog, the skill, the notebooks and the
+  package's warning resolves to a page and an anchor of the build;
+  `make -C examples/scripts run` reruns the three notebooks without error in
+  1 min 44 s, nearly all of it PyVBMC's, and reproduces their outputs but
+  for an elapsed time and PyBADS's random tip; `make -B -C
+  examples/scripts` regenerates the scripts identically; `$PY -m pytest`,
+  540 tests passed and 2 deselected; the pre-commit hooks pass on the whole
+  tree; the wheel ships the notebooks, `pyibs/examples/scripts/` and
+  `pyibs/README.md`; `import pyibs` imports no networking module, and
+  `pyibs.check_for_updates()` against PyPI reports the development install
+  and the latest release, 0.1.0.
+- Deviations: the phase ran in a cloud container; Opus sub-agents wrote the
+  notebooks, the FAQ and the documentation site in parallel, and the
+  orchestrator the rest. `dev-next` was pushed during the phase, at the
+  request of the session's stop hook. Beyond the steps: the docstring of
+  `IBS` moves the paragraph on its settings from Attributes, which numpydoc
+  reads as attributes, to Notes (`60ae967`); "How does it work?" in the
+  README and `index.rst` shows a figure of the cost and the variance of IBS,
+  drawn by `dev/scripts/ibs_cost_variance.py`; `pyproject.toml` lists
+  `pyibs.examples.scripts`, as PyBADS lists its own; the CI's path filters
+  include `examples/`, which they left out although `pyibs.examples` is
+  tested (`90e4852`). The links to PyVBMC's documentation take its 1.5
+  address, `https://acerbilab.org/pyvbmc/`, which PyVBMC's README and
+  `html_baseurl` give. Step 3 expected no text of 0.1.0 to remain: the
+  three exit messages of `EstimateResult` keep 0.1.0's wording, so
+  `LICENSE` keeps 0.1.0's copyright line, Julia Maria Perathoner's, beside
+  the lab's, as the step asks then. The README's acknowledgments credit her
+  with 0.1.0, take the grants of PyBADS's and PyVBMC's READMEs, and name
+  the coding agents' maker without a model. Example 2 evaluates the
+  solution with 1,000 repeats, ten times its target's, as `ibs_example.m`
+  does; Example 3 checks the ELBO and the posterior against an exact grid
+  integration. The Positioning's "unbiased, with a calibrated variance, for
+  every dataset" is written as "unbiased on every dataset, with an estimate
+  of their variance", since the calibration is shown in general ([1],
+  Section 4.6) and fails where nearly every count is 1 (the validation).
+- Review (`/doublecheck`, four read-only Opus reviewers: the code, tests,
+  packaging and tooling; the FAQ; the README, the documentation's pages,
+  the skill and the notebooks; the records and conventions). Fixed in
+  `90e4852` and `68b46c1`: the README and `index.rst` claimed that the
+  validation detected no bias under the likelihood threshold, and a
+  calibrated variance on every dataset; the examples' install command named
+  no versions, though Example 3 needs PyVBMC 1.5; the FAQ said that PyVBMC
+  requires the SD, and that neural likelihood estimation gives posteriors at
+  once; the 0.1.0 text of the exit messages (above); the CI's path filters;
+  `AGENTS.md` on the text that the README shares, on the labels of PyBADS's
+  and PyVBMC's FAQs that PyIBS links, and on the generation of the scripts;
+  smaller corrections to the FAQ (a bound rounded down, a sizing snippet
+  that gave 0 repeats, the threshold with PyVBMC, links to the lab), the
+  quick start's advice on noise and its seeding example, the README's
+  formula, which PyPI would show as raw LaTeX, a docstring and the figure's
+  script. Not taken: positioning IBS against non-amortized neural
+  simulation-based inference too, beyond the plan's Positioning; a
+  `make.bat` that stops on a failed build, which PyBADS's does not either.
+- For the PI: the FAQ's answer on a zero SD advises a floor in the user's
+  target, `max(sd, 1 / num_reps)`, the smallest positive SD that a call
+  returns with unit weights, and bounds the probability of a zero variance
+  by `exp(-(num_reps * sd) ** 2)`: the FAQ's own derivation, checked by two
+  agents, not taken from [1] or the wiki. `ibslike.m`, which PyIBS ports,
+  carries the copyright of Luigi Acerbi and Bas van Opheusden under MATLAB
+  IBS's MIT licence, which `LICENSE` does not name. Rewording the three exit
+  messages would let `LICENSE` name the lab alone.
+- For Phase 5: the README, `installation.rst` and `development.rst` install
+  `pyvbmc>=1.5`, and the links to PyVBMC's FAQ resolve, once PyVBMC 1.5.0 is
+  on PyPI and its documentation published (2026-10-13); the README's badges
+  of `docs.yml` and `build.yml` wait for those workflows; the README and
+  `installation.rst` promise conda-forge's package for Python 3.10, which
+  its recipe has to keep; the notebooks are rerun before the release. For
+  Phase 6: the labels of PyBADS's and PyVBMC's FAQs that PyIBS links join
+  those repositories' lists of linked labels.
