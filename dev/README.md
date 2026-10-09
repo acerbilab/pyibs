@@ -41,3 +41,8 @@ A file or directory is created with its first entry.
   the review of PyIBS against MATLAB `ibslike.m` and the IBS paper, with
   its ledger of findings; its evidence is
   [experiments/port-review_20261009/](experiments/port-review_20261009/).
+- [results/2026-10-09-validation.md](results/2026-10-09-validation.md):
+  the statistical validation of PyIBS 1.5's estimates against exact
+  log-likelihoods, its runs with PyBADS and PyVBMC, and its timings
+  against PyIBS 0.1.0; its evidence is
+  [experiments/validation_20261009/](experiments/validation_20261009/).

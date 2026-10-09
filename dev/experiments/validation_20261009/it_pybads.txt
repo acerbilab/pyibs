@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /home/user/pyibs/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/user/pyibs
+configfile: pyproject.toml
+plugins: platformdirs-4.12.4, cov-7.1.0
+collecting ... collected 1 item
+
+pyibs/testing/integration/test_pybads.py::test_pybads_reaches_the_maximum_likelihood PyBADS 1.5.1: x = [0.08435698 0.19866943 0.02979274], exact negative log-likelihood 172.1032; exact minimum 172.0619 at [0.08835244 0.2255073  0.03062305]; 348 evaluations
+PASSED
+
+============================== 1 passed in 42.47s ==============================

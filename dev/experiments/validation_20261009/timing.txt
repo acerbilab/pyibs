@@ -1,0 +1,87 @@
+PyIBS timing {
+ "date": "2026-10-09T13:56:17.045145+00:00",
+ "commit": "c76b5ac9239b2f507f631291619c031fbad820b9",
+ "clean": true,
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "processor": "x86_64",
+ "cpu_count": 4,
+ "argv": [
+  "dev/scripts/timing.py",
+  "--slow-jobs",
+  "12",
+  "--out",
+  "dev/scripts/runs/timing_full_1791554176.json"
+ ],
+ "data_seed": 20261009,
+ "run_seed": 20261011,
+ "slow_delay": 0.2,
+ "slow_jobs": 12
+}
+worker 1.5 (1.5_fast_N100_n10, 1.5_fast_N1000_n10, 1.5_fast_N10000_n10, 1.5_fast_N100_n100, 1.5_fast_N1000_n100, 1.5_fast_N10000_n100): .venv/bin/python
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  1.5_fast_N100_n10          full  median      0.001 s over 50 estimates; calls       9.1, rows per trial     28.04
+  1.5_fast_N1000_n10         full  median      0.004 s over 50 estimates; calls      11.1, rows per trial     26.89
+  1.5_fast_N10000_n10        full  median      0.024 s over 50 estimates; calls      11.9, rows per trial     26.52
+  1.5_fast_N100_n100         full  median      0.003 s over 50 estimates; calls       9.1, rows per trial    326.44
+  1.5_fast_N1000_n100        full  median      0.029 s over 50 estimates; calls      10.4, rows per trial    313.84
+  1.5_fast_N10000_n100       full  median      0.246 s over  8 estimates; calls      11.0, rows per trial    308.72
+worker 0.1.0 (0.1.0_fast_N100_n10, 0.1.0_fast_N1000_n10, 0.1.0_fast_N10000_n10, 0.1.0_fast_N100_n100, 0.1.0_fast_N1000_n100, 0.1.0_fast_N10000_n100): .venv-0.1/bin/python
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  0.1.0_fast_N100_n10        full  median      0.003 s over 50 estimates; calls       9.1, rows per trial     30.15
+  0.1.0_fast_N1000_n10       full  median      0.006 s over 50 estimates; calls      11.0, rows per trial     29.24
+  0.1.0_fast_N10000_n10      full  median      0.038 s over 50 estimates; calls      11.7, rows per trial     29.01
+  0.1.0_fast_N100_n100       full  median      0.005 s over 50 estimates; calls       9.2, rows per trial    359.38
+  0.1.0_fast_N1000_n100      full  median      0.040 s over 50 estimates; calls      10.5, rows per trial    346.99
+  0.1.0_fast_N10000_n100     full  median      0.334 s over  6 estimates; calls      11.2, rows per trial    312.35
+fast cells done
+worker 0.1.0 (0.1.0_slow_N10000_n100): .venv-0.1/bin/python
+worker 1.5 (1.5_slow_N10000_n100): .venv/bin/python
+worker 0.1.0 (0.1.0_slow_N1000_n100): .venv-0.1/bin/python
+worker 1.5 (1.5_slow_N1000_n100): .venv/bin/python
+worker 0.1.0 (0.1.0_slow_N100_n100): .venv-0.1/bin/python
+worker 1.5 (1.5_slow_N100_n100): .venv/bin/python
+worker 1.5 (1.5_slow_N10000_n10): .venv/bin/python
+worker 0.1.0 (0.1.0_slow_N10000_n10): .venv-0.1/bin/python
+worker 0.1.0 (0.1.0_slow_N1000_n10): .venv-0.1/bin/python
+worker 1.5 (1.5_slow_N1000_n10): .venv/bin/python
+worker 0.1.0 (0.1.0_slow_N100_n10): .venv-0.1/bin/python
+worker 1.5 (1.5_slow_N100_n10): .venv/bin/python
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "1.5", "pyibs": "0.1.dev107+g2fbfe8d04", "pyibs_file": "/home/user/pyibs/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  {"version_label": "0.1.0", "pyibs": "0.1.0", "pyibs_file": "/home/user/pyibs/.venv-0.1/lib/python3.12/site-packages/pyibs/__init__.py", "python": "3.12.3", "numpy": "2.5.3", "scipy": "1.18.1", "executable": "/home/user/pyibs/.venv-0.1/bin/python"}
+  1.5_slow_N100_n10          full  median     98.516 s over  1 estimates; calls     491.0, rows per trial     22.88
+  0.1.0_slow_N100_n10        full  median    130.107 s over  1 estimates; calls     649.0, rows per trial     23.84
+  1.5_slow_N1000_n10         full  median    191.443 s over  1 estimates; calls     954.0, rows per trial     20.34
+  1.5_slow_N10000_n10        full  median    224.644 s over  1 estimates; calls    1119.0, rows per trial     20.69
+  0.1.0_slow_N1000_n10       full  median    298.693 s over  1 estimates; calls    1490.0, rows per trial     20.81
+  0.1.0_slow_N10000_n10      full  median    573.392 s over  1 estimates; calls    2860.0, rows per trial     20.60
+  1.5_slow_N100_n100         full  median    930.778 s over  1 estimates; calls    4640.0, rows per trial    218.43
+  0.1.0_slow_N100_n100       full  median   1108.524 s over  1 estimates; calls    5531.0, rows per trial    217.51
+  1.5_slow_N1000_n100        full  median   1331.973 s over  1 estimates; calls    6640.0, rows per trial    205.86
+  1.5_slow_N10000_n100       full  median   1618.945 s over  1 estimates; calls    8065.0, rows per trial    205.16
+  0.1.0_slow_N1000_n100      full  median   3211.129 s over  1 estimates; calls   16021.0, rows per trial    206.03
+  0.1.0_slow_N10000_n100     full  median   6224.442 s over  1 estimates; calls   31048.0, rows per trial    207.12
+slow cells done
+
+cell                     1.5 (s)   0.1.0 (s)    ratio
+fast_N100_n10              0.001       0.003     2.06
+fast_N100_n100             0.003       0.005     1.36
+fast_N1000_n10             0.004       0.006     1.59
+fast_N1000_n100            0.029       0.040     1.40
+fast_N10000_n10            0.024       0.038     1.53
+fast_N10000_n100           0.246       0.334     1.36
+slow_N100_n10             98.516     130.107     1.32
+slow_N100_n100           930.778    1108.524     1.19
+slow_N1000_n10           191.443     298.693     1.56
+slow_N1000_n100         1331.973    3211.129     2.41
+slow_N10000_n10          224.644     573.392     2.55
+slow_N10000_n100        1618.945    6224.442     3.84
