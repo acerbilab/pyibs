@@ -19,27 +19,38 @@ e - exact:
   errors;
 - the mean squared z-score, ``mean(err**2 / var_estimate)``, in standard
   errors from 1, and the same statistic of exact IBS estimates drawn from
-  geometric counts, as a reference;
-- the 95% coverage of ``e +- 1.96 sqrt(var_estimate)``;
+  geometric counts, as a reference; with the threshold, err is taken from
+  the expected value of a thresholded estimate;
+- the 95% coverage of ``e +- 1.96 sqrt(var_estimate)``, about the same
+  value;
 - the ratio of the estimates' SD to the exact SD,
   ``sqrt(exact_var / num_reps)`` (no threshold);
 - the samples per trial against ``num_reps * mean_i(1 / p_i)``: at
-  ``vectorized=False`` (no surplus) in standard errors, otherwise as a
-  ratio, surplus included.
+  ``vectorized=False`` without the threshold (no surplus, no ended
+  repeats) in standard errors, otherwise as a ratio, surplus included;
+- the share of estimates with a variance estimate of 0, against its exact
+  probability, and with the threshold, the share with exit flag 1,
+  against ``1 - (1 - q)**num_reps`` for q the probability that an exact
+  repeat Y falls below -T.
 
 A cell passes when its bias is within 4.5 standard errors and, at
 ``num_reps`` of 10 or more without the threshold, its mean squared z-score
-is within 4.5 standard errors of 1. In the models whose trials all match
+is within 4.5 standard errors of 1 and, at ``vectorized=False``, its
+samples per trial within 4.5 standard errors of their expectation. In the models whose trials all match
 with probability 0.999 (``CALIBRATION_REPORTED_ONLY``), the mean squared
 z-score is reported instead, since exact IBS fails that gate there too:
 every count of an estimate is 1 with a probability of 0.999**(100 n), which
 makes the variance estimate 0, and with n = 100 the exact draws' mean
-squared z-score is about 1.28. Their gate is instead the share of
-estimates whose variance estimate is 0, within 4.5 standard errors of its
-exact probability, ``prod_i p_i**n``. The other statistics are reported.
+squared z-score is about 1.28. All their cells are gated instead on the
+number of estimates whose variance estimate is 0, binomial with the exact
+probability ``prod_i p_i**n``: the cell fails when its two-sided tail
+probability is below that of 4.5 standard errors of a normal, about
+6.8e-6. The other statistics are reported.
 
-Separately, ``--zero-check`` verifies that a model whose trials all match at
-the first sample returns a value and a variance of exactly 0.
+Every run first checks that a model whose trials all match at the first
+sample returns a value and a variance of exactly 0, with the warning on a
+zero variance; a failure of this check, or of a cell, makes the exit
+status 1.
 
 Run from the repository root with the venv, unbuffered, logged:
 
@@ -48,7 +59,11 @@ Run from the repository root with the venv, unbuffered, logged:
         > dev/scripts/runs/validate_smoke_$(date +%s).log 2>&1
 
 ``--project 2000`` (the default) prints the runtime that 2,000 estimates
-per cell would take, from the cells' measured times.
+per cell would take, from the cells' measured times. ``--restat JSON``
+draws nothing: it recomputes the statistics and verdicts of a finished
+run from its JSON (the models' data, the exact references, the cells'
+times) and the per-estimate arrays saved beside it, and writes them to
+``--out`` with the run's provenance and that of the recomputation.
 """
 
 import argparse
@@ -68,6 +83,7 @@ from multiprocessing import get_context
 from pathlib import Path
 
 import numpy as np
+from scipy.stats import binom, norm
 
 DATA_SEED = 20261009
 """The seed of the models' data: responses, probabilities and weights."""
@@ -519,6 +535,13 @@ def _calibration(err, var):
 
 
 def cell_stats(cell, raw, refs):
+    """The statistics and verdicts of a cell's estimates.
+
+    ``raw`` holds the arrays of :func:`run_cell`, and ``refs`` the exact
+    references of :func:`reference_calibration` and
+    :func:`reference_threshold`, keyed as :func:`main` keys them. The
+    errors are those of the negative log-likelihood estimates.
+    """
     model = models_by_name()[cell.model]
     est, var = raw["est"], raw["var"]
     n = est.size
@@ -533,8 +556,9 @@ def cell_stats(cell, raw, refs):
         expected = ref["nll_mean"]
         se = math.sqrt(se_err**2 + ref["nll_se"] ** 2)
         out["expected_nll"] = expected
-        out["bias_z"] = (float(est.mean()) - expected) / se
-        out["frac_flag1"] = float(np.mean(raw["flags"] == 1))
+        out["bias_z"] = (
+            (float(est.mean()) - expected) / se if se > 0 else float("nan")
+        )
         out["expected_frac_flag1"] = 1 - (1 - ref["prob_below"]) ** (
             cell.num_reps
         )
@@ -543,8 +567,19 @@ def cell_stats(cell, raw, refs):
         out["bias_z"] = mean_err / se_err if se_err > 0 else float("nan")
         exact_sd = math.sqrt(model.exact_var / cell.num_reps)
         out["sd_ratio"] = float(np.std(err, ddof=1) / exact_sd)
-        out["frac_flag1"] = float(np.mean(raw["flags"] == 1))
-    out.update(_calibration(err, var))
+    out["frac_flag1"] = float(np.mean(raw["flags"] == 1))
+    if cell.threshold:
+        # The share of estimates in which the threshold ended a repeat.
+        q1 = out["expected_frac_flag1"]
+        k1 = int(np.sum(raw["flags"] == 1))
+        sd1 = math.sqrt(n * q1 * (1 - q1))
+        out["flag1_z"] = (k1 - n * q1) / sd1 if sd1 > 0 else float("nan")
+        out["flag1_p"] = float(
+            min(1.0, 2 * binom.cdf(k1, n, q1), 2 * binom.sf(k1 - 1, n, q1))
+        )
+    # The calibration, about the expected value of the estimates: the exact
+    # value, or that of a thresholded estimate.
+    out.update(_calibration(est - out["expected_nll"], var))
     out["msz_z"] = (
         (out["msz"] - 1) / out["msz_se"]
         if out["msz_se"] > 0
@@ -588,6 +623,15 @@ def cell_stats(cell, raw, refs):
         if k_zero == n * p_zero
         else float("inf")
     )
+    # The exact two-sided tail, since the expected number can be far below
+    # 1, where the normal approximation fails.
+    out["zero_var_p"] = float(
+        min(
+            1.0,
+            2 * binom.cdf(k_zero, n, p_zero),
+            2 * binom.sf(k_zero - 1, n, p_zero),
+        )
+    )
     out["calls_mean"] = float(raw["calls"].mean())
     out["decided_true"] = float(raw["decided"].mean())
     # The gates.
@@ -598,12 +642,19 @@ def cell_stats(cell, raw, refs):
     )
     out["pass_cal"] = bool(abs(out["msz_z"]) <= TOL) if gated_cal else None
     out["pass_zero"] = (
-        bool(abs(out["zero_var_z"]) <= TOL) if reported_only else None
+        bool(out["zero_var_p"] >= 2 * norm.sf(TOL)) if reported_only else None
+    )
+    gated_samples = (
+        cell.vectorized is False and cell.num_reps >= 10 and not cell.threshold
+    )
+    out["pass_samples"] = (
+        bool(abs(out["samples_z"]) <= TOL) if gated_samples else None
     )
     out["passed"] = (
         out["pass_bias"]
         and out["pass_cal"] is not False
         and out["pass_zero"] is not False
+        and out["pass_samples"] is not False
     )
     return out
 
@@ -716,15 +767,78 @@ def line(cell, s, seconds):
         return format(x, fmt) if x is not None else "-"
 
     passed = "ok" if s["passed"] else "FAIL"
+    # The samples' expectation holds without surplus and without ended
+    # repeats.
+    samples_z = s["samples_z"]
+    if cell.vectorized is not False or cell.threshold:
+        samples_z = None
     return (
         f"{cell.name:<34} {s['n']:>5} {s['bias_z']:>7.2f} {s['msz']:>6.3f} "
         f"{s['msz_z']:>7.2f} {f(s.get('ref_msz'), '7.3f'):>7} "
         f"{s['coverage']:>6.3f} {f(s.get('sd_ratio'), '6.3f'):>6} "
         f"{s['samples_ratio']:>7.3f} "
-        f"{(s['samples_z'] if cell.vectorized is False else float('nan')):>6.2f} "
+        f"{f(samples_z, '6.2f'):>6} "
         f"{s['zero_var']:>5} {s['zero_var_z']:>6.2f} "
         f"{s['frac_flag1']:>5.2f} {seconds / s['n']:>8.4f} {passed}"
     )
+
+
+def _restored(x):
+    """A value of a run's JSON, with its non-finite numbers restored."""
+    if isinstance(x, dict):
+        return {k: _restored(v) for k, v in x.items()}
+    if isinstance(x, list):
+        return [_restored(v) for v in x]
+    if isinstance(x, str) and x in ("inf", "-inf", "nan"):
+        return float(x)
+    return x
+
+
+def restat(path, out):
+    """Recompute the statistics of the run saved at ``path`` into ``out``.
+
+    The run's per-estimate arrays are read from the directory that
+    :func:`main` saves beside its JSON; its exact references, cell times
+    and zero check are taken as recorded.
+    """
+    payload = _restored(json.loads(Path(path).read_text()))
+    raw_dir = path.with_suffix("")
+    raw_dir = raw_dir.parent / (raw_dir.name + "_raw")
+    refs = {}
+    for key, stats in payload["refs"].items():
+        parts = key.split("|")
+        if parts[0] == "calibration":
+            refs[("calibration", parts[1], int(parts[2]))] = stats
+        else:
+            refs[(parts[0], parts[1])] = stats
+    by_name = {c.name: c for c in all_cells()}
+    payload["meta"]["restat"] = dict(provenance(), source=str(path))
+    print("PyIBS validation, recomputed", flush=True)
+    print(json.dumps(_json(payload["meta"]), indent=1), flush=True)
+    print(HEADER, flush=True)
+    failing = []
+    for name, old in payload["cells"].items():
+        cell = by_name[name]
+        with np.load(raw_dir / f"{name}.npz") as data:
+            raw = {k: data[k] for k in data.files}
+        stats = cell_stats(cell, raw, refs)
+        stats["seconds"] = old["seconds"]
+        stats["settings"] = old["settings"]
+        payload["cells"][name] = stats
+        if not stats["passed"]:
+            failing.append(name)
+        print(line(cell, stats, stats["seconds"]), flush=True)
+    zero_ok = all(r["ok"] for r in payload["zero_check"])
+    payload["summary"].update(failing=failing, zero_check_ok=zero_ok)
+    write(out, payload)
+    print(flush=True)
+    print(
+        f"{len(payload['cells'])} cells; zero check "
+        f"{'ok' if zero_ok else 'FAIL'}",
+        flush=True,
+    )
+    print(f"failing cells ({len(failing)}): {', '.join(failing) or '-'}")
+    return 0 if zero_ok and not failing else 1
 
 
 def main(argv=None):
@@ -741,9 +855,15 @@ def main(argv=None):
     parser.add_argument("--skip", help="skip the cells matching REGEX")
     parser.add_argument("--jobs", type=int, default=os.cpu_count())
     parser.add_argument("--project", type=int, default=2000)
-    parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--out", type=Path)
     parser.add_argument("--no-raw", action="store_true")
     parser.add_argument("--list", action="store_true", help="list cells")
+    parser.add_argument(
+        "--restat",
+        type=Path,
+        metavar="JSON",
+        help="recompute the statistics of a finished run, drawing nothing",
+    )
     args = parser.parse_args(argv)
 
     cells = all_cells()
@@ -768,6 +888,10 @@ def main(argv=None):
             print(c.name, n_for(c))
         print(len(cells), "cells")
         return 0
+    if args.out is None:
+        parser.error("--out is required")
+    if args.restat:
+        return restat(args.restat, args.out)
 
     # One thread per worker, so that the workers do not compete.
     for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -829,8 +953,7 @@ def main(argv=None):
         # The exact references first: each cell's statistics need them.
         names = sorted({c.model for c in cells})
         ref_futures = []
-        for i, name in enumerate(names):
-            m = models[name]
+        for name in names:
             k = list(models).index(name)
             if any(c.model == name and c.threshold for c in cells):
                 ref_futures.append(pool.submit(reference_threshold, name, k))
@@ -884,6 +1007,7 @@ def main(argv=None):
 
     elapsed = time.perf_counter() - t_start
     failing = [n for n, (_, s) in done.items() if not s["passed"]]
+    zero_ok = all(r["ok"] for r in zero)
     cpu = sum(s["seconds"] for _, s in done.values())
     projected = sum(
         s["seconds"] / s["n"] * args.project for _, s in done.values()
@@ -894,6 +1018,7 @@ def main(argv=None):
     payload["summary"] = dict(
         cells=len(done),
         failing=failing,
+        zero_check_ok=zero_ok,
         wall_seconds=elapsed,
         cell_seconds=cpu,
         projected_cell_seconds=projected,
@@ -903,7 +1028,7 @@ def main(argv=None):
     print(flush=True)
     print(
         f"{len(done)} cells in {elapsed:.1f} s wall, {cpu:.1f} s in cells; "
-        f"zero check {'ok' if all(r['ok'] for r in zero) else 'FAIL'}",
+        f"zero check {'ok' if zero_ok else 'FAIL'}",
         flush=True,
     )
     print(f"failing cells ({len(failing)}): {', '.join(failing) or '-'}")
@@ -921,7 +1046,7 @@ def main(argv=None):
             f"{args.project}",
             flush=True,
         )
-    return 0 if not failing else 1
+    return 0 if zero_ok and not failing else 1
 
 
 if __name__ == "__main__":

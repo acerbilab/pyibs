@@ -5,6 +5,7 @@ Run on its own, with PyVBMC 1.5 or later installed:
 ``pytest -m integration pyibs/testing/integration/test_pyvbmc.py -s -v``.
 """
 
+import inspect
 from importlib.metadata import version
 
 import numpy as np
@@ -15,6 +16,11 @@ from pyibs.examples.psycho_model import psycho_generator
 from pyibs.testing.integration import _psycho_fit as fit
 
 pyvbmc = pytest.importorskip("pyvbmc")
+# PyVBMC takes a seed from 1.5 on. The test checks the parameter rather
+# than the version, which an install from an untagged checkout of PyVBMC
+# reads as 1.0.5.devN.
+if "seed" not in inspect.signature(pyvbmc.VBMC).parameters:
+    pytest.skip("needs PyVBMC 1.5 or later", allow_module_level=True)
 
 pytestmark = pytest.mark.integration
 
@@ -23,7 +29,9 @@ def test_pyvbmc_posterior_holds_the_maximum_likelihood():
     from pyvbmc.priors import Trapezoidal
 
     S, R = fit.data()
-    ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=fit.SEED)
+    ibs = IBS(
+        psycho_generator, R, S, vectorized=True, random_seed=fit.SEED_IBS
+    )
 
     def log_likelihood(theta):
         # With a separate prior, PyVBMC takes the log-likelihood and its SD
@@ -48,7 +56,7 @@ def test_pyvbmc_posterior_holds_the_maximum_likelihood():
         fit.PUB,
         options={"specify_target_noise": True},
         prior=prior,
-        seed=fit.SEED,
+        seed=fit.SEED_FIT,
     )
     vp, results = vbmc.optimize()
     mean, cov = vp.moments(cov_flag=True)

@@ -1,6 +1,6 @@
 """PyBADS fits the example model with an IBS estimate as its noisy target.
 
-Run on its own, with PyBADS 1.5 or later installed:
+Run on its own, with PyBADS 1.5.1 or later installed:
 ``pytest -m integration pyibs/testing/integration/test_pybads.py -s -v``.
 """
 
@@ -8,26 +8,31 @@ from importlib.metadata import version
 
 import numpy as np
 import pytest
+from packaging.version import Version
 
 from pyibs import IBS
 from pyibs.examples.psycho_model import psycho_generator, psycho_neg_logl
 from pyibs.testing.integration import _psycho_fit as fit
 
 pybads = pytest.importorskip("pybads")
+if Version(version("pybads")) < Version("1.5.1"):
+    pytest.skip("needs PyBADS 1.5.1 or later", allow_module_level=True)
 
 pytestmark = pytest.mark.integration
 
 
 def test_pybads_reaches_the_maximum_likelihood():
     S, R = fit.data()
-    ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=fit.SEED)
+    ibs = IBS(
+        psycho_generator, R, S, vectorized=True, random_seed=fit.SEED_IBS
+    )
 
     def target(theta):
         # PyBADS minimizes, and takes the pair (value, SD) as a tuple.
         return ibs(theta, num_reps=fit.NUM_REPS, additional_output="std")
 
     # A start drawn in the plausible box, as in ibs_example.m.
-    rng = np.random.default_rng(fit.SEED)
+    rng = np.random.default_rng(fit.SEED_START)
     x0 = fit.PLB + rng.random(fit.PLB.size) * (fit.PUB - fit.PLB)
     bads = pybads.BADS(
         target,
@@ -36,7 +41,7 @@ def test_pybads_reaches_the_maximum_likelihood():
         fit.UB,
         fit.PLB,
         fit.PUB,
-        options={"specify_target_noise": True, "random_seed": fit.SEED},
+        options={"specify_target_noise": True, "random_seed": fit.SEED_FIT},
     )
     result = bads.optimize()
     theta_ml, nll_min = fit.exact_ml(S, R)

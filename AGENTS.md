@@ -88,16 +88,18 @@ target returns a pair `(value, sd)`.
 
 The integration tests, `pyibs/testing/integration/`, fit the example model
 with each of them, an IBS estimate as the noisy target. They carry the
-marker `integration`, which `addopts` deselects, and each file skips
-through `pytest.importorskip` when its package is absent; `pytest
---pyargs pyibs`, run outside the checkout, reads no `addopts` and so runs
-them whenever the packages are installed. They need PyBADS 1.5.1 or later
-and PyVBMC 1.5, installed into the venv with
+marker `integration`, which `pyibs/testing/conftest.py` registers, so that
+it is known outside the checkout too, and which `addopts` deselects;
+`pytest --pyargs pyibs`, run outside the checkout, reads no `addopts` and
+so runs them whenever the packages are installed. Each file skips when its
+package is absent or older than it needs: PyBADS 1.5.1, read from its
+version, and PyVBMC 1.5, read from the `seed` parameter of `VBMC`, since an
+install from an untagged checkout of PyVBMC reads its version as
+1.0.5.devN. They are installed into the venv with
 `uv pip install "pybads>=1.5.1" "pyvbmc>=1.5.0"`. PyVBMC 1.5.0 is not on
 PyPI before 2026-10-13; until then it comes from its release branch,
-`uv pip install "pyvbmc @ git+https://github.com/acerbilab/pyvbmc@feat-release-1.5-preparation"`,
-whose installed version reads 1.0.5.devN, the branch having no tag. Each
-file is a heavy process (about 40 s and 2 min), run alone, unbuffered and
+`uv pip install "pyvbmc @ git+https://github.com/acerbilab/pyvbmc@feat-release-1.5-preparation"`.
+Each file is a heavy process (about 40 s and 2 min), run unbuffered and
 logged:
 `$PY -u -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v > dev/scripts/runs/it_pybads_$(date +%s).log 2>&1`,
 and `test_pyvbmc.py` likewise.
@@ -124,7 +126,8 @@ gitignored `pyibs/_version.py`.
 subpackage is added there; the build warns "Package would be ignored" for
 one that is missing. The tests ship in the wheel and run from an installed
 package as `pytest --pyargs pyibs`; what they need is the `test` extra,
-and only the test modules (`pyibs/testing/test_*.py`) import pytest.
+and only the test modules (`test_*.py` under `pyibs/testing/`) import
+pytest.
 
 ```console
 $PY -m pytest                                           # CI adds -x -vv

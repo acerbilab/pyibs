@@ -78,7 +78,6 @@ all = true
 
 [tool.pytest.ini_options]
 testpaths = ["pyibs/testing"]
-markers = ["integration: runs PyBADS or PyVBMC"]
 addopts = "-m 'not integration'"
 
 [tool.setuptools_scm]

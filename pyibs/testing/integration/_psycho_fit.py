@@ -1,11 +1,12 @@
 """The example model's fit of ``ibs_example.m``, shared by the integration
 tests.
 
-``ibs_example.m`` of MATLAB IBS fits its orientation discrimination data
-set with BADS and VBMC, an IBS estimate as their target. Its data set, as
-``pyibs/testing/test_examples.py`` draws it, its bounds and its plausible
-bounds are here, with the exact maximum-likelihood point, which the closed
-form of the likelihood gives.
+``ibs_example.m`` of MATLAB IBS fits a data set of the orientation
+discrimination model with BADS and VBMC, an IBS estimate as their target.
+Here are a data set drawn as it draws its own, as
+``pyibs/testing/test_examples.py`` draws it, its bounds and plausible
+bounds, and the exact maximum-likelihood point, which the closed form of
+the likelihood gives.
 """
 
 import math
@@ -27,10 +28,17 @@ PUB = np.array([math.log(5.0), 1.0, 0.2])
 # Repeats per estimate: an SD of about 1 near the maximum-likelihood point,
 # the noise that PyBADS and PyVBMC handle best.
 NUM_REPS = 100
+# The seeds of the starts of exact_ml, of a test's start, of its IBS
+# estimates and of PyBADS or PyVBMC: children of SEED, whose streams are
+# independent of each other and of the data's, default_rng(SEED).
+SEED_ML_STARTS, SEED_START, SEED_IBS, SEED_FIT = np.random.SeedSequence(
+    SEED
+).spawn(4)
 
 
 def data():
-    """``ibs_example.m``'s data set: 600 orientations and their responses."""
+    """600 orientations and their responses, drawn as ``ibs_example.m``
+    draws its data set."""
     rng = np.random.default_rng(SEED)
     S = 3 * rng.standard_normal((N_TRIALS, 1))
     R = psycho_generator(THETA_TRUE, S, rng)
@@ -44,7 +52,7 @@ def exact_ml(S, R, starts=10):
     centre of the plausible box and ``starts`` seeded points in it; the
     best of the runs.
     """
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(SEED_ML_STARTS)
     x0s = [THETA_TRUE, (PLB + PUB) / 2]
     x0s += list(PLB + rng.random((starts, PLB.size)) * (PUB - PLB))
     best = None

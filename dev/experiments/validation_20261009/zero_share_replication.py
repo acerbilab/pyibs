@@ -8,6 +8,10 @@ num_reps=10 of the two models whose trials all match with probability
 prints each replication's count with its z-score against the exact
 probability ``0.999**1000``.
 
+It draws through ``dev/scripts/validate.py``, whose models, cells and
+``run_cell`` are those of ``c76b5ac``, the commit of the full run; a later
+edit to them changes what this script draws.
+
 Run from the repository root:
 
     .venv/bin/python -u dev/experiments/validation_20261009/zero_share_replication.py

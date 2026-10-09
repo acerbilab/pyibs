@@ -16,8 +16,10 @@ come from a generator of its own, seeded per estimate.
 A worker process runs cells with the interpreter of its version's venv:
 ``.venv`` for 1.5 and ``.venv-0.1`` for 0.1.0 (``uv venv --python 3.12
 .venv-0.1``, ``uv pip install --python .venv-0.1 pyibs==0.1.0``). It runs
-with ``-P``, so that ``import pyibs`` finds the installed package and not
-the checkout, and reports the package's version and location. The
+with ``-P``, which leaves the script's directory off ``sys.path``, and
+reports the version and the location of the ``pyibs`` that it imports:
+the checkout for 1.5, through the editable install, and the venv's
+installed package for 0.1.0. The
 coordinator first runs the fast cells, one worker per version, one after
 the other and alone; then the slow cells, one worker each, at most
 ``--slow-jobs`` at a time (default 1). A slow cell sleeps for nearly all
@@ -44,6 +46,7 @@ import math
 import os
 import platform
 import re
+import statistics
 import subprocess
 import sys
 import threading
@@ -197,7 +200,7 @@ def run_worker_cell(cell, smoke, slow_estimates):
     secs = sorted(r["seconds"] for r in runs)
     out["runs"] = runs
     out["estimates"] = len(runs)
-    out["median_seconds"] = secs[len(secs) // 2]
+    out["median_seconds"] = statistics.median(secs)
     out["min_seconds"] = secs[0]
     out["mean_seconds"] = sum(secs) / len(secs)
     out["mean_calls"] = sum(r["calls"] for r in runs) / len(runs)
