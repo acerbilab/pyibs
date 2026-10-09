@@ -113,7 +113,7 @@ def check_for_updates(*, timeout: float = 5.0) -> UpdateCheck:
     Raises
     ------
     ValueError
-        If `timeout` is not a positive number of seconds of at most 3600.
+        If ``timeout`` is not a positive number of seconds of at most 3600.
         A network, HTTP or parse failure raises nothing: the printed
         message gives its reason, and the returned tuple holds
         ``latest=None``.

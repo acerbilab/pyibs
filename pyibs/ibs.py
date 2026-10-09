@@ -309,11 +309,6 @@ numpy.random.Generator, optional
         ``vectorized=None``, which is None until the object's first call
         with ``num_reps > 1``.
 
-    The other parameters are read-only attributes of the same names:
-    ``response_matrix`` and ``design_matrix`` hold read-only copies,
-    ``max_mem`` the bound in use, and the other settings the values
-    given, the counts as integers.
-
     Raises
     ------
     TypeError
@@ -328,6 +323,12 @@ numpy.random.Generator, optional
 
     Notes
     -----
+    **Settings.** Each parameter but ``random_seed`` is a read-only
+    attribute of the same name. ``response_matrix`` and ``design_matrix``
+    hold read-only copies, ``max_mem`` the bound in use, ``vectorized`` the
+    schedule as described under Attributes, and the other settings the
+    values given, the counts as integers.
+
     **Reproducibility.** Every random draw of a call comes from ``rng``,
     when the simulator draws from the ``rng`` it receives. Two objects
     created with the same ``random_seed`` then give the same estimates
@@ -445,7 +446,9 @@ numpy.random.Generator, optional
 
     @property
     def vectorized(self):
-        """The sampling schedule, None until ``vectorized=None`` decides."""
+        """The sampling schedule: as given, or the decision of
+        ``vectorized=None``, which is None until the object's first call
+        with ``num_reps > 1``."""
         return self._vectorized
 
     @property
