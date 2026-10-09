@@ -9,6 +9,9 @@ from pyibs import IBS
 from pyibs.examples.psycho_model import psycho_generator, psycho_neg_logl
 
 SEED = 20261009
+# The seed of the IBS objects: a child of SEED, whose stream is independent
+# of the data's, default_rng(SEED).
+SEED_IBS = np.random.SeedSequence(SEED).spawn(1)[0]
 N_TRIALS = 600
 # ibs_example.m's generating parameters: log(sigma), bias and lapse.
 THETA_TRUE = np.array([math.log(1.0), 0.2, 0.03])
@@ -33,7 +36,7 @@ def data():
 )
 def test_ibs_agrees_with_the_closed_form(data, theta):
     S, R = data
-    ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=SEED)
+    ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=SEED_IBS)
     neg_logl, sd = ibs(theta, num_reps=10, additional_output="std")
     assert abs(neg_logl - psycho_neg_logl(theta, S, R)) < 4.5 * sd
 
@@ -42,9 +45,13 @@ def test_one_dimensional_design_gives_the_same_estimate(data):
     # The simulator draws as many numbers, in the same order, for an
     # orientation column as for a vector of orientations.
     S, R = data
-    column = IBS(psycho_generator, R, S, vectorized=True, random_seed=SEED)
+    column = IBS(psycho_generator, R, S, vectorized=True, random_seed=SEED_IBS)
     vector = IBS(
-        psycho_generator, R[:, 0], S[:, 0], vectorized=True, random_seed=SEED
+        psycho_generator,
+        R[:, 0],
+        S[:, 0],
+        vectorized=True,
+        random_seed=SEED_IBS,
     )
     assert column(THETA_TRUE, additional_output="var") == vector(
         THETA_TRUE, additional_output="var"
