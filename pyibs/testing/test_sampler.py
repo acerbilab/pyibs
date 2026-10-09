@@ -417,6 +417,23 @@ def test_level_is_bounded_by_max_samples_per_call():
     assert [r.size for r in scripted.requests] == [8, 24, 30, 30, 30]
 
 
+def test_level_stays_finite_under_a_large_acceleration():
+    # The level is bounded by max_samples_per_call after every call:
+    # multiplied by 1e200 without the bound, it would reach inf at the third
+    # call, where math.floor raises.
+    scripted = ScriptedSimulator([LATE_MATCH])
+    settings = _Settings(
+        scripted,
+        np.ones(1),
+        initial_samples=1,
+        acceleration=1e200,
+        max_samples_per_call=7,
+    )
+    b = draw(settings, 1, SEED)
+    assert [r.size for r in scripted.requests] == [1] + [7] * 6
+    assert b.values[0] == ibs_loglik(41)
+
+
 # ---------------------------------------------------------------------------
 # Cost
 
