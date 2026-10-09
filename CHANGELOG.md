@@ -112,8 +112,9 @@ says where PyIBS differs from it, and why.
 - **Speed.** An estimate takes less time: in [timings of the example
   model](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
   0.1.0 took 1.3 to 2.1 times as long with a fast simulator, and up to 3.8
-  times as long with one of 0.2 s per call, which PyIBS 1.5 calls fewer
-  times by sampling all the repeats of a trial together.
+  times as long with one dominated by a fixed cost of 0.2 s per call,
+  which PyIBS 1.5 calls fewer times by sampling all the repeats of a trial
+  together.
 
 ### Fixed
 

@@ -1362,7 +1362,10 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   Every cell of step 1 passes its gates, under the PI's ruling below; both
   integration files pass; PyIBS 1.5 is faster than 0.1.0 in every timing
   cell, 1.3 to 2.1 times with the fast simulator and 1.2 to 3.8 times with
-  the slow one.
+  the one dominated by a fixed cost of 0.2 s per call. That simulator
+  measures the cost of calls, not that of a simulator whose every response
+  costs time, for which both versions draw about as many responses (PI,
+  after the review); the record says so.
 - The smoke passes and the PI's rulings (2026-10-09). The validation's
   smoke pass, 100 estimates per cell, projected its full run at 1.5 h on
   the container's 4 workers, and found six cells failing the calibration
@@ -1434,27 +1437,26 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   the gates added since pass. The integration tests ran again at
   `55af9e2`. Fixed in the record: three values of the timing table; the
   decision of `vectorized=None`, which `num_reps=1` does not make; the
-  growth of the slow simulator's gain, which at N = 100 does not grow with
-  `num_reps`; claims of unbiasedness
+  growth of the gain with the 0.2 s per call, which at N = 100 does not
+  grow with `num_reps`; claims of unbiasedness
   and calibration, now stated as what the evidence resolves, with the
   `num_reps=1` cells and the threshold cells' variance estimates, which
   overstate the variance about 2 to 3 times where the threshold acts; the
   data set, drawn as `ibs_example.m` draws its own; the README's commands,
   environments, seeds and the smoke passes' outputs, which are not kept.
   Not taken (PI): a reviewer's point that 0.1.0 at its default `max_iter`
-  can take less time than 1.5 with a slow simulator; that default is the
+  can take less time than 1.5 with the 0.2 s per call; that default is the
   defect `10 ^ 5` = 15, so the record compares only with
   `max_iter=10**5`.
 - For Phase 4: the FAQ and the examples can cite the record on the noise
   of an estimate (100 repeats give an SD of about 1.1 on the example's 600
   trials at its generating parameters), on the variance estimate under a
-  likelihood threshold, which overstates the variance, and on the cost of
-  a slow simulator: at `vectorized=None`, which decides False for a call
-  of 0.1 s or more, an estimate of 100 repeats with 0.2 s per call takes
-  15.5 to 27 minutes, about the number of samples that the slowest trial
-  needs for all its repeats; the accelerated schedule makes 9 to 12 calls
-  in these cells, so `vectorized=True` would serve a simulator whose time
-  goes to the call rather than to its rows, which no cell measured. The
+  likelihood threshold, which overstates the variance, and on a simulator
+  dominated by a fixed cost per call: there `vectorized=None` decides
+  False, and an estimate of 100 repeats with 0.2 s per call takes 15.5 to
+  27 minutes, where `vectorized=True` would make 9 to 12 calls, which no
+  cell measured. For a simulator whose every response costs time, the
+  decision False is the right one. The
   changelog's link to the record resolves once the record is on `main`.
   `pyibs/testing/test_examples.py` seeds its `IBS` objects with the seed of
   its data, as the integration tests did. For Phase 5: once PyVBMC 1.5.0 is

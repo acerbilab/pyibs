@@ -103,21 +103,24 @@ the test checks that the ELBO is finite and that the posterior mean lies
 within three posterior SDs of the exact maximum-likelihood point in each
 coordinate.
 
-**Timing** (`dev/scripts/timing.py`). The wall time of one estimate of
-the example model at N = 100, 1,000 and 10,000 trials (the orientations
-drawn as in `ibs_example.m`, the responses at its generating parameters),
-`num_reps` 10 and 100, with the fast simulator and with one that sleeps
-0.2 s per call, for PyIBS 1.5 and for PyIBS 0.1.0 from PyPI in a venv of
-its own. Each version runs at its defaults, with a new `IBS` object per
-estimate, so that `vectorized=None` decides at each, and 0.1.0 with
-`max_iter=10**5`, the value that its documentation gives (its default,
-written `10 ^ 5`, evaluates to 15, a defect that 1.5 fixes).
-Both call the same two-argument simulator, which counts its calls and
-rows. A fast cell takes at least 5 estimates and 2 s, up to 50, and
-reports their median; a slow cell, one estimate. The fast cells ran
-alone; the slow ones, which sleep for nearly all of their time, ran
-together, beside the validation, as the PI approved after a smoke pass
-projected 4.4 h for them one at a time.
+**Timing** (`dev/scripts/timing.py`). The wall time of one estimate of the
+example model at N = 100, 1,000 and 10,000 trials (the orientations drawn as in
+`ibs_example.m`, the responses at its generating parameters), `num_reps` 10 and
+100, with the fast simulator and with one whose cost is a fixed overhead per
+call: it sleeps 0.2 s per call, whatever the number of responses it simulates
+(the cells named `slow` in `timing.json`). It models a simulator dominated by
+the cost of a call, such as one that starts an external program, and not one
+that is slow because each simulated response costs time. The versions are PyIBS
+1.5 and PyIBS 0.1.0, the latter from PyPI in a venv of its own. Each version
+runs at its defaults, with a new `IBS` object per estimate, so that
+`vectorized=None` decides at each, and 0.1.0 with `max_iter=10**5`, the value
+that its documentation gives (its default, written `10 ^ 5`, evaluates to 15, a
+defect that 1.5 fixes). Both call the same two-argument simulator, which counts
+its calls and rows. A fast cell takes at least 5 estimates and 2 s, up to 50,
+and reports their median; a cell with the overhead, one estimate. The fast
+cells ran alone; those with the overhead, which sleep for nearly all of their
+time, ran together, beside the validation, as the PI approved after a smoke
+pass projected 4.4 h for them one at a time.
 
 ## Main results
 
@@ -198,18 +201,18 @@ projected 4.4 h for them one at a time.
   | fast | 1,000 | 100 | 0.029 | 0.040 | 1.40 | 10 | 10 | 314 | 347 | 50, 50 |
   | fast | 10,000 | 10 | 0.024 | 0.038 | 1.53 | 12 | 12 | 27 | 29 | 50, 50 |
   | fast | 10,000 | 100 | 0.24 | 0.32 | 1.30 | 11 | 11 | 309 | 312 | 8, 6 |
-  | slow | 100 | 10 | 99 | 130 | 1.32 | 491 | 649 | 23 | 24 | 1, 1 |
-  | slow | 100 | 100 | 931 | 1,109 | 1.19 | 4,640 | 5,531 | 218 | 218 | 1, 1 |
-  | slow | 1,000 | 10 | 191 | 299 | 1.56 | 954 | 1,490 | 20 | 21 | 1, 1 |
-  | slow | 1,000 | 100 | 1,332 | 3,211 | 2.41 | 6,640 | 16,021 | 206 | 206 | 1, 1 |
-  | slow | 10,000 | 10 | 225 | 573 | 2.55 | 1,119 | 2,860 | 21 | 21 | 1, 1 |
-  | slow | 10,000 | 100 | 1,619 | 6,224 | 3.84 | 8,065 | 31,048 | 205 | 207 | 1, 1 |
+  | overhead | 100 | 10 | 99 | 130 | 1.32 | 491 | 649 | 23 | 24 | 1, 1 |
+  | overhead | 100 | 100 | 931 | 1,109 | 1.19 | 4,640 | 5,531 | 218 | 218 | 1, 1 |
+  | overhead | 1,000 | 10 | 191 | 299 | 1.56 | 954 | 1,490 | 20 | 21 | 1, 1 |
+  | overhead | 1,000 | 100 | 1,332 | 3,211 | 2.41 | 6,640 | 16,021 | 206 | 206 | 1, 1 |
+  | overhead | 10,000 | 10 | 225 | 573 | 2.55 | 1,119 | 2,860 | 21 | 21 | 1, 1 |
+  | overhead | 10,000 | 100 | 1,619 | 6,224 | 3.84 | 8,065 | 31,048 | 205 | 207 | 1, 1 |
 
   With the fast simulator, both versions take the accelerated schedule
   and make as many calls, and 0.1.0 takes 1.3 to 2.1 times as long. With
-  the slow one, both take one sample per open trial and call, and the
-  time is 0.2 s per call to within 0.4%, for either version. A slow
-  cell's ratio rests on one estimate per version, at different seeds.
+  the overhead, both take one sample per open trial and call, and the
+  time is 0.2 s per call to within 0.4%, for either version; each ratio
+  rests on one estimate per version, at different seeds.
 
 ## Interpretation
 
@@ -232,18 +235,27 @@ target unchanged: PyBADS reaches the exact maximum likelihood to 0.01,
 and PyVBMC's posterior holds the exact maximum-likelihood point well
 within its spread.
 
-PyIBS 1.5 is faster than 0.1.0 everywhere tested. With
-a fast simulator the gain, 1.3 to 2.1 times on the same number of calls,
-is mostly in the sampler's own work; 0.1.0 also simulates up to 11% more
-rows. With a slow simulator the time is the number of calls, and 1.5
-needs fewer: it samples all repeats of a trial as one stream, so that a
-call takes one sample of each trial that still needs a match in any
-repeat, where 0.1.0 runs the repeats one after the other and waits in
-each for its slowest trial. The gain grows with N, to 3.8 times at 10,000
-trials and 100 repeats, and with `num_reps` from 1,000 trials on. In
-absolute terms, an estimate of 100 repeats with a simulator
-of 0.2 s per call takes 15.5 to 27 minutes at `vectorized=None`, which
-decides False for any simulator whose call takes 0.1 s or more. The
-accelerated schedule makes 9 to 12 calls in these cells, so a simulator
-whose time goes to the call rather than to the rows it simulates would
-gain from `vectorized=True`, given explicitly; no cell measured it.
+PyIBS 1.5 is faster than 0.1.0 everywhere tested. With a fast simulator
+the gain, 1.3 to 2.1 times on the same number of calls, is mostly in the
+sampler's own work; 0.1.0 also simulates up to 11% more rows. With a
+simulator dominated by a fixed cost per call, the time is the number of
+calls, and 1.5 needs fewer: it samples all repeats of a trial as one
+stream, so that a call takes one sample of each trial that still needs a
+match in any repeat, where 0.1.0 runs the repeats one after the other and
+waits in each for its slowest trial. The gain grows with N, to 3.8 times
+at 10,000 trials and 100 repeats, and with `num_reps` from 1,000 trials
+on.
+
+That gain does not carry over to a simulator that is slow because each
+simulated response costs time. Its time is the number of responses
+simulated, and in these cells both versions simulated about as many per
+trial (205 to 218 at 100 repeats, 20 to 24 at 10), so that neither would
+be faster beyond the sampler's own work; no cell measured such a
+simulator. For it, the decision of `vectorized=None` (False for a
+simulator whose simulation of all trials takes 0.1 s or more) is the
+right one, since the accelerated schedule draws 1.01 to 1.56 times as many
+responses. For a simulator dominated by a fixed cost per call, it is
+not: at `vectorized=None`, an estimate of 100 repeats with 0.2 s per call
+takes 15.5 to 27 minutes, where the accelerated schedule, given as
+`vectorized=True`, makes about as few calls as with the fast simulator
+(9 to 12), which no cell measured either.

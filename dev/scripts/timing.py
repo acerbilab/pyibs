@@ -4,7 +4,10 @@ Phase 3, step 3, of ``dev/plans/pyibs-1.5.md``. A cell is a version, a
 number of trials N (100, 1,000 or 10,000), ``num_reps`` (10 or 100) and a
 simulator: the example model's (the orientation discrimination model at
 ``ibs_example.m``'s generating parameters, with N orientations drawn as in
-``ibs_example.m``), fast, or slowed by a sleep of 0.2 s per call. Each
+``ibs_example.m``), fast, or with a fixed cost of 0.2 s per call, a sleep
+whatever the number of responses it simulates (the cells named ``slow``):
+a simulator dominated by the cost of a call, not one whose every
+simulated response costs time. Each
 version runs at its defaults, with a new ``IBS`` object per estimate, so
 that ``vectorized=None`` decides at every estimate as it does at an
 object's first call; 0.1.0 runs with ``max_iter=10**5``, an integer (its

@@ -105,10 +105,11 @@ outputs were copied here from there: `validation.json` and
 
 The validation and the timing ran together, as the PI approved on
 2026-10-09: the timing's fast cells ran alone, one version after the
-other; its twelve slow cells then ran together, one process each, beside
-the validation's three workers. A slow cell sleeps 0.2 s per simulator call
-for nearly all of its time, and only its computation competed for the
-CPUs. The integration tests and the replication ran alone.
+other; its twelve cells named `slow`, whose simulator has a fixed cost
+of 0.2 s per call, a sleep, then ran together, one process each, beside
+the validation's three workers. Such a cell sleeps for nearly all of its
+time, and only its computation competed for the CPUs. The integration
+tests and the replication ran alone.
 
 The seeds are constants of the scripts: in `validate.py`, `DATA_SEED`
 20261009 (the data of every model) and `RUN_SEED` 20261010 (the estimates
