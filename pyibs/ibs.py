@@ -67,7 +67,8 @@ class EstimateResult(dict):
         Its square root.
     exit_flag : int
         0 when every repeat was sampled to completion (the estimate is
-        unbiased), 1 when the likelihood threshold ended a repeat (the
+        unbiased when ``max_time`` is infinite: see ``max_time`` of
+        :class:`IBS`), 1 when the likelihood threshold ended a repeat (the
         log-likelihood estimate is biased upwards, and the negative
         log-likelihood estimate downwards), 2 when ``max_time`` stopped the
         sampling (the estimate can be arbitrarily biased).
@@ -220,7 +221,10 @@ class IBS:
         when every column agrees. The responses must be discrete: numbers,
         booleans, text, bytes, or objects compared by ``==``. A simulator
         must return them of the same kind, since NumPy never finds text or
-        bytes equal to numbers.
+        bytes equal to numbers. Responses that mix numbers and text are
+        given as an object array (``dtype=object``), which the simulator
+        returns too: NumPy otherwise turns them into text, which never
+        equals a simulated number.
     design_matrix : array_like of shape (N, ...), optional
         The design of each trial, one row per trial, which the simulator
         receives for the requested trials. None, the default, passes the
@@ -257,7 +261,10 @@ class IBS:
         trial's value averages its completed repeats, while a repeat that
         the likelihood threshold ended counts -T; the result has exit flag
         2, with a warning, and a trial with no completed repeat raises
-        :class:`IBSSamplingError`. The default, ``np.inf``, sets none.
+        :class:`IBSSamplingError`. A finite limit also biases the calls
+        that complete in time: completing in time is more likely with few
+        samples, which give high log-likelihoods. The default, ``np.inf``,
+        sets none, and only it keeps the estimates unbiased.
     max_samples : int, optional
         The bound on the samples of one trial in one simulator call.
         Default 10**4.
@@ -280,8 +287,11 @@ class IBS:
         that its negative log-likelihood exceeds T is ended and counts -T,
         which saves the samples of poor parameter vectors at the price of
         an upward bias of the log-likelihood estimate ([1], Appendix C.1).
-        The chance level, ``N log 2`` for N binary choices, is the usual
-        choice. The default, ``np.inf``, sets none.
+        T bounds the weighted negative log-likelihood, and the usual
+        choice is its chance level, that of uniform responding:
+        ``sum_i w_i log(k_i)`` for trial weights w_i and k_i possible
+        responses on trial i, ``N log 2`` for N binary choices of weight 1.
+        The default, ``np.inf``, sets none.
     random_seed : None, int, numpy.random.SeedSequence or \
 numpy.random.Generator, optional
         The seed of ``rng``, keyword only. None, the default, derives the
@@ -505,7 +515,10 @@ numpy.random.Generator, optional
         trial_weights : None, float or array_like of shape (N,), optional
             Weights of the trials' log-likelihoods, finite and >= 0, real
             numbers and not booleans or strings; a scalar weighs every
-            trial alike. None, the default, gives unit weights.
+            trial alike. None, the default, gives unit weights. A trial of
+            weight 0 adds nothing to the estimate but is still sampled, and
+            can reach the cap or the time limit: a trial to leave out is
+            better removed from the data.
         additional_output : None or str, optional
             What the call returns besides the estimate: None or ``"none"``,
             nothing; ``"var"``, its variance estimate; ``"std"``, the square

@@ -147,7 +147,7 @@ from the original maintainer on 2026-10-09.
 | Samples per call | `min(1e4, max(1, round(level)))`, with MATLAB's `round` (halves away from zero), then at most `ceil(MaxMem / n_open)` | `max(1, min(floor(level), 10**6 // n_open))` | `ibslike.m`'s formula and defaults (D6) |
 | Likelihood threshold | Vectorized path: checks the lowest repeat still sampled, keeps the partial counts of an ended repeat, compares the unweighted sum. Loop path: checks each repeat, keeps partial counts | Every repeat against a weighted bound; an ended repeat is worth exactly -T | As the engine (D5, deliberate difference) |
 | Cap | `MaxIter` rounds (times `Nreps` in the vectorized path); error | More than `max_samples_per_trial * n` samples of one trial in a draw of n repeats; error | As the engine, with `max_iter` as `max_samples_per_trial`, default `10**5` (D3, D6, deliberate difference) |
-| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none, and under a threshold also the partial count c + 1 of the repeat it stopped | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning; with the likelihood threshold, D24 (D3, D24, deliberate differences) |
+| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling; NaN for every trial when the limit passed before its first round. Loop path: averages its completed repeats, NaN when it has none, and under a threshold also the partial count c + 1 of the repeat it stopped | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning; with the likelihood threshold, D24 (D3, D24, deliberate differences) |
 | Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21, deliberate difference) |
 | Sample count | The vectorized path adds the number of open trials per call, whatever the samples requested of each | Every simulated row | As the engine (deliberate difference) |
 | Simulator | `fun(params, dmat, varargin{:})`, global random state | Called with the generator of the draw | `sample_from_model(params, design_rows)`, with `rng=` when its signature has a parameter named `rng` (D8, D18) |
@@ -865,15 +865,17 @@ from the README, the documentation and the model-fitting page.
   exit flag 3 gave (a truncated count biases it, and inside an
   optimization nothing reads the flag); `ibslike.m`'s handling of the time
   limit (its vectorized path averages in the partial count of an
-  unfinished repeat, whose value depends on the schedule, and its loop
-  path, without a threshold, returns NaN for a trial with no completed
-  repeat).
+  unfinished repeat, whose value depends on the schedule, or returns NaN
+  for every trial when the limit passed before its first round, and its
+  loop path, without a threshold, returns NaN for a trial with no
+  completed repeat).
 - **D4. Acceleration grows after every call by default, and the time
   rule of `ibslike.m` is opt-in** — so that a seed reproduces a run, as in
   PyBADS and PyVBMC. The values of complete repeats do not depend on the
   schedule; it changes the cost, the variance estimate of a repeat that
-  the threshold ends, and, under the time limit, which repeats complete.
-  Rejected: `ibslike.m`'s default, which makes the samples requested
+  the threshold ends, whether a call reaches the cap, which counts the
+  samples drawn after a trial's last match, and, under the time limit,
+  which repeats complete. Rejected: `ibslike.m`'s default, which makes the samples requested
   depend on the wall-clock time.
 - **D5. The likelihood threshold follows [1], Appendix C.1, as the
   engine implements it** — every repeat is checked against a weighted
@@ -1023,8 +1025,9 @@ from the README, the documentation and the model-fitting page.
   estimate is -T at every parameter vector, with no error.
   A NaN is an element not equal to itself, which finds float and complex
   NaN, `NaT` and a NaN in an object array, and never flags text. The design
-  is not checked: `ibslike.m`'s own examples pass a NaN design (lines 57,
-  511). `ibs_basic` raises in the same way. Rejected: leaving it to the cap
+  is not checked: `ibslike.m`'s own examples call their simulator with a
+  design of NaN (lines 57, 511, 587), and a port that passes such a design
+  to `IBS` keeps working. `ibs_basic` raises in the same way. Rejected: leaving it to the cap
   or the threshold (the whole cap's cost, or a silent -T, with nothing that
   names the cause).
 
