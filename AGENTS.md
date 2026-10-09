@@ -302,6 +302,12 @@ gave.
 - **Tests.** Statistical tolerances are stated in standard errors (4.5 by
   default), and a failing statistical test is investigated, never
   reseeded.
+- **Network access and output.** The package opens a network connection
+  only in `pyibs.check_for_updates()` (`pyibs/_update_check.py`), which
+  the user calls, and which imports its networking modules inside the
+  function; its tests replace `urllib.request.urlopen` and reach no
+  network. Nothing else in the package prints: a call reports through its
+  return value, its exit flag and Python's `warnings`.
 - **Links to the lab.** In what ships or is published, a link that names
   Luigi Acerbi goes to his personal page, https://lacerbi.github.io/. A
   link to the group goes preferably to its main page,

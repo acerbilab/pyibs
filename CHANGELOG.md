@@ -75,6 +75,13 @@ says where PyIBS differs from it, and why.
 - **A warning on a zero variance.** A call that returns a variance
   estimate of 0, as it is when every trial matches at its first sample,
   warns that PyBADS and PyVBMC refuse an SD of 0, and links the FAQ.
+- **Documentation, examples and a coding-agent skill.** PyIBS has a
+  [documentation site](https://acerbilab.github.io/pyibs/) with a page of
+  frequently asked questions, and three example notebooks, installed in
+  `pyibs/examples`, which replace 0.1.0's: basic use and calibration,
+  maximum-likelihood estimation with PyBADS, and the posterior and the
+  model evidence with PyVBMC. `skills/pyibs/SKILL.md` in the repository
+  points a coding agent to the documentation relevant to its task.
 - **Update check.** `pyibs.check_for_updates()` asks PyPI whether a newer
   version of PyIBS exists and gives the command that installs it. It is
   PyIBS's only network access, made only when the function is called.
