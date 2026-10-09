@@ -1,43 +1,53 @@
+# pyproject.toml
+
 [project]
 name = "PyIBS"
-version = "0.1.0"
+dynamic = ["version"]  # use git tags for version, via setuptools_scm
 description = "Inverse Binomial Sampling in Python."
 readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 dependencies = [
-    "cma >= 3.1.0",
-    "corner >= 2.2.1",
-    "dill >= 0.3.5.1",
-    "gpyreg >= 0.1.0",
-    "imageio >= 2.13.5",
-    "matplotlib >= 3.5.1",
-    "numpy >= 1.22.1",
-    "plotly >= 5.11.0",
-    "pytest >= 6.2.5",
-    "pytest-mock >= 3.6.1",
-    "pytest-rerunfailures >= 10.2",
-    "scipy >= 1.7.3",
+    "numpy >= 2.0.0",
+    "scipy >= 1.13.0",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
+
+[project.urls]
+Documentation = "https://acerbilab.github.io/pyibs/"
+Source = "https://github.com/acerbilab/pyibs"
+Changelog = "https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md"
+Issues = "https://github.com/acerbilab/pyibs/issues"
+"Model-fitting tools" = "https://acerbilab.org/model-fitting/"
 
 [tool.setuptools]
 include-package-data = true
-# Include examples in binary/wheel distribution:
-packages = ["pyibs"]
+# Every directory of the package
+packages = [
+    "pyibs",
+    "pyibs.testing",
+]
 
 [project.optional-dependencies]
+# What the test suite needs (`pytest --pyargs pyibs`); CI installs it.
+test = [
+    "pytest >= 6.2.5",
+]
 dev = [
+    "build >= 0.9.0",
     "myst_nb >= 0.13.1",
     "numpydoc >= 1.2.1",
-    "pylint >= 2.15.5",
+    "pre-commit",
+    "pytest >= 6.2.5",
     "pytest-cov >= 4.0.0",
     "sphinx >= 4.3.2",
-    "sphinx-book-theme>=0.2.0",
-    "build >= 0.9.0",
+    # Source links in docsrc/source/conf.py use the theme's header buttons.
+    "sphinx-book-theme >= 1.0.0",
 ]
 
 [build-system]
 requires = [
-    "setuptools >= 45",
+    "setuptools >= 77",
     "setuptools_scm[toml] >= 6.2",
 ]
 build-backend = "setuptools.build_meta"
@@ -57,4 +67,10 @@ profile = "black"
 [tool.pycln]
 all = true
 
+[tool.pytest.ini_options]
+testpaths = ["pyibs/testing"]
+markers = ["integration: runs PyBADS or PyVBMC"]
+addopts = "-m 'not integration'"
+
 [tool.setuptools_scm]
+write_to = "pyibs/_version.py"

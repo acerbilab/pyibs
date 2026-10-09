@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
+pyibs/_version.py
 dist/
 downloads/
 eggs/
@@ -68,8 +69,12 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/_build/
+# Sphinx documentation: the build in docsrc/, its copy in docs/,
+# and the copies of the example notebooks that a failed
+# `make github` leaves
+docs/
+docsrc/_build/
+docsrc/source/_examples/
 
 # PyBuilder
 .pybuilder/
@@ -127,6 +132,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.venv-*/
 
 # Spyder project settings
 .spyderproject
