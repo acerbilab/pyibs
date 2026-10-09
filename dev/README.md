@@ -25,7 +25,9 @@ cite, and the tooling that produced it. They are not user documentation.
   elsewhere). Its raw output goes
   under `dev/scripts/runs/`, which git ignores and a fresh clone creates
   (`mkdir -p dev/scripts/runs`): a result that matters is summarized in a
-  plan or a result, not committed raw.
+  plan or a result, not committed raw. `scripts/octave/` holds the files
+  that let MATLAB `ibslike.m` run under GNU Octave (`AGENTS.md`, "Sibling
+  repositories").
 - `private/` is gitignored: maintainer notes that are not published. A
   tracked record may point to one by its path, but never restates it.
 

@@ -271,9 +271,9 @@ class _Settings:
         checked by :func:`pyibs._estimates.trial_weights`. None gives unit
         weights and a scalar applies to every trial.
     initial_samples : int or None, optional
-        The level of samples per open trial at the first simulator call of
-        a draw, at least 1 (``ibslike.m``'s ``NsamplesPerCall``). None, the
-        default, uses the number of repeats the draw asks for.
+        The level of samples per open trial at the schedule's first round
+        of a draw, at least 1 (``ibslike.m``'s ``NsamplesPerCall``). None,
+        the default, uses the number of repeats the draw asks for.
     acceleration : float, optional
         Factor >= 1 by which the level grows from one call to the next
         (``ibslike.m``'s ``Acceleration``).

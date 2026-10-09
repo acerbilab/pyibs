@@ -938,6 +938,7 @@ def test_arrays_are_read_only_copies():
         dict(acceleration=math.nan),
         dict(num_samples_per_call=-1),
         dict(num_samples_per_call=1.5),
+        dict(num_samples_per_call=math.inf),
         dict(max_iter=0),
         dict(max_iter=2.5),
         dict(max_iter=math.inf),

@@ -1026,10 +1026,10 @@ from the README, the documentation and the model-fitting page.
   A NaN is an element not equal to itself, which finds float and complex
   NaN, `NaT` and a NaN in an object array, and never flags text. The design
   is not checked: `ibslike.m`'s own examples call their simulator with a
-  design of NaN (lines 57, 511, 587), and a port that passes such a design
-  to `IBS` keeps working. `ibs_basic` raises in the same way. Rejected:
-  leaving it to the cap or the threshold (the whole cap's cost, or a
-  silent -T, with nothing that names the cause).
+  design of NaN (lines 57, 511, 587, 630), and a port that passes such a
+  design to `IBS` keeps working. `ibs_basic` raises in the same way.
+  Rejected: leaving it to the cap or the threshold (the whole cap's cost, or
+  a silent -T, with nothing that names the cause).
 
 - **D24. When the time limit stops a draw in which the likelihood threshold
   ended repeats, the ended repeats count -T each and the others are

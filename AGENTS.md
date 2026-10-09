@@ -52,19 +52,21 @@ before relying on more than this file states about it.
 
 A record of a comparison names the commit of the checkout it read.
 
-`ibslike.m` runs under GNU Octave (8.4 on Ubuntu, `apt-get install
-octave`), unmodified, with `dev/scripts/octave/compat` on Octave's path:
-`ibslike.m` calls `fields` (line 124), MATLAB's alias of `fieldnames`,
-which Octave lacks. `ibslike('test')` also plots; without a display it
-needs `dev/scripts/octave/headless` too, whose stand-ins draw nothing, and
-then passes its three self-tests. From the repository root:
+`ibslike.m` runs unmodified under GNU Octave (8.4.0, the package of Ubuntu
+24.04, `apt-get install octave`) with `dev/scripts/octave/compat` on
+Octave's path, which supplies the `fields` that `ibslike.m` calls and
+Octave lacks. `ibslike('test')` also plots, which needs a graphics
+toolkit; `dev/scripts/octave/headless` supplies stand-ins that draw
+nothing. From the repository root:
 
 ```console
-octave-cli --no-gui --norc -q --eval "warning('off', 'Octave:shadowed-function'); addpath('../ibs', 'dev/scripts/octave/compat', 'dev/scripts/octave/headless'); ibslike('test')"
+octave-cli --norc -q --eval "warning('off', 'Octave:shadowed-function'); addpath('../ibs', 'dev/scripts/octave/compat', 'dev/scripts/octave/headless'); ibslike('test')"
 ```
 
-Octave is not MATLAB: a record that rests on an Octave run says so and
-names Octave's version.
+Octave is not MATLAB, and accepts some code that MATLAB refuses: its `&&`
+takes arrays, which it reduces with `all`. A record that rests on an
+Octave run says so, names Octave's version, and names the semantic that
+it takes MATLAB to share.
 
 ## PyBADS and PyVBMC
 

@@ -132,32 +132,33 @@ by range.**
 `Acceleration` is at least 1, that `NegLogLikeThreshold` and `MaxTime` are
 positive, and that `TrialWeights` has one element or one per trial (lines
 139-168). PyIBS checks every setting when `IBS` is created, and `num_reps`,
-`trial_weights` and `additional_output` at each call, and raises
-`ValueError` for a value it does not take and `TypeError` for a setting or
-a count of the wrong type, naming the argument and what it takes. The
-counts (`num_reps`, `num_samples_per_call`, `max_iter`, `max_samples`,
-`max_mem`) take integers and whole-number floats, such as `1e5`, and refuse
-booleans, fractions and infinity; `num_samples_per_call` is at least 0, the
-others at least 1. `ibslike.m` takes `MaxIter = Inf`, which disables its
-cap (KD-11), and `NsamplesPerCall = Inf`, which starts the samples per
-call at their bounds (lines 264-266, 281-283). `acceleration` is finite.
-Trial weights are real numbers, finite and at least 0, and refuse booleans
-and strings. `num_reps` is one integer: `ibslike.m` reads `Nreps` as a
-vector of per-trial repeats in places (lines 248, 259-260), which no
-documentation offers and its code runs only in special cases: the loop
-path fails at line 413, and the vectorized path at line 284 unless
-`NsamplesPerCall` is set, and otherwise at line 361 once a round's open
-trials are neither all of them nor one (lines 264, 281-284, 361, 413). The
-data are checked too: the responses are a non-empty array of one or two
-dimensions; the design has one row per trial, where `ibslike.m` ignores extra
-rows and fails at an index when rows are missing (lines 185, 296, 439); and the
-trial weights are a scalar or have shape (N,), where `ibslike.m` flattens any
-array of one or N elements (line 163).
+`trial_weights` and `additional_output` at each call, and raises `ValueError`
+for a value it does not take and `TypeError` for a setting or a count of the
+wrong type, naming the argument and what it takes. The counts (`num_reps`,
+`num_samples_per_call`, `max_iter`, `max_samples`, `max_mem`) take integers and
+whole-number floats, such as `1e5`, and refuse booleans, fractions and
+infinity; `num_samples_per_call` is at least 0, the others at least 1.
+`ibslike.m` takes `MaxIter = Inf`, which disables its cap (KD-11), and
+`NsamplesPerCall = Inf`, which starts the samples per call at their bounds
+(lines 264-266, 281-283). `acceleration` is finite. Trial weights are real
+numbers, finite and at least 0, and refuse booleans and strings. `num_reps` is
+one integer: `ibslike.m` reads `Nreps` as a vector of per-trial repeats in
+places (lines 248, 259-260), which no documentation offers and its code does
+not support: in MATLAB, whose `&&` takes scalars, a vector stops at line 193
+when `Vectorized` is given; the loop path fails at line 413; and the vectorized
+path fails at line 284 unless `NsamplesPerCall` is set, and otherwise, once
+fewer than all trials are open, fails at line 361 or 372 or misplaces the
+counts (lines 193, 264, 281-284, 361, 372, 413). The data are checked too: the
+responses are a non-empty array of one or two dimensions; the design has one
+row per trial, where `ibslike.m` ignores extra rows and fails at an index when
+rows are missing (lines 185, 296, 439); and the trial weights are a scalar or
+have shape (N,), where `ibslike.m` flattens any array of one or N elements
+(line 163).
 - PyIBS: `IBS.__init__`, `IBS.__call__` (`pyibs/ibs.py`); `_check_count`,
   `_check_real`, `_Settings` (`pyibs/_sampler.py`); `trial_weights`
   (`pyibs/_estimates.py`).
-- MATLAB: `ibslike.m:139-168`, `185`, `248`, `259-266`, `269`,
-  `281-284`, `296`, `361`, `413`, `427`, `439`.
+- MATLAB: `ibslike.m:139-168`, `185`, `193`, `248`, `259-266`, `269`,
+  `281-284`, `296`, `361`, `372`, `413`, `427`, `439`.
 - Settled by: D16. Kind: deliberate change.
 
 ## Sampling
@@ -217,7 +218,8 @@ only after a simulator call faster than `AccelerationThreshold`, 0.1 s
 random numbers to trials, depend on the wall-clock time. PyIBS multiplies it
 after every call by default (`acceleration_threshold=None`), so that a seed
 reproduces a run; `acceleration_threshold=0.1` restores `ibslike.m`'s rule.
-The level is bounded by `max_samples`, which changes no request. The
+Either rule skips the extra first round of `vectorized=None` (KD-8). The
+level is bounded by `max_samples`, which changes no request. The
 values of complete repeats do not depend on the schedule; it changes the
 cost, the variance estimate of a repeat that the threshold ends, whether a
 call reaches the cap, which counts the samples drawn after a trial's last
@@ -254,13 +256,13 @@ says, "per trial and estimate" (line 95), scaled by the repeats as the
 vectorized path scales it. The timing call of `vectorized=None` is a
 round (KD-8), so its sample of each trial counts toward the cap;
 `ibslike.m`'s timing call is a round only when its first round requests one
-sample of every trial. The error names the trials
-over the cap by their 0-based indices and the samples each drew.
-`MaxIter = Inf` disables `ibslike.m`'s cap: its loops then run until the
-sampling ends (lines 260, 269, 427). `max_iter` is a finite integer, since
-a response that the simulator cannot produce would otherwise sample
-forever, with nothing that names the cause; a very large one, such as
-`10**18`, sets a cap that no call reaches.
+sample of every trial. The error names the trials over the cap by their
+0-based indices and the samples each drew. `MaxIter = Inf` disables
+`ibslike.m`'s cap in effect: its loops run until the sampling ends (lines
+260, 269, 427), since Octave, and presumably MATLAB, bound an infinite
+range only at 2^63 - 1 iterations. `max_iter` is a finite integer, so that
+a call has a cap unless the user chooses one so large, such as `10**18`,
+that no call reaches it.
 - PyIBS: `sample`, `_cap_error`, `IBSSamplingError` (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:95`, `180-189`, `260`, `269-276`, `390-393`, `410`,
   `427-430`, `477-480`.
@@ -405,18 +407,18 @@ checked: a design of NaN serves a simulator that reads only its size, as
 
 **KD-18. `ibs_basic` runs without a design, passes a generator, and
 raises on its data and on responses that cannot match.**
-`ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33);
-it returns 0 for empty responses (lines 28-29, 39), ignores extra rows of
-`S` and fails at an index when rows are missing (line 33); and it loops
-forever on a NaN response, since `NaN ~= NaN` (line 33). PyIBS's
-`ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None)`
-passes the 0-based trial index when `S` is None, as `IBS` does (KD-5),
-creates a generator from `random_seed` and passes it to a simulator that
-takes `rng`, as `IBS` does (KD-4), checks `R` and `S` as `IBS` checks its
-data (KD-6), and refuses a NaN response (KD-17) and a simulated response of
-a kind that NumPy never finds equal to `R` (KD-16), as `IBS` does. It
-returns the log-likelihood estimate, not its negative, as `ibs_basic.m`
-does (line 39).
+`ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33); it
+returns 0 for empty responses (lines 28-29, 39), ignores extra rows of `S` and
+fails at an index when rows are missing (line 33); and it loops forever on a
+NaN response, since `NaN ~= NaN` (line 33). PyIBS's
+`ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None)` passes
+the 0-based trial index when `S` is None, as `IBS` does (KD-5), creates a
+generator from `random_seed` and passes it to a simulator that takes `rng`, as
+`IBS` does (KD-4), checks that `R` is a non-empty array of one or two
+dimensions and that `S` has one row per trial, and refuses a NaN response
+(KD-17) and a simulated response of a kind that NumPy never finds equal to `R`
+(KD-16), as `IBS` does. It returns the log-likelihood estimate, not its
+negative, as `ibs_basic.m` does (line 39).
 - PyIBS: `ibs_basic` (`pyibs/ibs_basic.py`).
 - MATLAB: `ibs_basic.m:28-39`.
 - Settled by: D23 (the NaN response). Kind: deliberate change.
@@ -431,10 +433,13 @@ through the public `IBS`, without figures. `ibslike.m` checks `runtest1`
 and `runtest3` at one random state; a correct sampler fails either by
 chance at about one seed in a thousand, so each port checks three seeds and
 passes at two. `runtest2` keeps `ibslike.m`'s criteria at one seed. The
-ports run with `vectorized=True` and the samples per call growing after
-every call, where the self-tests leave `Vectorized` at `'auto'` and the
-acceleration under its time rule (lines 517-518, 578, 639-641), so that a
-seed alone decides their draws.
+ports run with `vectorized=True`, and those of `runtest1` and `runtest2`
+with the samples per call growing after every call, where these self-tests
+leave `Vectorized` at `'auto'` and the acceleration under its time rule
+(lines 517-518, 578), so that a seed alone decides their draws; `runtest3`
+and its port set the acceleration to 1 (line 641). The ports pass on a
+strict `<` at the tolerances of the RMSE and of the z-scores' mean and SD,
+where `ibslike.m` passes on `<=` (lines 535, 610, 666).
 - PyIBS: `pyibs/testing/test_ibslike_ports.py`.
 - MATLAB: `ibslike.m:110-122`, `503-698`.
 - Kind: removed feature (`ibslike('test')`), substituted by the test

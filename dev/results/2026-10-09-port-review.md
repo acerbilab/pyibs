@@ -32,15 +32,16 @@ Where a conclusion about `ibslike.m` rests on MATLAB semantics, it was
 checked by running `ibslike.m` under GNU Octave 8.4.0 (`octave_checks.m`
 and its output in the evidence directory); each such finding names the
 semantic. Every finding below was checked again apart from the reviewer
-who reported it: by a run where it concerns behaviour, and against the
-source or the argument otherwise.
+who reported it: F-1 by the PyIBS run of the evidence directory, F-2 by the
+test that its fix adds, F-3, F-4, F-6 and F-7 by its Octave runs, and the
+others against the source or the argument.
 
 ## Main results
 
-- No defect in the sampler or the interface relative to `ibslike.m`: every
-  behavioural difference of the options, defaults, schedule, threshold,
-  cap, time limit, outputs, exit flags and errors is catalogued or is
-  among the findings below.
+- Apart from the findings below, every behavioural difference between
+  PyIBS and `ibslike.m` in the options, defaults, schedule, threshold, cap,
+  time limit, outputs, exit flags and errors is catalogued, with its
+  reason.
 - One small statistical defect (F-1): an `IBS` object's first call with
   `vectorized=None` is biased when the simulator's running time depends on
   what it simulates.
@@ -54,16 +55,30 @@ source or the argument otherwise.
   (F-10, F-12).
 - `ibslike.m` runs unmodified under Octave and passes its self-tests there.
 
+## Interpretation
+
+PyIBS departs from `ibslike.m` only on purpose, and the catalogue gives
+each departure with its reason, after the few entries that the review
+added or corrected. The two defects lay outside a comparison of the two
+codes: F-1, a bias that `ibslike.m` and PyIBS 0.1.0 share, appears only
+when one asks whether the use of a sample can depend on its value, and
+F-2 is a trap of comparisons between values of different kinds. Most other
+findings were statements about `ibslike.m` that needed MATLAB's semantics
+to settle, which running it under Octave did.
+
 ## Ledger
 
 The verdicts and outcomes proposed, and the PI's rulings of 2026-10-09.
-Every outcome is carried out: the fixes of F-1 and F-2 in `27e321c` and
-`cf0ed60`, each with a test that fails before it, and the catalogue
-entries and documentation of the others in `16790c6`.
+Every outcome is carried out, each fix with a test that fails before it:
+F-1 in `27e321c`, with its changelog entry in `09bda5a`; F-2 in `cf0ed60`;
+F-4 and F-10 in `27e321c` and `28a0891`; F-12 in `16790c6` and, at the
+PI's request after the phase's review, by a check of object responses in
+`2b2e299`; the others in `16790c6`. The phase's review, which the plan's
+Worklog records, corrected the wording of several.
 
 | ID | Finding | Reported by | Verdict | Outcome | Ruling |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| F-1 | The first call with `vectorized=None` keeps the timing call's samples only when it decides False | B | Defect | Fix: the timing call is always the first round; KD-8, KD-11, D19 | Accepted, outcome 1 |
+| F-1 | The first call with `vectorized=None` uses the timing call's samples only when its first round requests one sample per trial | B | Defect | Fix: the timing call is always the first round; KD-8, KD-11, D19; changelog | Accepted, outcome 1 |
 | F-2 | `ibs_basic` loops forever on responses of a kind that never matches | A, B | Defect | Fix: the kind check of `IBS`; KD-16, KD-18; changelog | Accepted, the fix |
 | F-3 | With one trial, `ibslike.m`'s per-trial arrays have one entry per repeat | A | Deliberate difference, catalogue entry missing | KD-3; a test of the shapes | Accepted |
 | F-4 | `MaxIter = Inf` disables `ibslike.m`'s cap; PyIBS refuses `max_iter=np.inf` | A | Deliberate difference, catalogue entry missing | KD-6, KD-11 | Accepted, the refusal kept |
@@ -74,7 +89,7 @@ entries and documentation of the others in `16790c6`.
 | F-9 | Zero-weight trials are sampled; the chance-level threshold is written unweighted | B | Documentation error | Docstrings of `IBS` | Accepted |
 | F-10 | A simulator that is slow only at its first call fixes `vectorized=None` at False | B | No issue in the code (D19) | A sentence in the `vectorized` docstring | Accepted |
 | F-11 | KD-19 does not state the settings of the ported self-tests | A | Deliberate difference, catalogue entry incomplete | KD-19 | Accepted |
-| F-12 | Responses mixing numbers and text become text in a NumPy array | B | Documentation gap | `response_matrix` docstring | Accepted |
+| F-12 | Responses mixing numbers and text become text in a NumPy array | B | Documentation gap | `response_matrix` docstring; then a check of object responses | Accepted; the check at the PI's request |
 | N-1 | `IBS` checks settings before `_Settings` checks them again | A | No issue | None | Accepted |
 | N-2 | `max_samples` (per trial and call) beside `max_samples_per_trial` | A | No issue | None | Accepted |
 | N-3 | `ibs_basic` compares a scalar output with every column of a response | A, B | No issue | None | Accepted |
@@ -82,17 +97,17 @@ entries and documentation of the others in `16790c6`.
 
 ## Findings
 
-### F-1. The first call with `vectorized=None` keeps the timing call's samples only when it decides False
+### F-1. The first call with `vectorized=None` uses the timing call's samples only when its first round requests one sample per trial
 
 At an `IBS` object's first call with `num_reps > 1`, `vectorized=None`
 times one simulation of every trial (`IBS.__call__`, `pyibs/ibs.py`; D19,
-KD-8). When the simulation lasts `vectorized_threshold` or more, the
-decision is False, the schedule's first round requests one sample per
-trial, and `sample` (`pyibs/_sampler.py`) takes the timing call as that
-round. Otherwise the decision is True, the first round requests
-`num_reps` samples per trial (`max_mem` permitting), and the timing call's
-samples are discarded. `ibslike.m` does the same at every call
-(lines 176-190, 287-289, 433-434).
+KD-8). At `40e7d77`, `sample` (`pyibs/_sampler.py`) took that call as its
+first round when the round requested one sample per trial, and discarded
+its samples otherwise. With the default `num_samples_per_call=0`, the
+first round requests one sample per trial when the simulation lasts
+`vectorized_threshold` or more and the decision is False, and `num_reps`
+samples per trial (`max_mem` permitting) when it is True. `ibslike.m` does
+the same at every call (lines 176-190, 287-289, 433-434).
 
 Every other choice of the sampler is made before the samples it governs
 are drawn, which keeps the repeats independent ([1], Eqs 14 and 17 assume
@@ -117,15 +132,17 @@ outcomes are dependent, and the call is biased.
   and 0 s otherwise, `num_reps=2`, 3,000 new objects: the mean estimate is
   0.5076 ± 0.0090, against the exact log 2 = 0.6931 (z = -20.5) and the
   0.75 log 2 = 0.5199 that keeping the timing call exactly when it matched
-  predicts. No test could see it: the fake clocks of the tests advance
-  independently of the outcomes. After the fix,
+  predicts. No test at `40e7d77` could see it, since the fake clocks of
+  the tests advance independently of the outcomes;
+  `test_first_call_is_unbiased_when_the_timing_tracks_the_outcomes`
+  repeats the case. After the fix,
   `first_call_bias_after_fix.txt` gives 0.6794 ± 0.0098 (z = -1.4).
 
 Verdict: defect. The outcomes considered, of which the PI chose the first:
 
 1. Recommended: the timing call is always the draw's first round. When the
    schedule's first round requests one sample per trial, it is that round,
-   as now and as in `ibslike.m`; otherwise it is an extra round of one
+   as at `40e7d77` and as in `ibslike.m`; otherwise it is an extra round of one
    sample per trial before the schedule's first, and the level does not
    grow after it, so that the rounds after it are those of `ibslike.m`'s
    schedule. The use of the samples no longer depends on their outcomes,
@@ -152,7 +169,9 @@ returns `"1"` for numeric responses never matches, and
 raises `TypeError` after the first such simulator call (KD-16), and
 `ibs_basic` raises on a NaN response (D23, KD-18) for the same reason, a
 response that cannot match. `ibs_basic.m` compares characters with numbers
-by their codes (line 33), so this endless loop belongs to Python alone.
+by their codes (line 33): it loops forever on this example too, since
+`'1'` has the code 49, but it matches a character whose code equals the
+response, where NumPy never finds text equal to a number.
 
 Verdict: defect. Outcome: `ibs_basic` checks every simulated
 response with the check of `IBS` (`_sampler._check_kinds`), at the cost of
@@ -189,14 +208,16 @@ the shape of `neg_logl_var_trials`.
 
 `ibslike.m` does not check `MaxIter`. With `Inf`, its loops `for iter =
 1:MaxIter` (lines 260, 269, 427) run until the sampling ends, and
-`ibslike:ConvergenceFail` cannot occur. `NsamplesPerCall = Inf` likewise
+`ibslike:ConvergenceFail` does not occur. `NsamplesPerCall = Inf` likewise
 starts the samples per call at their bounds (lines 264-266, 281-283).
-Semantics: a `for` over a colon range iterates without building it.
-Evidence: `octave_checks.txt`, the lines "MaxIter", where `MaxIter = 2` is
-the control. `IBS` raises `ValueError` for `max_iter=np.inf` and
+Semantics: a `for` over a colon range iterates without building it; Octave
+bounds an infinite one at 2^63 - 1 iterations, with a warning, which no run
+reaches, and MATLAB, not run here, is taken to do likewise. Evidence:
+`octave_checks.txt`, the lines "MaxIter", where `MaxIter = 2` is the
+control. `IBS` raises `ValueError` for `max_iter=np.inf` and
 `num_samples_per_call=np.inf` (`_check_count`), deliberately
-(`test_invalid_settings_raise`), although the sampler can run without a
-cap (`max_samples_per_trial=None`).
+(`test_settings_out_of_range_raise`, `test_ibs.py`), although the sampler
+can run without a cap (`max_samples_per_trial=None`).
 
 Verdict: deliberate difference, catalogue entry missing; D3 keeps
 the cap as the guard against an observed response that the simulator
@@ -217,8 +238,9 @@ in time decrease as the counts grow, and the counts are independent, so
 the two are positively correlated (Harris's inequality): the estimates of
 the calls with exit flag 0 are biased upward when the limit can bind. The
 documents call a flag-0 estimate unbiased: `EstimateResult.exit_flag` and
-the message of exit flag 0 (`pyibs/ibs.py`), which is `ibslike.m`'s (header
-lines 40-44), and the `max_time` docstring by omission. With
+the message of exit flag 0 (`pyibs/ibs.py`), 0.1.0's, which restates the
+header of `ibslike.m` (lines 40-44), and the `max_time` docstring by
+omission. With
 `max_time=np.inf`, the default, nothing changes.
 
 Wall-clock time reaches an estimate's value only here and in F-1. The
@@ -232,8 +254,8 @@ first two effects of the schedule and not the third.
 Verdict: documentation error. Outcome: the `max_time` docstring
 of `IBS`, `EstimateResult.exit_flag` and KD-14 say that only an infinite
 `max_time` gives unbiased estimates, since completing in time favours small
-counts; the message of exit flag 0 stays `ibslike.m`'s. KD-9 and D4 add the
-cap to the effects of the schedule.
+counts; the message of exit flag 0 stays as it is. KD-9 and D4 add the cap
+to the effects of the schedule.
 
 ### F-6. `ibslike.m`'s vectorized path returns NaN when the time limit passed before its first round
 
@@ -253,27 +275,36 @@ vectorized path's NaN, with lines 210-213 and 396-398.
 
 ### F-7. A per-trial `Nreps` vector runs on `ibslike.m`'s vectorized path in some cases
 
-KD-6 says that `ibslike.m` reads `Nreps` as a vector of per-trial repeats
+KD-6 said that `ibslike.m` reads `Nreps` as a vector of per-trial repeats
 in places, "which no documentation offers and neither of its paths can
-run". The loop path fails at line 413, and the vectorized path at line 284
-when `NsamplesPerCall` is 0, since its level is then `Nreps` (line 264).
-With `NsamplesPerCall` set, it reaches line 361, where implicit expansion
-accepts the vector when a round's open trials are all N or one, and fails
-otherwise; with `Nreps = [2; 3]` and two trials it returns per-trial
-results for 2 and 3 repeats. Evidence: `octave_checks.txt`, the lines
-"Nreps = [2; 3]". Semantics: implicit expansion, shared by MATLAB since
-R2016b and Octave.
+run". With `Vectorized` given, MATLAB stops a vector at line 193, whose
+`&&` takes scalars; Octave reduces a vector there with `all` and goes on.
+With `'auto'`, the `if` of line 177 takes the vector in both. The loop path
+then fails at line 413, and the vectorized path at line 284 when
+`NsamplesPerCall` is 0, since its level is then `Nreps` (line 264). With
+`NsamplesPerCall` set, it reaches line 361, where implicit expansion
+accepts the vector while every trial is open: with `Nreps = [2; 3]` and
+two trials that complete together, it returns per-trial results for 2 and
+3 repeats. Once some trials are done, line 361 fails, or, with one trial
+open, applies another trial's limits and fails at line 372 or misplaces
+the counts. Evidence: `octave_checks.txt`, the lines "Nreps = [2; 3]", run
+with `Vectorized` given, which Octave lets through line 193; the last of
+them fails at line 372, for a stream in which trial 1 completes first.
+Semantics: `&&` on scalars only in
+MATLAB, and implicit expansion, shared by MATLAB since R2016b and Octave.
 
-Verdict: documentation error. Outcome: KD-6 says that its code
-runs a vector only in special cases: the loop path fails at line 413; the
-vectorized path at line 284 unless `NsamplesPerCall` is set, and otherwise
-at line 361 once a round's open trials are neither all of them nor one.
+Verdict: documentation error. Outcome: KD-6 says that its code does not
+support a vector: line 193 stops it in MATLAB when `Vectorized` is given;
+the loop path fails at line 413; and the vectorized path fails at line 284
+unless `NsamplesPerCall` is set, and otherwise, once fewer than all trials
+are open, at line 361 or 372, or misplaces the counts.
 
 ### F-8. `ibslike.m`'s examples call their simulator, not `ibslike`, with a NaN design
 
 D23 says that `ibslike.m`'s own examples pass a NaN design (lines 57,
 511). They call their simulator with a NaN array to generate the responses
-(lines 57, 511, 587), and call `ibslike` without a design or with `[]`
+(lines 57, 511, 587, 630), and call `ibslike` without a design or with
+`[]`
 (lines 58, 523, 588, 646). KD-17 states it correctly. Verdict:
 documentation error in the plan. Outcome: D23 says that the examples call
 their simulator with a design of NaN, so that a port passing such a design
@@ -309,22 +340,31 @@ such a simulator is given `vectorized=True` or called once before.
 
 ### F-11. KD-19 does not state the settings of the ported self-tests
 
-`runtest1` to `runtest3` leave `Vectorized` at `'auto'` and the
-acceleration under its time rule (lines 517-518, 578, 639-641); the ports
-(`test_ibslike_ports.py`) run with `vectorized=True` and growth after
-every call, so that a seed alone decides their draws. Their criteria are
-`ibslike.m`'s, but for `<` against `<=` at the tolerances. Verdict:
-deliberate difference, catalogue entry incomplete. Outcome: KD-19 states
-the settings and their reason.
+`runtest1` to `runtest3` leave `Vectorized` at `'auto'` (lines 517-518,
+578, 639-641), and `runtest1` and `runtest2` the acceleration under its
+time rule; `runtest3` sets it to 1 (line 641), as its port does. The ports
+(`test_ibslike_ports.py`) run with `vectorized=True`, and those of
+`runtest1` and `runtest2` with the samples per call growing after every
+call, so that a seed alone decides their draws. Their criteria are
+`ibslike.m`'s, except that the ports pass on a strict `<` at the
+tolerances of the RMSE and of the z-scores' mean and SD, where `ibslike.m`
+passes on `<=` (lines 535, 610, 666). Verdict: deliberate difference,
+catalogue entry incomplete. Outcome: KD-19 states the settings and their
+reason.
 
 ### F-12. Responses mixing numbers and text become text in a NumPy array
 
-`np.array([[1, "a"], [2, "b"]])` is an array of text. A simulator that
-returns such rows as an object array compares `1 == "1"`, never matches,
-and samples until the cap; `_check_kinds` leaves object arrays unchecked,
-as KD-16 says. Verdict: documentation gap. Outcome: the
+Responses that mix numbers and text in a row keep their numbers in an
+object array, but a simulator that builds its output with `np.array` turns
+them into text: `np.array([[1, "a"], [2, "b"]])` is an array of text,
+whose `"1"` never equals the response 1. At `40e7d77`, `_check_kinds` left
+object responses unchecked, so such a call sampled until the cap, and
+`ibs_basic` forever. Verdict: documentation gap. Outcome: the
 `response_matrix` docstring says that responses mixing numbers and text
-are given as an object array, and returned by the simulator as one.
+are given as an object array, and returned by the simulator as one. After
+the phase's review, at the PI's request, `2b2e299` also checks the kinds of
+the elements of object responses, so that such an output raises
+`TypeError` at the first simulator call (KD-16).
 
 ### N-1 to N-4. No issue
 
@@ -368,9 +408,9 @@ are given as an object array, and returned by the simulator as one.
   paper's counts c), is a lower bound on -Y_r, never decreases, and equals
   -Y_r at completion; every incomplete repeat is checked after every round,
   complete repeats on their exact values, so a repeat ends exactly when
-  -Y_r > T and is worth exactly -T. Under Octave, `ibslike.m`'s bounds are
-  c on its vectorized path and c + 1 on its loop path, with the partial
-  counts kept, as KD-13 says.
+  -Y_r > T and is worth exactly -T. `ibslike.m`'s bounds are c on its
+  vectorized path and c + 1 on its loop path, with the partial counts kept
+  (lines 347-387, 456-466), as KD-13 says.
 - The time limit: D24's estimate and variance, D3's error, no check before
   the first call, and no flag for a sampling that completes.
 - The cap, the cost counts, the samples-per-call formula with MATLAB's

@@ -39,21 +39,29 @@ for vec = [true, false]
   end
 end
 
-% A per-trial Nreps vector (F-7), with a stream of alternating misses and hits.
+% A per-trial Nreps vector (F-7). The first three cases draw from a stream of
+% alternating misses and hits, in which both trials complete together; in
+% the fourth, trial 1 completes in the first round and trial 2 is then
+% sampled alone.
 global STREAM POS
-STREAM = repmat([0 1], 1, 1000);
+streams = {repmat([0 1], 1, 1000), repmat([0 1], 1, 1000), ...
+           repmat([0 1], 1, 1000), [1 0 1 0 0 0 0 0, ones(1, 100)]};
 cases = {struct('Vectorized', true, 'Nreps', [2; 3], 'NsamplesPerCall', 4, 'Acceleration', 1), ...
          struct('Vectorized', true, 'Nreps', [2; 3]), ...
-         struct('Vectorized', false, 'Nreps', [2; 3])};
-names = {'vectorized, NsamplesPerCall = 4', 'vectorized, NsamplesPerCall = 0', 'loop'};
+         struct('Vectorized', false, 'Nreps', [2; 3]), ...
+         struct('Vectorized', true, 'Nreps', [2; 3], 'NsamplesPerCall', 4, 'Acceleration', 1)};
+names = {'vectorized, NsamplesPerCall = 4', 'vectorized, NsamplesPerCall = 0', 'loop', ...
+         'vectorized, NsamplesPerCall = 4, trial 1 done first'};
 for k = 1:numel(cases)
+  STREAM = streams{k};
   POS = 0;
   try
     [nl, v, ef, out] = ibslike(@scripted_fun, 0, true(2, 1), [], cases{k});
     fprintf('Nreps = [2; 3], %s: nlogL_trials %s, nlogLvar_trials %s, exit flag %d\n', ...
             names{k}, mat2str(out.nlogL_trials', 5), mat2str(out.nlogLvar_trials', 4), ef);
   catch err
-    fprintf('Nreps = [2; 3], %s: error "%s"\n', names{k}, err.message);
+    fprintf('Nreps = [2; 3], %s: error at line %d, "%s"\n', names{k}, ...
+            err.stack(1).line, err.message);
   end
 end
 
