@@ -90,9 +90,9 @@ PyIBS suits a model that you can simulate but whose likelihood you cannot comput
 - **IBS remains the method of choice where amortization is hard, because the
   trials' contexts are many and richly structured.** An amortized estimator
   has to learn the model's behaviour across every context it may meet, while
-  IBS only simulates the model in the contexts of the data. A model of game
-  play is a case in point: each move is conditioned on its board position,
-  and a position may occur only once in the data [`1 <#references>`__,
+  IBS only simulates the model in the contexts of the data. For example, a
+  model of how people play a board game chooses each move from the current
+  position on the board, and a position may occur only once in the data [`1 <#references>`__,
   Section 5.4; `2 <#references>`__].
 - **IBS also serves where guarantees on each dataset matter.** An amortized
   estimator can be accurate on some datasets and untrustworthy on others, so

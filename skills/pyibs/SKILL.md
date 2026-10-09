@@ -40,7 +40,8 @@ the alternatives with the user, citing the README's and the FAQ's reasons:
   estimation, is often the better choice when one model is fitted to many
   datasets and its simulations are cheap.
 - IBS remains the choice when the trials' contexts are many and richly
-  structured, as the board positions of a model of game play are, and when
+  structured (for example, the positions on the board in a model of how
+  people play a board game), and when
   guarantees on each dataset matter: an amortized estimator can fail on a
   given dataset, while IBS's estimates are unbiased on every dataset,
   without training (the fit that uses them still has errors of its own).

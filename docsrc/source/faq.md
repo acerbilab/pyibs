@@ -158,9 +158,10 @@ inference (Li et al., 2026, Section 2.3).
 
 - *The trials' contexts are many and richly structured.* An amortized
   estimator has to learn the model's behaviour across every context it may
-  meet, while IBS only simulates the model in the contexts of the data. A
-  model of game play is a case in point: each move is conditioned on its
-  board position, and a position may occur only once in the data ([1],
+  meet, while IBS only simulates the model in the contexts of the data. For
+  example, a model of how people play a board game chooses each move from
+  the current position on the board, and a position may occur only once in
+  the data ([1],
   Section 5.4; B. van Opheusden et al., 2023, "Expertise increases planning
   depth in human gameplay", *Nature* 618: 1000–1005,
   <https://doi.org/10.1038/s41586-023-06124-2>). In the four-in-a-row
