@@ -101,9 +101,12 @@ From the repository root, at the commit of each output:
 
 `<t>` is `$(date +%s)` of the run; `--restat` reads the run's JSON and the
 per-estimate arrays that `validate.py` saved beside it, in
-`validate_full_<t>_raw/`, which stayed under `dev/scripts/runs/`. The
-outputs were copied here from there: `validation.json` and
-`validation.txt` from the recomputation's JSON and log.
+`validate_full_<t>_raw/` under `dev/scripts/runs/`, which git ignores,
+so that they are not kept: a new `--restat` first draws them again with
+the command at `c76b5ac` (1.4 h on 3 workers), whose estimates its seeds
+fix. The outputs were copied here from `dev/scripts/runs/`:
+`validation.json` and `validation.txt` from the recomputation's JSON and
+log.
 
 The validation and the timing ran together, as the PI approved on
 2026-10-09: the timing's fast cells ran alone, one version after the
