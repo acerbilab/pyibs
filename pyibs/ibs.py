@@ -68,7 +68,8 @@ class EstimateResult(dict):
     exit_flag : int
         0 when every repeat was sampled to completion (the estimate is
         unbiased), 1 when the likelihood threshold ended a repeat (the
-        estimate is biased upwards), 2 when ``max_time`` stopped the
+        log-likelihood estimate is biased upwards, and the negative
+        log-likelihood estimate downwards), 2 when ``max_time`` stopped the
         sampling (the estimate can be arbitrarily biased).
     message : str
         The exit flag's meaning.
@@ -238,8 +239,10 @@ class IBS:
         The factor, finite and >= 1, by which the samples requested per
         trial grow from one call to the next. Default 1.5.
     num_samples_per_call : int, optional
-        The samples per trial requested in the first simulator call; 0, the
-        default, requests ``num_reps``.
+        The level at which the samples per trial and simulator call start,
+        bounded by ``max_samples`` and ``max_mem``, which ``acceleration``
+        then grows; 0, the default, starts at ``num_reps``. It is unused
+        with ``vectorized=False``.
     max_iter : int, optional
         The cap on the samples of one trial, per repeat: a call of
         ``num_reps`` repeats raises :class:`IBSSamplingError` once a trial
@@ -355,6 +358,8 @@ numpy.random.Generator, optional
         responses = _sampler._check_responses(
             np.atleast_1d(response_matrix), "response_matrix"
         )
+        if design_matrix is not None:
+            design_matrix = np.atleast_1d(design_matrix)
         design = _sampler._check_design(
             design_matrix, responses.shape[0], "design_matrix"
         )

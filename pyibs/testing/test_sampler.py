@@ -865,6 +865,24 @@ def test_max_samples_per_trial_names_the_trials_over_it(responses, expected):
         assert text in str(e.value)
 
 
+def test_max_samples_per_trial_names_five_trials_and_counts_the_rest():
+    settings = _Settings(
+        never_matches,
+        np.ones(8),
+        initial_samples=1,
+        acceleration=1,
+        max_samples_per_trial=2,
+    )
+    with pytest.raises(IBSSamplingError) as e:
+        draw(settings, 1, SEED)
+    assert (
+        "8 trials drew more than max_samples_per_trial * n = 2 samples: "
+        "trial 0 drew 3, trial 1 drew 3, trial 2 drew 3, trial 3 drew 3, "
+        "trial 4 drew 3, and 3 more." in str(e.value)
+    )
+    assert type(e.value).__module__ == "pyibs"
+
+
 def test_max_samples_per_trial_counts_the_surplus():
     # One call of 5 samples completes a draw of one repeat with 4 surplus
     # samples, more than the cap of 4: the draw raises, and the message

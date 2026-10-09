@@ -66,8 +66,9 @@ def psycho_neg_logl(theta, S, R):
         ``(log(sigma), bias, lapse)``, as for :func:`psycho_generator`.
     S : array_like
         The stimulus orientation of each trial, in degrees.
-    R : array_like of the shape of ``S``
-        The responses, 1 for rightwards and -1 for leftwards.
+    R : array_like of the size of ``S``
+        The responses, 1 for rightwards and -1 for leftwards, one per
+        stimulus, in the order of ``S``.
 
     Returns
     -------
@@ -76,7 +77,9 @@ def psycho_neg_logl(theta, S, R):
     """
     sigma, bias, lapse = np.exp(theta[0]), theta[1], theta[2]
     S = np.asarray(S, dtype=float)
-    R = np.asarray(R)
+    # Responses of the shape of S, so that a column and a vector of the
+    # same trials do not broadcast against each other.
+    R = np.asarray(R).reshape(S.shape)
     # Probability of each observed response (closed form).
     z = (S - bias) / sigma
     p = lapse / 2 + (1 - lapse) * ((R == -1) * ndtr(-z) + (R == 1) * ndtr(z))

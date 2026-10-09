@@ -1,5 +1,6 @@
 """Tests of the interface: :class:`pyibs.IBS` and its outputs."""
 
+import copy
 import inspect
 import math
 import pickle
@@ -175,6 +176,13 @@ def test_full_result_repr_shows_every_field_in_order():
     assert repr(full.neg_logl) in text
     assert full.message in text
     assert repr(EstimateResult()) == "EstimateResult()"
+
+
+def test_full_result_reads_its_keys_as_attributes():
+    full = bernoulli_ibs()(THETA, num_reps=5, additional_output="full")
+    assert full.fun_count is full["fun_count"]
+    with pytest.raises(AttributeError, match="no_such_field"):
+        full.no_such_field
 
 
 @pytest.mark.parametrize(
@@ -409,7 +417,9 @@ def test_nan_responses_raise(responses, trials):
     with pytest.raises(ValueError, match="response_matrix holds a NaN") as e:
         IBS(never_called, responses)
     message = str(e.value)
-    assert f"in {trials}" in message
+    assert f"in {trials[:-1]}: no sample of such a trial can match." in (
+        message
+    )
     assert "Recode the response" in message
     assert "or remove the trial." in message
 
@@ -445,6 +455,15 @@ def test_scalar_responses_are_one_trial():
     res = ibs(THETA, num_reps=2, additional_output="full")
     assert res.neg_logl_trials.shape == (1,)
     assert_allclose(res.neg_logl, 0.5, **EXACT)
+    # A scalar design is the design of that one trial.
+    seen = []
+
+    def simulator(params, design_rows):
+        seen.append(np.array(design_rows))
+        return np.ones(len(design_rows))
+
+    IBS(simulator, 1.0, 5.0, vectorized=False)(THETA, num_reps=2)
+    assert all(np.array_equal(rows, [5.0]) for rows in seen)
 
 
 # ---------------------------------------------------------------------------
@@ -475,10 +494,11 @@ def test_threshold_ending_every_repeat_gives_exit_flag_1():
 def test_threshold_ending_some_repeats():
     # At T = -log L, about half of the repeats fall below -T. Each repeat
     # is worth at least -T, so the estimate is below T unless every repeat
-    # ended.
+    # ended; with 40 repeats, none or all of them end with a probability of
+    # about 1e-12.
     T = -exact_loglik(P)
     res = bernoulli_ibs(neg_logl_threshold=T)(
-        THETA, num_reps=10, additional_output="full"
+        THETA, num_reps=40, additional_output="full"
     )
     assert res.exit_flag == 1
     assert res.message == EXIT_MESSAGES[1]
@@ -1110,6 +1130,17 @@ def test_ibs_pickles_with_its_generator():
     assert clone.vectorized is True
 
 
+@pytest.mark.parametrize(
+    "duplicate", [lambda x: pickle.loads(pickle.dumps(x)), copy.deepcopy]
+)
+def test_copies_keep_the_arrays_read_only(duplicate):
+    ibs = IBS(bernoulli, np.ones(P.size), np.arange(P.size), random_seed=SEED)
+    clone = duplicate(ibs)
+    assert not clone.response_matrix.flags.writeable
+    assert not clone.design_matrix.flags.writeable
+    assert not clone._settings.trial_weights.flags.writeable
+
+
 def test_simulator_without_rng_is_called_with_two_arguments():
     seen = []
 
@@ -1234,6 +1265,33 @@ def test_one_repeat_does_not_warn_unless_vectorized_was_given(vectorized):
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         ibs(THETA, num_reps=1)
+
+
+def test_one_repeat_after_a_decision_of_true_does_not_warn(clock):
+    # vectorized=None decided True: a call with num_reps=1 samples one at a
+    # time, as the warning of vectorized=True says, but does not warn.
+    ibs = IBS(Timed(bernoulli, clock, 0.0), np.ones(P.size), random_seed=SEED)
+    ibs(THETA, num_reps=2)
+    assert ibs.vectorized is True
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        ibs(THETA, num_reps=1)
+
+
+def test_max_time_counts_the_timing_call(clock):
+    # The timing call (0.04 s, fast: True) counts toward max_time = 0.07 s,
+    # from the start of the call: after the first round of the draw, 0.08 s
+    # have passed, and the sampling stops. The timing call's sample is
+    # discarded, as the first round requests two samples; the round
+    # completes a count of 2 and leaves the second repeat open.
+    sim = Timed(ScriptedSimulator([[0, 0, 1] + [0] * 50]), clock, 0.04)
+    ibs = IBS(sim, np.ones(1), max_time=0.07)
+    with pytest.warns(UserWarning, match="max_time = 0.07 s"):
+        res = ibs(THETA, num_reps=2, additional_output="full")
+    assert ibs.vectorized is True
+    assert sim.calls == res.fun_count == 2
+    assert res.exit_flag == 2
+    assert_allclose([res.neg_logl, res.neg_logl_var], [1.0, 1.0], **EXACT)
 
 
 def test_vectorized_true_with_one_repeat_warns_and_samples_one_at_a_time():

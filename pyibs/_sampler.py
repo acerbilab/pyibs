@@ -58,6 +58,9 @@ class IBSSamplingError(RuntimeError):
     """
 
 
+IBSSamplingError.__module__ = "pyibs"
+
+
 def _check_count(n, name, minimum=1):
     """Return ``n`` as an int, which must be an integer >= ``minimum``.
 
@@ -127,9 +130,8 @@ def _check_responses(responses, name):
     if nan.any():
         raise ValueError(
             f"{name} holds a NaN, which no simulated response equals, in "
-            f"{_name_trials(np.flatnonzero(nan))}. IBS would sample such a "
-            "trial until its cap, or end every repeat at the likelihood "
-            "threshold. Recode the response as a value that the simulator "
+            f"{_name_trials(np.flatnonzero(nan))}: no sample of such a trial "
+            "can match. Recode the response as a value that the simulator "
             "returns, or remove the trial."
         )
     responses.setflags(write=False)
@@ -372,6 +374,13 @@ class _Settings:
             ("names", tuple(self.names)),
         ]:
             object.__setattr__(self, name, value)
+
+    def __setstate__(self, state):
+        # Pickling and deep copies give writable arrays.
+        self.__dict__.update(state)
+        for array in (self.responses, self.design, self.trial_weights):
+            if array is not None:
+                array.setflags(write=False)
 
     @property
     def n_trials(self):
@@ -711,15 +720,20 @@ class _MatchCounts:
             The complete repeats that are not ended, in order.
         values, var_estimates : ndarray
             Their values and variance estimates.
+        trial_value_sums, trial_var_sums : ndarray of shape (N,)
+            The per-trial sums over them.
         """
         kept = self.complete_repeats()
-        v, s, _, _ = _estimates.repeat_estimates(self.K[kept], self.weights)
+        v, s, tv, ts = _estimates.repeat_estimates(self.K[kept], self.weights)
         below = -v > threshold
         if np.any(below):
             self.ended_var[kept[below]] = s[below]
             self.ended[kept[below]] = True
             kept, v, s = kept[~below], v[~below], s[~below]
-        return kept, v, s
+            _, _, tv, ts = _estimates.repeat_estimates(
+                self.K[kept], self.weights
+            )
+        return kept, v, s, tv, ts
 
     def clipped_estimates(self, threshold):
         """Estimates of a finished draw under a likelihood threshold.
@@ -740,8 +754,7 @@ class _MatchCounts:
         trial_value_sums, trial_var_sums : ndarray of shape (N,)
             The per-trial sums over the repeats that are not ended.
         """
-        kept, v, s = self.end_complete_below(threshold)
-        _, _, tv, ts = _estimates.repeat_estimates(self.K[kept], self.weights)
+        kept, v, s, tv, ts = self.end_complete_below(threshold)
         values = np.full(self.n, -threshold)
         values[kept] = v
         var_estimates = self.ended_var.copy()
@@ -1075,7 +1088,7 @@ def sample(
                 counts.K[kept], weights
             )
         else:
-            kept, kept_v, kept_s = counts.end_complete_below(threshold)
+            kept, kept_v, kept_s, _, _ = counts.end_complete_below(threshold)
         v = np.full(n, np.nan)
         s = np.full(n, np.nan)
         v[kept], s[kept] = kept_v, kept_s
@@ -1202,7 +1215,8 @@ def _simulate(settings, theta, rng, trials, m):
     if responses.ndim == 1 or responses.shape[1] == 1:
         if simulated.shape not in ((r,), (r, 1)):
             raise ValueError(
-                f"The simulator was asked for {r} responses of one column "
+                f"The simulator was asked for {r} response"
+                f"{'' if r == 1 else 's'} of one column "
                 f"and returned an array of shape {simulated.shape}, where "
                 f"it must return shape ({r},) or ({r}, 1)."
             )

@@ -5,8 +5,10 @@ draws up to and including the first match of one trial) into that trial's
 contribution to one repeat's log-likelihood estimate and variance estimate
 ([1], Eqs 14 and 16). With trial weights ``w``, one repeat's value is
 ``sum_i w_i ibs_loglik(K_i)`` and its variance estimate
-``sum_i w_i**2 ibs_var(K_i)``, as in MATLAB ``ibslike.m``;
-:func:`repeat_estimates` computes both for a matrix of counts. The sampler
+``sum_i w_i**2 ibs_var(K_i)``; MATLAB ``ibslike.m`` weights each trial's
+average over the repeats instead, which gives the same mean when every
+trial has a count in every repeat. :func:`repeat_estimates` computes both
+for a matrix of counts. The sampler
 reduces its counts through it, and so do the exact draws of the tests.
 
 References
@@ -77,7 +79,8 @@ def trial_weights(weights, n_trials):
     ------
     TypeError
         If the weights are not real numbers: booleans and strings,
-        numeric or not, are refused.
+        numeric or not, are refused; an object array is taken when its
+        elements are real numbers.
     ValueError
         If the shape is wrong, or a weight is not finite or is negative.
     """
@@ -93,10 +96,16 @@ def trial_weights(weights, n_trials):
     if weights is None:
         return np.ones(n_trials)
     w = np.asarray(weights)
+    if w.dtype.kind == "O" and all(
+        isinstance(x, numbers.Real) and not isinstance(x, (bool, np.bool_))
+        for x in w.flat
+    ):
+        w = w.astype(float)
     if w.dtype.kind not in "iuf":
+        got = repr(weights) if w.ndim == 0 else f"an array of dtype {w.dtype}"
         raise TypeError(
             "Trial weights must be real numbers, not booleans or strings, "
-            f"got an array of dtype {w.dtype}."
+            f"got {got}."
         )
     w = np.array(w, dtype=float)
     if w.ndim == 0:

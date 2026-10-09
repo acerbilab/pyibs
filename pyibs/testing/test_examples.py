@@ -51,6 +51,15 @@ def test_one_dimensional_design_gives_the_same_estimate(data):
     )
 
 
+def test_closed_form_takes_responses_of_another_shape(data):
+    # A column of responses with a vector of orientations, or the reverse,
+    # gives the value of matching shapes.
+    S, R = data
+    expected = psycho_neg_logl(THETA_TRUE, S, R)
+    assert psycho_neg_logl(THETA_TRUE, S[:, 0], R) == expected
+    assert psycho_neg_logl(THETA_TRUE, S, R[:, 0]) == expected
+
+
 def test_closed_form_at_chance():
     # With a lapse rate of 1, every response has probability 1/2.
     S = 3 * np.random.default_rng(SEED).standard_normal(N_TRIALS)

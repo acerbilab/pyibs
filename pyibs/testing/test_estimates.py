@@ -1,3 +1,6 @@
+from decimal import Decimal
+from fractions import Fraction
+
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -161,3 +164,15 @@ def test_repeat_estimates_rows_do_not_depend_on_blocks():
 def test_repeat_estimates_rejects_shapes(shape, weights):
     with pytest.raises(ValueError):
         repeat_estimates(np.ones(shape, dtype=np.int64), weights)
+
+
+def test_trial_weights_take_objects_that_are_real_numbers():
+    weights = np.array([Fraction(1, 2), 1.5, 2], dtype=object)
+    assert_allclose(trial_weights(weights, 3), [0.5, 1.5, 2.0], **EXACT)
+    # A Decimal is not a numbers.Real, as for the settings.
+    with pytest.raises(TypeError, match="booleans or strings"):
+        trial_weights(np.array([Decimal("1.5")] * 3, dtype=object), 3)
+    with pytest.raises(TypeError, match="booleans or strings"):
+        trial_weights(np.array([1.0, True, 2.0], dtype=object), 3)
+    with pytest.raises(TypeError, match="booleans or strings"):
+        trial_weights(np.array([1.0, None, 2.0], dtype=object), 3)

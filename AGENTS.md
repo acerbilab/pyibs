@@ -136,11 +136,11 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
 
 ## Architecture
 
-`IBS` (`pyibs/ibs.py`) is the interface. It checks its settings and holds
-them in a `_Settings` of the sampler, with the generator `rng` and the
-decision of `vectorized=None`; each call checks its arguments, runs one
-draw of `num_reps` repeats, and turns it into the outputs (a float, a tuple
-or an `EstimateResult`), the exit flag and the warnings.
+`IBS` (`pyibs/ibs.py`) is the interface. It holds its settings in a
+`_Settings` of the sampler, which checks them, with the generator `rng`
+and the decision of `vectorized=None`; each call checks its arguments,
+runs one draw of `num_reps` repeats, and turns it into the outputs (a
+float, a tuple or an `EstimateResult`), the exit flag and the warnings.
 `pyibs/_sampler.py` owns the sampling: `_Settings` and its checks; `sample`,
 one draw, with the schedule, the cap, the likelihood threshold
 (`_MatchCounts`) and the time limit (`_limited_estimates`); `first_round`,
@@ -161,8 +161,11 @@ The interface and the sampler name some settings differently:
 `max_iter` is `max_samples_per_trial`, `neg_logl_threshold` (`np.inf` for
 none) is `neg_loglik_threshold` (None), and `response_matrix` and
 `design_matrix` are `responses` and `design`. `IBS` checks those settings
-itself and passes its names to `_Settings.names` for the messages of
-`IBSSamplingError`, so that an error names the argument the user gave.
+itself, and those that only it has (`vectorized`,
+`vectorized_threshold`), before `_Settings` checks them again under its
+names; it passes `("max_iter", "num_reps")` to `_Settings.names` for the
+messages of `IBSSamplingError`. An error thus names the argument the user
+gave.
 
 ## What spans files
 
@@ -176,10 +179,10 @@ itself and passes its names to `_Settings.names` for the messages of
 - **The FAQ label of the zero-variance warning.** The warning that a call
   issues on a variance estimate of 0 links the label
   `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`
-  of the published FAQ (`_FAQ_ZERO_SD` in `pyibs/ibs.py`). The FAQ's
-  answer on a zero SD carries that label, and a change of either changes
-  both; an installed release keeps its link.
-
+  of the published FAQ (`_FAQ_ZERO_SD` in `pyibs/ibs.py`), which the FAQ's
+  answer on a zero SD must carry (`docsrc/source/faq.md`, written in Phase
+  4 of the plan). An installed release keeps its link, so the label does
+  not change once a release has shipped it.
 - **The shared IBS reduction.** `repeat_estimates` in
   `pyibs/_estimates.py` turns matching counts into per-repeat values,
   variance estimates and per-trial sums, for the sampler and for the exact
@@ -222,8 +225,9 @@ itself and passes its names to `_Settings.names` for the messages of
   fixed tolerances. They run through `IBS` with `vectorized=True`, and
   their draws change whenever the sampling consumes the generator
   differently.
-- A call whose counts can all be 1 returns a variance of 0 with a
-  `UserWarning`, which a test expects or filters.
+- A call that returns a variance estimate of 0, as when every count is 1,
+  issues a `UserWarning` with `additional_output` `"var"`, `"std"` or
+  `"full"` (not with the value alone), which a test expects or filters.
 
 ## Conventions
 
@@ -244,13 +248,14 @@ itself and passes its names to `_Settings.names` for the messages of
   a user notices, relative to the last release: a fix to a change that no
   release has shipped edits that change's entry, and the reasons and the
   comparison with `ibslike.m` belong in the catalogue (`pyibs/README.md`)
-  and the records under `dev/`, to which an entry can point. The fixes are grouped under a few themes (`####`
-  headings under Fixed), and changes of one kind, such as new checks of
-  the settings' values, share one entry. A change that can stop a script
-  written for the last release, or change its results, also has a line in
-  the "Upgrading from" list that opens the section: the change's only
-  mention when that line says all a user needs, and otherwise a pointer
-  to its entry, kept in step with it; changes of one kind share a line.
+  and the records under `dev/`, to which an entry can point. The fixes are
+  grouped under a few themes (`####` headings under Fixed), and changes of
+  one kind, such as new checks of the settings' values, share one entry.
+  A change that can stop a script written for the last release, or change
+  its results, also has a line in the "Upgrading from" list that opens the
+  section: the change's only mention when that line says all a user
+  needs, and otherwise a pointer to its entry, kept in step with it;
+  changes of one kind share a line.
 - **Code** follows PyBADS and PyVBMC: plain NumPy/SciPy, numpydoc
   docstrings, black at line length 79, isort with the black profile and
   pycln, which the pre-commit hooks enforce ("Setup and commands").

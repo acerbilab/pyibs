@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 
 from pyibs import ibs_basic
 from pyibs.testing._exact import exact_loglik, exact_var
@@ -103,13 +104,20 @@ def test_generator_reaches_the_simulator():
     gen = np.random.default_rng(SEED)
     ibs_basic(simulator, THETA, np.ones(5), random_seed=gen)
     assert seen and all(rng is gen for rng in seen)
-    # A seed reproduces the estimate.
-    first, second, other = (
-        ibs_basic(simulator, THETA, np.ones(20), random_seed=seed)
-        for seed in (SEED, SEED, SEED + 1)
+    # A seed gives the estimate of the draws of its generator, in order.
+    rng = np.random.default_rng(SEED)
+    expected = 0.0
+    for _ in range(20):
+        K = 1
+        while not rng.random() < 0.5:
+            K += 1
+        expected -= sum(1 / k for k in range(1, K))
+    first, second = (
+        ibs_basic(simulator, THETA, np.ones(20), random_seed=SEED)
+        for _ in range(2)
     )
     assert first == second
-    assert first != other
+    assert_allclose(first, expected, rtol=1e-12, atol=1e-12)
 
 
 def test_keyword_only_rng():

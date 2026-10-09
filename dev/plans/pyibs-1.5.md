@@ -147,7 +147,7 @@ from the original maintainer on 2026-10-09.
 | Samples per call | `min(1e4, max(1, round(level)))`, with MATLAB's `round` (halves away from zero), then at most `ceil(MaxMem / n_open)` | `max(1, min(floor(level), 10**6 // n_open))` | `ibslike.m`'s formula and defaults (D6) |
 | Likelihood threshold | Vectorized path: checks the lowest repeat still sampled, keeps the partial counts of an ended repeat, compares the unweighted sum. Loop path: checks each repeat, keeps partial counts | Every repeat against a weighted bound; an ended repeat is worth exactly -T | As the engine (D5, deliberate difference) |
 | Cap | `MaxIter` rounds (times `Nreps` in the vectorized path); error | More than `max_samples_per_trial * n` samples of one trial in a draw of n repeats; error | As the engine, with `max_iter` as `max_samples_per_trial`, default `10**5` (D3, D6, deliberate difference) |
-| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning; with the likelihood threshold, D24 (D3, D24, deliberate differences) |
+| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none, and under a threshold also the partial count c + 1 of the repeat it stopped | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning; with the likelihood threshold, D24 (D3, D24, deliberate differences) |
 | Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21, deliberate difference) |
 | Sample count | The vectorized path adds the number of open trials per call, whatever the samples requested of each | Every simulated row | As the engine (deliberate difference) |
 | Simulator | `fun(params, dmat, varargin{:})`, global random state | Called with the generator of the draw | `sample_from_model(params, design_rows)`, with `rng=` when its signature has a parameter named `rng` (D8, D18) |
@@ -306,7 +306,7 @@ that every later phase can start from a clone.
 
 ### Phase 1: the interface and parity with `ibslike.m`
 
-**Status**: in progress
+**Status**: done
 **Executor**: Opus (orchestrator); the tests of step 6 may go to an Opus
 sub-agent once steps 2 to 5 are committed.
 **Needs**: `../ibs`, `../pybads`.
@@ -488,10 +488,10 @@ examples/
    goes. Commit.
 
 **Verification**:
-- [ ] `$PY -m pytest` passes, the ports of `runtest1` to `runtest3`
+- [x] `$PY -m pytest` passes, the ports of `runtest1` to `runtest3`
       included; the Worklog records the number of tests and the runtime.
-- [ ] `$PY -m pre_commit run --all-files` passes.
-- [ ] Every row of the parity table is implemented as its last column
+- [x] `$PY -m pre_commit run --all-files` passes.
+- [x] Every row of the parity table is implemented as its last column
       says, and the catalogue lists every deliberate difference.
 
 ### Phase 2: review against `ibslike.m`
@@ -864,7 +864,8 @@ from the README, the documentation and the model-fitting page.
   optimization nothing reads the flag); `ibslike.m`'s handling of the time
   limit (its vectorized path averages in the partial count of an
   unfinished repeat, whose value depends on the schedule, and its loop
-  path returns NaN for a trial with no completed repeat).
+  path, without a threshold, returns NaN for a trial with no completed
+  repeat).
 - **D4. Acceleration grows after every call by default, and the time
   rule of `ibslike.m` is opt-in** — so that a seed reproduces a run, as in
   PyBADS and PyVBMC. The values of complete repeats do not depend on the
@@ -1005,8 +1006,9 @@ from the README, the documentation and the model-fitting page.
 - **D23. A NaN response raises `ValueError` when `IBS` is created** (PI,
   2026-10-09) — a NaN never matches. Without a likelihood threshold its
   trial samples until the cap and fails there after `max_iter * num_reps`
-  samples; with one, and a positive weight on that trial, every repeat ends
-  below -T and the estimate is -T at every parameter vector, with no error.
+  samples; with one that the trial's growing term reaches before the cap,
+  and a positive weight on that trial, every repeat ends below -T and the
+  estimate is -T at every parameter vector, with no error.
   A NaN is an element not equal to itself, which finds float and complex
   NaN, `NaT` and a NaN in an object array, and never flags text. The design
   is not checked: `ibslike.m`'s own examples pass a NaN design (lines 57,
@@ -1138,10 +1140,78 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 
 ### Phase 1 — 2026-10-09
 
-In progress.
-
 - References (step 1): `../ibs` at `2229c00c4a19eb9f236f9f257100dab9e87b6f92`,
   Phase 0's commit, so `ibslike.m` and `ibs_basic.m` are unchanged;
   `../pybads` at `ff415ca0316ba3d58b5c48337978ddfe81851cc2`.
-- Commits: `65add3a` (steps 2 to 5); steps 6 to 9 in the commit after it.
-- Open: the review, the Status and this entry's completion.
+- Commits: `65add3a` (steps 2 to 5), `781b7e7` (steps 6 to 9), and the
+  commit after it (the review's fixes and this entry).
+- Tests that the schedule or the checks changed (step 2): in
+  `test_sampler.py`, `test_scripted_counts[2-1.5]` (the third call
+  requests 5 samples per trial, MATLAB's round of 4.5, where it requested
+  4); `test_counts_match_reference_sampler`, and
+  `test_matches_reference_sampler` of `test_threshold.py`, whose reference
+  samplers take `ibslike.m`'s
+  formula from `_helpers.ibslike_samples`, with `max_samples` and `max_mem`
+  in place of `max_samples_per_call`, and two more cases;
+  `test_level_is_bounded_by_max_samples` (renamed from
+  `..._by_max_samples_per_call`) and
+  `test_level_stays_finite_under_a_large_acceleration` (`max_samples` in
+  place of `max_samples_per_call`); `test_wrong_simulator_output_raises`,
+  whose case of an (r, 1) output for responses of shape (N,) moved to
+  `test_one_column_responses_take_both_output_shapes` (D22); and
+  `test_invalid_settings_raise`, `test_sample_rejects_bad_n`,
+  `test_exact.py::test_rejects_bad_n` and
+  `test_threshold.py::test_invalid_threshold_raises`, since a boolean or a
+  value of another type raises `TypeError`. The statistical tests, the
+  ports among them, pass unchanged; the ports, which call `IBS` with
+  `vectorized=True`, draw bitwise what the engine-based ports drew.
+- Verification: `$PY -m pytest`, 453 tests passed in about 8 s; the
+  pre-commit hooks pass; the review below found every row of the parity
+  table implemented as its last column says, and every deliberate
+  difference in the catalogue (KD-1 to KD-19).
+- Deviations: `vectorized=None` is decided at the object's first call with
+  `num_reps > 1`, where step 2 and D19 say "at its first call": a call with
+  `num_reps=1` samples one sample per trial and call whatever the setting,
+  as `ibslike.m` does (lines 177-178), so it needs no decision, and
+  deciding False there would hold a fast model to that schedule for every
+  later call. For the PI's ruling. Where the steps are silent: the timing
+  call of `vectorized=None` is the sampling's first round when that round
+  requests one sample of every trial, as in `ibslike.m`, and otherwise its
+  sample counts toward the cap; the time limit is checked after every
+  simulator call of the sampling, not before its first; the settings of
+  `IBS` are read-only attributes; `IBS` pickles when its simulator does.
+  The tests of step 6 were written by an Opus sub-agent. Step 7 found the
+  engine's docstring wrong on `ibslike.m`'s vectorized threshold, which
+  bounds the lowest open repeat with the open count c that its count
+  matrix holds (a transliteration of lines 319-373 confirmed it), and
+  corrected it. `781b7e7`, a commit of tests and documents, also changes
+  code: the cap's count of a discarded timing call, the picklable
+  simulator wrapper and docstrings. The parity table's row "Time limit",
+  D3 and D23 overstated what `ibslike.m` and PyIBS do, and are corrected in
+  place: under a threshold, the loop path also averages the partial count
+  of the repeat it stopped, and a NaN response ends every repeat at the
+  threshold only when its term reaches T before the cap.
+- Review (`/doublecheck`, three read-only Opus reviewers: the code, the
+  statements about `ibslike.m`, the tests and records): nothing in the code
+  to undo. Fixed: the catalogue's KD-13 (the paper's bound counts c,
+  PyIBS's c + 1), KD-14 (the loop path under a threshold) and KD-17, with
+  a paragraph of notation, missing citations and the data checks in KD-6;
+  this entry's list of tests; the changelog's statements about 0.1.0, its
+  duplicates of the "Upgrading" lines, the conditions of reproducibility,
+  the calls with `num_reps=1` and the module `pyibs.ibs_basic`, which the
+  function now shadows; `AGENTS.md` on the FAQ label and the checks of
+  the settings; `psycho_neg_logl` with responses of another shape than the
+  stimuli; the NaN message, which named a cap that `ibs_basic` lacks; the
+  bias direction in `EstimateResult`'s docstring; object arrays of real
+  numbers as trial weights; arrays left writable by pickling; `pyibs/README.md`
+  as package data; two tests that failed at about 0.2 % of seeds; and tests
+  of the paths that none covered.
+- For Phase 2: `IBS` checks the responses, the design, `max_iter` and
+  `num_samples_per_call` before `_Settings` checks them again; `ibs_basic`
+  loops forever on responses of a kind that never matches, as
+  `ibs_basic.m` does; inside the engine, `max_samples` (per trial and
+  call) sits next to `max_samples_per_trial` (per trial and repeat).
+- For Phase 4: 0.1.0's wheel shipped three notebooks in `pyibs/`, which
+  the new examples replace, and its README describes 0.1.0; the FAQ's
+  answer on a zero SD carries the label of `_FAQ_ZERO_SD`
+  (`AGENTS.md`, "What spans files").

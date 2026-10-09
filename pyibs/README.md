@@ -9,9 +9,17 @@ deliberate: it is a defect until shown otherwise.
 
 PyIBS is cited by module and function, `ibslike.m` and `ibs_basic.m` by
 their lines at `2229c00`. Each entry names the decision of the plan
-`dev/plans/pyibs-1.5.md` that settled it (D1 to D24), where there is one.
-A change that adds, removes or alters a deliberate difference updates its
-entry here.
+[`dev/plans/pyibs-1.5.md`](https://github.com/acerbilab/pyibs/blob/main/dev/plans/pyibs-1.5.md)
+that settled it (D<n>), where there is one. A change that adds, removes or
+alters a deliberate difference updates its entry here.
+
+N is the number of trials, and n the number of repeats of a call
+(`num_reps`, `ibslike.m`'s `Nreps`). T is the likelihood threshold
+(`neg_logl_threshold`, `ibslike.m`'s `NegLogLikeThreshold`). A trial's
+open count c is the number of samples it has drawn since its last match,
+in the repeat it is sampling. Y_r is the log-likelihood estimate that the
+complete sampling of repeat r gives, the weighted sum of its trials'
+terms.
 
 Kinds: *deliberate change* (PyIBS does it otherwise), *Python-only
 feature* (`ibslike.m` has no counterpart), *removed feature* (`ibslike.m`
@@ -40,8 +48,10 @@ them. There is no `ibslike('defaults')` (lines 101-108): the defaults are
 those of the signature, and the settings are read-only attributes of the
 object.
 - PyIBS: `IBS.__init__`, `IBS.__call__` (`pyibs/ibs.py`).
-- MATLAB: `ibslike.m:1`, `31`, `89-99`, `101-108`, `133-137`.
-- Settled by: D2. Kind: deliberate change (interface).
+- MATLAB: `ibslike.m:1`, `31`, `89-99`, `101-108`, `133-137`, `183`,
+  `293`.
+- Settled by: D2. Kind: deliberate change (interface); removed features
+  (`varargin` and `ibslike('defaults')`).
 
 **KD-2. The outputs are a float, a tuple of two floats, or an
 `EstimateResult`.**
@@ -49,8 +59,8 @@ object.
 `ReturnStd`), an exit flag and a structure with `funcCount`,
 `NsamplesPerTrial`, `nlogL_trials` and `nlogLvar_trials` (lines 1,
 209-232). PyIBS returns, by `additional_output`, the estimate alone, a
-`tuple` of the estimate and its variance (`"var"`) or SD (`"std"`), the
-form that PyBADS and PyVBMC take from a noisy target, or an
+`tuple` of the estimate and its variance (`"var"`) or its SD (`"std"`),
+the latter the form that PyBADS and PyVBMC take from a noisy target, or an
 `EstimateResult` (`"full"`) with the estimate, its variance and SD, the exit
 flag and its message, the elapsed time, the samples per trial, the
 simulator calls and the per-trial arrays (KD-3). The numbers are Python
@@ -76,8 +86,8 @@ average over its completed repeats, all of them unless `max_time` stopped
 the sampling (KD-14), and its variance estimate, unweighted as in
 `ibslike.m`; weighted, they add up to the returned estimate and its
 variance. Even so, under a threshold they are finite only on draws whose
-repeats all stayed above -T: a user who wants per-trial values sets no
-threshold.
+repeats all stayed above -T, which favours small values of
+`neg_logl_trials`: a user who wants per-trial values sets no threshold.
 - PyIBS: `IBS.__call__` (`pyibs/ibs.py`); `trial_value_sums`,
   `trial_var_sums` and `trial_counts` of `_Draw` (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:213`, `220-221`, `396-398`, `483-485`.
@@ -115,20 +125,26 @@ by range.**
 positive, and that `TrialWeights` has one element or one per trial (lines
 139-168). PyIBS checks every setting when `IBS` is created, and `num_reps`,
 `trial_weights` and `additional_output` at each call, and raises
-`ValueError` for a value out of range and `TypeError` for a value of the
-wrong type, naming the argument and what it takes. The counts
-(`num_reps`, `num_samples_per_call`, `max_iter`, `max_samples`, `max_mem`)
-take integers and whole-number floats, such as `1e5`, and refuse booleans
-and fractions; `num_samples_per_call` is at least 0, the others at least
-1. `acceleration` is finite. Trial weights are real numbers, finite and at
-least 0, and refuse booleans and strings. `num_reps` is one integer:
-`ibslike.m`'s vectorized path reads `Nreps` as a vector of per-trial
-repeats in places (lines 248, 259-260), which no documentation offers and
-which its loop path cannot run (line 413).
+`ValueError` for a value it does not take and `TypeError` for a setting or
+a count of the wrong type, naming the argument and what it takes. The
+counts (`num_reps`, `num_samples_per_call`, `max_iter`, `max_samples`,
+`max_mem`) take integers and whole-number floats, such as `1e5`, and refuse
+booleans and fractions; `num_samples_per_call` is at least 0, the others
+at least 1. `acceleration` is finite. Trial weights are real numbers,
+finite and at least 0, and refuse booleans and strings. `num_reps` is one
+integer: `ibslike.m` reads `Nreps` as a vector of per-trial repeats in
+places (lines 248, 259-260), which no documentation offers and neither of
+its paths can run (lines 264, 281-284, 361, 413). The data are checked
+too: the responses are a non-empty array of one or two dimensions; the
+design has one row per trial, where `ibslike.m` ignores extra rows and
+fails at an index when rows are missing (lines 185, 296, 439); and the
+trial weights are a scalar or have shape (N,), where `ibslike.m` flattens
+any array of one or N elements (line 163).
 - PyIBS: `IBS.__init__`, `IBS.__call__` (`pyibs/ibs.py`); `_check_count`,
   `_check_real`, `_Settings` (`pyibs/_sampler.py`); `trial_weights`
   (`pyibs/_estimates.py`).
-- MATLAB: `ibslike.m:139-168`, `248`, `259-260`, `413`.
+- MATLAB: `ibslike.m:139-168`, `185`, `248`, `259-264`, `281-284`, `296`,
+  `361`, `413`, `439`.
 - Settled by: D16. Kind: deliberate change.
 
 ## Sampling
@@ -143,16 +159,17 @@ call. PyIBS has one sampler, the vectorized path's design, whose schedule
 `vectorized` selects: `True` requests `ibslike.m`'s number of samples per
 trial and call (lines 281-283, with MATLAB's `round`), `False` requests one
 sample of every trial that still needs a match, in whichever repeat it is
-sampling. With `False`, as in the loop path, a call requests at most N rows
-and no sample is drawn after a trial's last match; but a trial that
-completes a repeat goes on to its next repeat in the next call, so a call of
-n repeats takes as many calls as the trial with the most samples, where the
-loop path takes, summed over the repeats, the most samples of a trial in
-each. `True` with `num_reps=1` falls back to `False` with a warning, as in
-`ibslike.m` (lines 193-196).
+sampling. With `False`, as in the loop path, a simulator call requests at
+most N rows and no sample is drawn after a trial's last match; but a trial
+that completes a repeat goes on to its next repeat in the next simulator
+call, so the sampling of n repeats takes as many simulator calls as the
+trial with the most samples, where the loop path takes, summed over the
+repeats, the most samples of a trial in each. `True` with `num_reps=1`
+falls back to `False` with a warning, as in `ibslike.m` (lines 193-196).
 - PyIBS: `sample`, `_samples_per_trial` (`pyibs/_sampler.py`);
   `IBS.__call__` (`pyibs/ibs.py`).
-- MATLAB: `ibslike.m:199-205`, `237-401`, `406-487`, `193-196`.
+- MATLAB: `ibslike.m:193-196`, `199-205`, `237-401`, `281-283`,
+  `406-487`.
 - Settled by: D7. Kind: deliberate change.
 
 **KD-8. `vectorized=None` is decided once per object.**
@@ -165,8 +182,9 @@ timing call, with the same rule, at the object's first call with
 whatever the setting (lines 177-178). As in `ibslike.m`, the timing call
 counts as a simulator call (line 189), and is the first round of the
 sampling when that round requests one sample of every trial (lines
-287-289, 433-434). The decision follows `ibslike.m`'s rule while the later
-calls stay on one schedule, which their results then do not depend on.
+287-289, 433-434). The decision follows `ibslike.m`'s rule, and the
+object's later calls stay on one schedule however the timing of their
+simulations varies.
 - PyIBS: `IBS.__call__` (`pyibs/ibs.py`); `first_round`, `sample`
   (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:135`, `176-190`, `287-289`, `433-434`.
@@ -204,18 +222,23 @@ which trial.
 raises `IBSSamplingError`.**
 `ibslike.m` caps the rounds of simulator calls: `MaxIter * Nreps` rounds in
 the vectorized path and `MaxIter` per repeat in the loop path, and raises
-`ibslike:ConvergenceFail` when a trial has not finished by then (lines 260,
-269, 390-393, 410, 427, 477-480). A round can hold many samples per trial.
-PyIBS raises `IBSSamplingError`, a `RuntimeError`, once a trial has drawn
-more than `max_iter * num_reps` samples in a call, the samples after its
-last match included, checked after every simulator call. The cap thus
-means what `MaxIter`'s description says, "per trial and estimate" (line
-95), scaled by the repeats as the vectorized path scales it. The error
-names the trials over the cap by their 0-based indices and the samples each
-drew.
+`ibslike:ConvergenceFail` when trials were still open at the start of the
+last round it allows, even if that round finished them (lines 260,
+269-276, 390-393, 410, 427-430, 477-480). A round can hold many samples per
+trial. PyIBS raises `IBSSamplingError`, a `RuntimeError`, once a trial has
+drawn more than `max_iter * num_reps` samples in a call, the samples after
+its last match included, checked after every simulator call, so that it
+too raises after the simulator call that crosses the cap even if that call
+completes the sampling. The cap thus means what `MaxIter`'s description
+says, "per trial and estimate" (line 95), scaled by the repeats as the
+vectorized path scales it. The sample that the timing call of
+`vectorized=None` draws of each trial counts toward the cap when the
+sampling discards it (KD-8), where `ibslike.m`'s timing call is no round.
+The error names the trials over the cap by their 0-based indices and the
+samples each drew.
 - PyIBS: `sample`, `_cap_error`, `IBSSamplingError` (`pyibs/_sampler.py`).
-- MATLAB: `ibslike.m:95`, `260`, `269`, `390-393`, `410`, `427`,
-  `477-480`.
+- MATLAB: `ibslike.m:95`, `180-189`, `260`, `269-276`, `390-393`, `410`,
+  `427-430`, `477-480`.
 - Settled by: D3, D6. Kind: deliberate change.
 
 **KD-12. The cost counts every simulated response.**
@@ -230,7 +253,8 @@ trial's last match included, the measure of the simulator's work.
 `fun_count` counts the simulator calls, as `funcCount` does (lines 189,
 206, 294, 297, 437, 440).
 - PyIBS: `sample` (`pyibs/_sampler.py`); `IBS.__call__` (`pyibs/ibs.py`).
-- MATLAB: `ibslike.m:189`, `206`, `219`, `287-289`, `308`, `449`.
+- MATLAB: `ibslike.m:189`, `206`, `219`, `287-289`, `294`, `297`, `308`,
+  `437`, `440`, `449`.
 - Kind: deliberate change.
 
 ## The likelihood threshold
@@ -238,55 +262,64 @@ trial's last match included, the measure of the simulator's work.
 **KD-13. Every repeat is checked against a weighted bound, and a repeat
 that exceeds it counts exactly -T.**
 `ibslike.m`'s vectorized path checks, after every round, only the lowest
-repeat that a trial is still sampling (line 377), with the completed counts
-and the open count c of the trials still sampling it (line 379; its count
-matrix holds the open count at a trial's current repeat), against the
-unweighted sum of the terms (line 380). Its loop path checks the repeat it
-samples after every call, with c + 1 for the trials that have not matched
-(lines 456-466), also unweighted. In both, the partial counts of an ended
-repeat stay among the trials' counts and enter their averages (lines 382-384,
-396-398, 483-485), so that the estimate depends on the sampling schedule;
-its own comment calls the threshold incompatible with vectorized sampling
-(line 91). PyIBS follows the IBS paper, Appendix C.1: after every round it
-checks every repeat that is not ended against a running bound of its
-weighted negative log-likelihood, with c + 1 for a trial sampling it, and
-ends the repeats whose bound exceeds T; a complete repeat whose value lies
-below -T is ended too. An ended repeat's value is exactly -T, so every
-repeat's value is `max(Y_r, -T)`, a function of its own draws, whatever
-the schedule; its variance estimate is that of its counts when it was
-ended. The bound is on the scale of the weighted value, which `neg_logl`
-is. The exit flag is 1 when a repeat was ended, as in `ibslike.m` (lines
-385, 463).
+repeat that a trial is still sampling (line 377). Its bound takes the
+completed counts and, for the trials still sampling that repeat, their open
+count c, which its count matrix holds at a trial's current repeat, 0 when
+the trial's last sample matched (written at lines 347-373, read at line
+379), and it compares the unweighted sum of the terms with T (line 380).
+Its loop path checks the repeat it samples after every call, with c + 1
+for the trials that have not matched (lines 456-466), also unweighted. In
+both, the partial counts of an ended repeat stay among the trials' counts
+and enter their averages (lines 382-384, 396-398, 483-485), so that the
+estimate depends on the sampling schedule; its own comment calls the
+threshold incompatible with vectorized sampling (line 91). PyIBS follows
+the IBS paper, Appendix C.1, in checking every repeat and in valuing an
+ended repeat at exactly -T: after every round, it checks every repeat that
+is not ended against a running bound of its weighted negative
+log-likelihood, and ends the repeats whose bound exceeds T; a complete
+repeat whose value lies below -T is ended too. Its bound counts c + 1 for a
+trial sampling the repeat, as the loop path does: one term more than the
+paper's c, and still a lower bound on the trial's final term. Every
+repeat's value is then `max(Y_r, -T)`, a function of its own draws,
+whatever the schedule; an ended repeat's variance estimate is that of its
+counts when it was ended. The weighted bound is on the scale of the
+returned estimate. The exit flag is 1 when a repeat was ended, as in
+`ibslike.m` (lines 385, 463).
 - PyIBS: `_MatchCounts.bounds`, `end_above`, `end_complete_below`,
   `clipped_estimates`, `sample` (`pyibs/_sampler.py`).
-- MATLAB: `ibslike.m:91`, `375-387`, `396-398`, `456-466`, `483-485`.
+- MATLAB: `ibslike.m:91`, `347-387`, `396-398`, `456-466`, `483-485`.
 - Settled by: D5. Kind: deliberate change.
 
 ## The time limit
 
 **KD-14. When the time limit stops the sampling, each trial averages its
 completed repeats, and a trial without one raises.**
-`ibslike.m` checks `MaxTime` before every round of its vectorized path
-(lines 272-275), and before every repeat and after every call of its loop
-path (lines 422-425, 468-473), and stops with exit flag 2, also when the
-sampling happens to be complete at that check. Its vectorized path then
-averages each trial's positive counts, among them the partial count of the
-repeat it was sampling (lines 396-398), whose value depends on the
-schedule; its loop path averages the completed repeats, and a trial
-without one gets 0/0, NaN (lines 483-485). Nothing warns. PyIBS checks the
-time after every simulator call of a call's sampling, while trials still
-need matches: a sampling that completes is not flagged. Once `max_time`
-has passed, each trial's value averages its completed counts in the repeats
-that the likelihood threshold did not end, and the ended repeats count -T
-each: of n repeats with n_e ended, the estimate is (n_e / n)(-T) + (1 -
-n_e / n) times the weighted sum of the trials' averages. A trial with no
-completed count raises `IBSSamplingError`, and the call issues a
-`UserWarning`, since the exit flag is not seen in the `"std"` output that
-PyBADS and PyVBMC take; its exit flag is 2.
+`ibslike.m` counts `MaxTime` from the start of the call (line 86), checks
+it before every round of its vectorized path (lines 272-275), and before
+every repeat and after every call of its loop path (lines 422-425,
+468-473), and stops with exit flag 2, also when the sampling happens to be
+complete at that check. Its vectorized path then averages each trial's
+positive counts, among them the partial count of the repeat it was
+sampling (lines 347-373, 396-398), whose value depends on the schedule.
+Its loop path averages each trial's positive counts too: without a
+threshold, these are its completed repeats, and a trial without one gets
+0/0, NaN; under a threshold, they also include the c + 1 that line 458
+sets for every trial that has not matched in the stopped repeat (lines
+456-458, 483-485). Nothing warns. PyIBS counts `max_time` from the start
+of the call too, and checks it after every simulator call of the call's
+sampling while trials still need matches, so that a sampling that
+completes is not flagged. Once `max_time` has passed, each trial's value
+averages its completed counts in the repeats that the likelihood threshold
+did not end, and the ended repeats count -T each: of n repeats with n_e
+ended, the log-likelihood estimate is (n_e / n)(-T) + (1 - n_e / n) times
+the weighted sum of the trials' averages. The call has exit flag 2 and
+issues a `UserWarning`, since the exit flag is not seen in the `"std"`
+output that PyBADS and PyVBMC take. A trial with no completed count
+raises `IBSSamplingError`.
 - PyIBS: `sample`, `_limited_estimates` (`pyibs/_sampler.py`);
   `IBS.__call__` (`pyibs/ibs.py`).
-- MATLAB: `ibslike.m:86`, `272-275`, `390-398`, `422-425`, `468-473`,
-  `483-485`.
+- MATLAB: `ibslike.m:86`, `272-275`, `347-373`, `396-398`, `422-425`,
+  `456-458`, `468-473`, `483-485`.
 - Settled by: D3, D24. Kind: deliberate change.
 
 ## Responses and matching
@@ -320,13 +353,13 @@ call. Object arrays are compared element by element and not checked.
 
 **KD-17. A NaN response raises `ValueError` when `IBS` is created.**
 A NaN never equals a simulated response. In `ibslike.m` its trial samples
-until `MaxIter` and fails there, or, under a likelihood threshold, ends
-every repeat at every parameter vector, with nothing that names the
-cause. PyIBS refuses responses that hold a NaN, an element not equal to
-itself (a float or complex NaN, `NaT`, a NaN in an object array), naming
-their trials. The design is not checked: a design of NaN serves a
-simulator that reads only its size, as `ibslike.m`'s examples call theirs
-(lines 57, 511).
+until the cap and fails there; under a likelihood threshold that the
+trial's growing term reaches before the cap, every repeat ends instead, at
+every parameter vector. Nothing names the cause. PyIBS refuses responses
+that hold a NaN, an element not equal to itself (a float or complex NaN,
+`NaT`, a NaN in an object array), naming their trials. The design is not
+checked: a design of NaN serves a simulator that reads only its size, as
+`ibslike.m`'s examples call theirs (lines 57, 511).
 - PyIBS: `_check_responses` (`pyibs/_sampler.py`), called by
   `IBS.__init__` and `ibs_basic`.
 - MATLAB: `ibslike.m:57`, `316`, `390-393`, `450`, `477-480`, `511`.

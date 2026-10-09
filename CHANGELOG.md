@@ -32,7 +32,9 @@ says where PyIBS differs from it, and why.
   completed repeats, and a trial with none raises `IBSSamplingError` ("Time
   limit" under Changed).
 - `vectorized=None` is decided once per `IBS` object, at its first call
-  with `num_reps > 1`, where 0.1.0 timed a simulation at every call.
+  with `num_reps > 1`, where 0.1.0 timed a simulation at every call. A
+  call with `num_reps=1` requests one sample per trial and simulator call,
+  as `ibslike.m` does, with a warning when `vectorized=True` was given.
 - A NaN in `response_matrix` raises `ValueError` when `IBS` is created,
   where 0.1.0 sampled its trial until the iteration limit, with exit flag 3.
 - `IBS` checks its settings, and `num_reps`, `trial_weights` and
@@ -40,26 +42,34 @@ says where PyIBS differs from it, and why.
   for values that 0.1.0 accepted ("Checks of the settings" under Changed).
   The settings are read-only attributes: create a new `IBS` object to
   change one.
-- The estimates are Python floats, and `additional_output="var"` and
-  `"std"` return a tuple of two. Warnings are issued through Python's
-  `warnings` module instead of printed.
+- The estimates are Python floats, also in the tuples of
+  `additional_output="var"` and `"std"`. The warning on reaching `max_time`
+  is issued through Python's `warnings` module, where 0.1.0 printed it, and
+  reaching the likelihood threshold prints nothing: the exit flag reports
+  it.
 - `num_samples_per_trial` counts every response that the simulator
   returned, where 0.1.0's vectorized sampling counted one per trial and
   call, and `fun_count` counts every simulator call.
 - The example model is the module `pyibs.examples.psycho_model`, whose
   `psycho_generator(theta, S, rng)` takes a `numpy.random.Generator`; the
   modules `pyibs.psycho_generator` and `pyibs.psycho_neg_logl` are removed.
+- `pyibs.ibs_basic` is the function `ibs_basic`, which `pyibs` exports:
+  `from pyibs.ibs_basic import ibs_basic` works as in 0.1.0, but
+  `import pyibs.ibs_basic as m` gives the function rather than its module.
 
 ### Added
 
 - **Reproducible runs.** `IBS(..., random_seed=...)` creates the
   generator of the object's calls, `rng`, from a seed, as PyBADS's
   `random_seed` does, and a simulator that has a parameter named `rng`
-  receives it: two objects with the same seed then give the same
-  estimates.
+  receives it. Two objects with the same seed give the same estimates when
+  `vectorized` is given and `max_time` and `acceleration_threshold` keep
+  their defaults, since timing decides those. `ibs_basic` takes
+  `random_seed` likewise.
 - **Per-trial estimates.** `additional_output="full"` returns each trial's
   negative log-likelihood estimate and its variance estimate,
-  `neg_logl_trials` and `neg_logl_var_trials`, as `ibslike.m` does.
+  `neg_logl_trials` and `neg_logl_var_trials`, as `ibslike.m` does; they
+  are NaN when the likelihood threshold ended a repeat.
 - **Optional design.** `design_matrix` defaults to None, which passes the
   trial indices to the simulator.
 - **A warning on a zero variance.** A call that returns a variance
@@ -85,7 +95,7 @@ says where PyIBS differs from it, and why.
   averages its completed repeats, a repeat that the likelihood threshold
   ended counts `-neg_logl_threshold`, and the call warns, with exit flag 2;
   a trial with no completed repeat raises `IBSSamplingError`.
-- **The simulator's output.** For r requested trials, a simulator returns
+- **The simulator's output.** For r requested rows, a simulator returns
   shape (r,) or (r, 1) when `response_matrix` has one column, of shape
   (N,) or (N, 1), as a model ported from MATLAB does, and shape (r, C) for
   C > 1 columns. Another shape raises `ValueError`, and responses of a kind
@@ -106,24 +116,17 @@ says where PyIBS differs from it, and why.
 #### Sampling
 
 - `max_iter` defaulted to 15, so that a repeat in which a trial had not
-  matched after 15 rounds was left out of that trial's estimate, which was
-  biased, or NaN; `max_iter=1e5` raised `TypeError`.
+  matched after 15 rounds of simulator calls (15 * `num_reps` with
+  `vectorized=True`) was left out of that trial's estimate, which was
+  biased, or NaN; with `vectorized=False`, `max_iter=1e5` raised
+  `TypeError`.
 - A `response_matrix` of several columns raised an error.
-- `fun_count` missed simulator calls, the timing call of `vectorized=None`
-  among them.
-- No seed reproduced a run: the samples requested depended on the timing
-  of the simulator calls, and the simulator could only draw from NumPy's
-  global state.
+- With the default settings, no seed reproduced a run: the samples
+  requested depended on the timing of the simulator calls, and the
+  simulator could only draw from NumPy's global state.
 
 #### ibs_basic
 
 - `ibs_basic` works without a design (`S=None`, its default), when the
-  simulator receives the trial index; it takes `random_seed`, and passes
-  the generator to a simulator that has a parameter named `rng`. A NaN
-  response raises `ValueError`, where `ibs_basic` sampled forever.
-
-### Removed
-
-- **Exit flag 3.** The cap on the samples raises `IBSSamplingError`.
-- **Example modules.** `pyibs.psycho_generator` and `pyibs.psycho_neg_logl`
-  are removed; the example model is `pyibs.examples.psycho_model`.
+  simulator receives the trial index. A NaN response raises `ValueError`,
+  where `ibs_basic` sampled forever.
