@@ -682,7 +682,7 @@ the other two.
    the venv's interpreter first on `PATH`:
    `PATH="$PWD/.venv/Scripts:$PATH" make -C examples/scripts run`
    (`.venv/bin` elsewhere), and commit their outputs.
-3. [~] `README.md`, after `../pybads/README.md`'s sections: What is it?,
+3. [x] `README.md`, after `../pybads/README.md`'s sections: What is it?,
    What's new in PyIBS 1.5, Documentation, When should I use PyIBS?,
    Installation, Quick start (with the calls for PyBADS and PyVBMC), Next
    steps, How does it work?, Troubleshooting and contact, References and
@@ -693,7 +693,7 @@ the other two.
    holder, as PyBADS's does: `Copyright (c) 2026, acerbilab`. If any part
    of 0.1.0 is kept after all, its copyright line stays beside the lab's,
    as the licence requires.
-4. [~] `docsrc/` after `../pybads/docsrc/`: `Makefile`, `make.bat`,
+4. [x] `docsrc/` after `../pybads/docsrc/`: `Makefile`, `make.bat`,
    `.nojekyll` (which the `github` target copies into `docs/`), and under
    `docsrc/source/`: `conf.py`, `index.rst`, `installation.rst`,
    `quickstart.rst`, `documentation.rst`, hand-written API pages under
