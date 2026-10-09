@@ -498,7 +498,7 @@ examples/
 
 ### Phase 2: review against `ibslike.m`
 
-**Status**: pending
+**Status**: in progress
 **Executor**: Opus (orchestrator), with two Opus sub-agents that only read
 and reason (no test runs or other heavy processes).
 **Needs**: `../ibs`, `../pubs-llms`.
@@ -506,24 +506,24 @@ and reason (no test runs or other heavy processes).
 listed in the catalogue with its reason or fixed.
 
 **Steps**:
-1. Reviewer A compares `../ibs/ibslike.m` and `../ibs/ibs_basic.m` (the
+1. [~] Reviewer A compares `../ibs/ibslike.m` and `../ibs/ibs_basic.m` (the
    commit recorded in Phase 1) with `pyibs/` line by line: options and
    defaults, validation, the sampling schedule, the threshold, the cap,
    the time limit, outputs, exit flags, errors and the self-tests. It
    reports each behavioural difference with file and line on both sides,
    and checks every statement about `ibslike.m` in the docstrings and the
    catalogue against its source.
-2. Reviewer B checks the package against [1] and for internal
+2. [~] Reviewer B checks the package against [1] and for internal
    correctness: the estimator and its variance estimate, the weights, the
    independence of the repeats under the sampler's schedule, the
    threshold of Appendix C.1, the cost counts, and edge cases (one trial,
    `num_reps=1`, trials that always match, a zero variance, text, bytes
    and object responses, a design of None).
-3. Consolidate both reports into the ledger
+3. [ ] Consolidate both reports into the ledger
    `dev/results/<YYYY-MM-DD>-port-review.md`: each finding with its
    verdict (deliberate difference, defect, or no issue) and its fix,
    catalogue entry or `dev/TODO.md` item. The PI rules on the verdicts.
-4. Fix the defects, each with a test that fails before the fix, and
+4. [ ] Fix the defects, each with a test that fails before the fix, and
    update the catalogue and the changelog. Index the ledger in
    `dev/README.md`. Commit.
 
