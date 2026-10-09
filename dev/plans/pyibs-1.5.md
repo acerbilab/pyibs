@@ -956,6 +956,12 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   ([run 37906670683](https://github.com/acerbilab/pyibs/actions/runs/37906670683)):
   Ubuntu with Python 3.14.8, NumPy 2.5.3 and SciPy 1.18.1, 173 tests
   passed in 4.1 s, the package installed as `0.1.dev85+gb99e39e37`.
+  Beyond step 11, the full matrix of `tests.yml`, dispatched with
+  `0a84c10` at the head, passed in all 15 jobs, Ubuntu, Windows and macOS
+  × Python 3.10 to 3.14
+  ([run 37908926522](https://github.com/acerbilab/pyibs/actions/runs/37908926522));
+  on Python 3.10 it installs NumPy 2.2.6 and SciPy 1.15.3, the oldest
+  versions the matrix tests.
 - Deviations: the hooks' new versions are a commit of their own
   (`2fe31bc`), so that the formatting commit holds only the reformatting
   (black 23.3 removed four blank lines of `pyibs/ibs.py`); the packaging
