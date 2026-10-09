@@ -25,9 +25,7 @@ posterior and evidence inference.
 The released version is 0.1.0, published on PyPI and conda-forge as
 `pyibs`. Version 1.5.0 is prepared on the branch `dev-next` by the plan
 `dev/plans/pyibs-1.5.md`, which states its scope, its phases and its
-decisions. The package holds the engine (`pyibs/_estimates.py`,
-`pyibs/_sampler.py`) and its tests next to the 0.1.0 interface, which
-Phase 1 of the plan replaces.
+decisions.
 
 - `dev/` holds the maintainer records: plans, findings, the evidence they
   cite and the tooling that produced it. `dev/README.md` says where each
@@ -136,7 +134,51 @@ bring a workstation down. A long run writes its output unbuffered
 (`python -u`) to a uniquely named log under `dev/scripts/runs/`, which a
 fresh clone creates first (`mkdir -p dev/scripts/runs`).
 
+## Architecture
+
+`IBS` (`pyibs/ibs.py`) is the interface. It checks its settings and holds
+them in a `_Settings` of the sampler, with the generator `rng` and the
+decision of `vectorized=None`; each call checks its arguments, runs one
+draw of `num_reps` repeats, and turns it into the outputs (a float, a tuple
+or an `EstimateResult`), the exit flag and the warnings.
+`pyibs/_sampler.py` owns the sampling: `_Settings` and its checks; `sample`,
+one draw, with the schedule, the cap, the likelihood threshold
+(`_MatchCounts`) and the time limit (`_limited_estimates`); `first_round`,
+the timing call of `vectorized=None`; `_simulate`, one simulator call with
+its checks of the output's shape and kind; and `IBSSamplingError`.
+`pyibs/_estimates.py` owns the per-count formulas, the check of the trial
+weights and the reduction of counts to estimates (`repeat_estimates`).
+`pyibs/ibs_basic.py` is the didactic loop over the trials, which shares the
+check of the responses and the generator with `IBS`. `examples/` is
+installed as `pyibs.examples`, with the example model in
+`psycho_model.py`. `pyibs/testing/` holds the tests, with `_exact.py`
+(exact IBS draws from geometric counts, and the exact moments) and
+`_helpers.py` (the scripted and Bernoulli simulators, and `ibslike.m`'s
+samples per call).
+
+The interface and the sampler name some settings differently:
+`num_samples_per_call` (0 for the default) is `initial_samples` (None),
+`max_iter` is `max_samples_per_trial`, `neg_logl_threshold` (`np.inf` for
+none) is `neg_loglik_threshold` (None), and `response_matrix` and
+`design_matrix` are `responses` and `design`. `IBS` checks those settings
+itself and passes its names to `_Settings.names` for the messages of
+`IBSSamplingError`, so that an error names the argument the user gave.
+
 ## What spans files
+
+- **The catalogue of deliberate differences.** `pyibs/README.md` lists
+  every deliberate difference between PyIBS and `ibslike.m` 0.96, and
+  `ibs_basic.m`, each with its reason and the lines of `ibslike.m` it cites
+  at `2229c00`; a difference that it does not list is a defect until shown
+  otherwise. A change that adds, removes or alters one updates its entry,
+  and the docstrings that describe `ibslike.m`, in `pyibs/_sampler.py`
+  above all, agree with it.
+- **The FAQ label of the zero-variance warning.** The warning that a call
+  issues on a variance estimate of 0 links the label
+  `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`
+  of the published FAQ (`_FAQ_ZERO_SD` in `pyibs/ibs.py`). The FAQ's
+  answer on a zero SD carries that label, and a change of either changes
+  both; an installed release keeps its link.
 
 - **The shared IBS reduction.** `repeat_estimates` in
   `pyibs/_estimates.py` turns matching counts into per-repeat values,
@@ -154,6 +196,34 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
   (`test_exact.py`), `test_unreachable_threshold_changes_nothing`
   (`test_threshold.py`) and the bitwise tests of `test_estimates.py` check
   them.
+
+## Tests and their traps
+
+- Timing decides the time limit, the decision of `vectorized=None` and the
+  rule of `acceleration_threshold`. Their tests run on a fake clock that
+  the simulator advances, patched over `pyibs._sampler.time`, which times
+  the simulator and checks the limit, and over `pyibs.ibs.time`, from which
+  `IBS.__call__` counts `max_time` (the `clock` fixture of `test_ibs.py`,
+  `FakeTime` in `test_sampler.py`). Two tests of `test_ibs.py` sleep,
+  `test_max_time_stops_a_slow_simulator` and
+  `test_max_time_raises_for_a_trial_without_a_completed_count`: each call
+  sleeps 0.02 s under `max_time=0.05`, every trial that matches does so in
+  the first call and never again, so the expected values hold whichever
+  call the limit stops after, however slow the runner; without the limit,
+  the cap would end the draw with another error after 67 calls. A new test
+  that involves time takes one of these two forms, never a margin that a
+  slow CI runner can miss.
+- `vectorized=None` decides by timing, so a test that compares the
+  estimates of two `IBS` objects gives `vectorized` or runs on the fake
+  clock.
+- The ports of `ibslike.m`'s self-tests (`test_ibslike_ports.py`) check
+  `runtest1` and `runtest3` at three seeds and pass at two, with a warning
+  for a seed that fails, and `runtest2` at one seed with `ibslike.m`'s
+  fixed tolerances. They run through `IBS` with `vectorized=True`, and
+  their draws change whenever the sampling consumes the generator
+  differently.
+- A call whose counts can all be 1 returns a variance of 0 with a
+  `UserWarning`, which a test expects or filters.
 
 ## Conventions
 
@@ -173,8 +243,8 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
   gets none. An entry is one or two sentences, written for users, on what
   a user notices, relative to the last release: a fix to a change that no
   release has shipped edits that change's entry, and the reasons and the
-  comparison with `ibslike.m` belong in the records under `dev/`, to which
-  an entry can point. The fixes are grouped under a few themes (`####`
+  comparison with `ibslike.m` belong in the catalogue (`pyibs/README.md`)
+  and the records under `dev/`, to which an entry can point. The fixes are grouped under a few themes (`####`
   headings under Fixed), and changes of one kind, such as new checks of
   the settings' values, share one entry. A change that can stop a script
   written for the last release, or change its results, also has a line in

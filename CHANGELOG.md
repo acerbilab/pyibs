@@ -85,10 +85,12 @@ says where PyIBS differs from it, and why.
   averages its completed repeats, a repeat that the likelihood threshold
   ended counts `-neg_logl_threshold`, and the call warns, with exit flag 2;
   a trial with no completed repeat raises `IBSSamplingError`.
-- **Responses of one column.** A simulator can return the responses of
-  one column, `response_matrix` of shape (N,) or (N, 1), with shape (r,)
-  or (r, 1) for r requested trials, as a model ported from MATLAB does;
-  for C > 1 columns it returns shape (r, C).
+- **The simulator's output.** For r requested trials, a simulator returns
+  shape (r,) or (r, 1) when `response_matrix` has one column, of shape
+  (N,) or (N, 1), as a model ported from MATLAB does, and shape (r, C) for
+  C > 1 columns. Another shape raises `ValueError`, and responses of a kind
+  that NumPy never finds equal to the observed ones, such as text for
+  numbers, raise `TypeError`.
 - **Checks of the settings.** `IBS` raises `ValueError` or `TypeError`,
   naming the setting, for a value out of range or of the wrong type, such
   as a negative `acceleration`, a boolean for a count, or a
@@ -117,7 +119,8 @@ says where PyIBS differs from it, and why.
 
 - `ibs_basic` works without a design (`S=None`, its default), when the
   simulator receives the trial index; it takes `random_seed`, and passes
-  the generator to a simulator that has a parameter named `rng`.
+  the generator to a simulator that has a parameter named `rng`. A NaN
+  response raises `ValueError`, where `ibs_basic` sampled forever.
 
 ### Removed
 

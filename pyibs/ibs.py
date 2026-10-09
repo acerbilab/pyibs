@@ -170,6 +170,25 @@ def _takes_rng(fun):
     )
 
 
+class _Simulator:
+    """The user's simulator, called as the sampler calls a simulator.
+
+    ``_Simulator(fun)(params, design_rows, rng)`` calls
+    ``fun(params, design_rows, rng=rng)`` when ``fun`` has a parameter
+    named ``rng`` (:func:`_takes_rng`), and ``fun(params, design_rows)``
+    otherwise. It pickles when ``fun`` does.
+    """
+
+    def __init__(self, fun):
+        self.fun = fun
+        self.takes_rng = _takes_rng(fun)
+
+    def __call__(self, params, design_rows, rng):
+        if self.takes_rng:
+            return self.fun(params, design_rows, rng=rng)
+        return self.fun(params, design_rows)
+
+
 class IBS:
     """Inverse binomial sampling estimates of a model's log-likelihood.
 
@@ -226,10 +245,12 @@ class IBS:
         ``num_reps`` repeats raises :class:`IBSSamplingError` once a trial
         has drawn more than ``max_iter * num_reps`` samples. Default 10**5.
     max_time : float, optional
-        The time limit of a call, in seconds, > 0. Once it is reached, the
-        sampling stops, and each trial's value averages its completed
-        repeats; the result has exit flag 2, with a warning. The default,
-        ``np.inf``, sets none.
+        The time limit of a call, in seconds, > 0, checked after every
+        simulator call. Once it is reached, the sampling stops, and each
+        trial's value averages its completed repeats, while a repeat that
+        the likelihood threshold ended counts -T; the result has exit flag
+        2, with a warning, and a trial with no completed repeat raises
+        :class:`IBSSamplingError`. The default, ``np.inf``, sets none.
     max_samples : int, optional
         The bound on the samples of one trial in one simulator call.
         Default 10**4.
@@ -363,18 +384,8 @@ numpy.random.Generator, optional
                 "neg_logl_threshold must be > 0, or np.inf for none, got "
                 f"{neg_logl_threshold}."
             )
-        if _takes_rng(sample_from_model):
-
-            def simulator(params, design_rows, rng):
-                return sample_from_model(params, design_rows, rng=rng)
-
-        else:
-
-            def simulator(params, design_rows, rng):
-                return sample_from_model(params, design_rows)
-
         self._settings = _sampler._Settings(
-            simulator,
+            _Simulator(sample_from_model),
             responses,
             design,
             initial_samples=num_samples_per_call or None,

@@ -1,4 +1,4 @@
-"""Simulators and helpers shared by the tests of the sampler."""
+"""Simulators and helpers shared by the tests."""
 
 import math
 from decimal import ROUND_HALF_UP, Decimal

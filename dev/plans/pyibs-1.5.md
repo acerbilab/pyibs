@@ -306,7 +306,7 @@ that every later phase can start from a clone.
 
 ### Phase 1: the interface and parity with `ibslike.m`
 
-**Status**: pending
+**Status**: in progress
 **Executor**: Opus (orchestrator); the tests of step 6 may go to an Opus
 sub-agent once steps 2 to 5 are committed.
 **Needs**: `../ibs`, `../pybads`.
@@ -330,9 +330,9 @@ examples/
 ```
 
 **Steps**:
-1. Record `git -C ../ibs rev-parse HEAD` in the Worklog; if it differs
+1. [x] Record `git -C ../ibs rev-parse HEAD` in the Worklog; if it differs
    from Phase 0's, say what changed in `ibslike.m` and `ibs_basic.m`.
-2. `pyibs/_sampler.py`, per the parity table, reading `../ibs/ibslike.m`
+2. [x] `pyibs/_sampler.py`, per the parity table, reading `../ibs/ibslike.m`
    for each item:
    - samples per call (D6): `m = min(max_samples, max(1,
      math.floor(level + 0.5)))`, then `m = min(m, ceil(max_mem /
@@ -369,7 +369,7 @@ examples/
      them, stay as they are: one that fails after the change of schedule
      is investigated, never reseeded (the port of `runtest2` checks
      `ibslike.m`'s fixed tolerances at one seed).
-3. `pyibs/ibs.py` replaces 0.1.0's, with the class `IBS` (D2, D3, D8, D10,
+3. [x] `pyibs/ibs.py` replaces 0.1.0's, with the class `IBS` (D2, D3, D8, D10,
    D16, D21, D22, D23):
    - `IBS(sample_from_model, response_matrix, design_matrix=None,
      vectorized=None, acceleration=1.5, num_samples_per_call=0,
@@ -419,13 +419,13 @@ examples/
    - A zero variance is returned as computed, with the `UserWarning` of
      D10; its link points to the FAQ answer that Phase 4 writes, under the
      published documentation's address.
-4. `pyibs/ibs_basic.py`: read `../ibs/ibs_basic.m`; keep the function's
+4. [x] `pyibs/ibs_basic.py`: read `../ibs/ibs_basic.m`; keep the function's
    signature, make a missing design work (the simulator then receives the
    trial index, as `IBS` does), compare every column, pass the generator as
    `IBS` does, and raise on a NaN response as `IBS` does (D23), where
    `ibs_basic.m` loops forever. `pyibs/__init__.py` exports the public
    names and `__version__` (from `importlib.metadata`).
-5. The example model: `examples/psycho_model.py`, after
+5. [x] The example model: `examples/psycho_model.py`, after
    `../ibs/psycho_gen.m` and `psycho_nll.m`, with the simulator and the
    closed-form log-likelihood. In `pyproject.toml`, `packages` gains
    `pyibs.examples`, with `package-dir = {"pyibs.examples" = "examples"}`
@@ -434,7 +434,7 @@ examples/
    `pyibs/psycho_neg_logl.py` and the three notebooks from `pyibs/`
    (D13). Commit steps 2 to 5, with the changelog entries of their
    changes (`AGENTS.md`, "Changelog").
-6. Tests:
+6. [x] Tests:
    - `test_ibs.py`: each output form and its types (`type(res) is tuple`,
      Python floats); `return_positive`; scalar and per-trial weights;
      responses with several columns, text responses and a design of None;
@@ -463,13 +463,13 @@ examples/
      its closed form within 4.5 standard errors at three seeded parameter
      vectors.
    - `test_ibslike_ports.py` calls the public `IBS`.
-7. `pyibs/README.md`: the catalogue of deliberate differences from
+7. [x] `pyibs/README.md`: the catalogue of deliberate differences from
    `ibslike.m` 0.96, after `../pybads/pybads/bads/README.md`, one entry per
    deliberate difference of the parity table and of steps 2 to 4, each
    with its reason. Every statement about what `ibslike.m` does is checked
    against `../ibs/ibslike.m` and cites its lines; descriptions of
    `ibslike.m` in the engine's docstrings are not copied unchecked.
-8. `CHANGELOG.md`, under `Unreleased`: the "Upgrading from 0.1.0" list
+8. [x] `CHANGELOG.md`, under `Unreleased`: the "Upgrading from 0.1.0" list
    that opens the section, covering the defects listed under Context and
    the changed behaviour: the cap raises; `max_iter` counts samples;
    `max_mem` defaults to `ibslike.m`'s formula instead of 1e6;
@@ -478,7 +478,7 @@ examples/
    its iteration limit, exit flag 3); the example modules leave the
    package; Python 3.10 or newer. Check that every change of the phase
    has its entry.
-9. `AGENTS.md`: an "Architecture" section (the modules and what each
+9. [x] `AGENTS.md`: an "Architecture" section (the modules and what each
    owns); under "What spans files", the catalogue as the list of
    deliberate differences, which a change that adds or removes one
    updates; in the convention "Changelog", the catalogue beside the
@@ -1135,3 +1135,13 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   `git config blame.ignoreRevsFile .git-blame-ignore-revs`, needs
   `git config --unset blame.ignoreRevsFile`: without the file, `git blame`
   stops with "fatal: could not open object name list".
+
+### Phase 1 — 2026-10-09
+
+In progress.
+
+- References (step 1): `../ibs` at `2229c00c4a19eb9f236f9f257100dab9e87b6f92`,
+  Phase 0's commit, so `ibslike.m` and `ibs_basic.m` are unchanged;
+  `../pybads` at `ff415ca0316ba3d58b5c48337978ddfe81851cc2`.
+- Commits: `65add3a` (steps 2 to 5); steps 6 to 9 in the commit after it.
+- Open: the review, the Status and this entry's completion.

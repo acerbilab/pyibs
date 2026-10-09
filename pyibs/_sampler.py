@@ -253,10 +253,12 @@ class _Settings:
         counterpart of ``ibslike.m``'s ``MaxIter`` (10**5 per trial and
         estimate, also the default here). A draw of n repeats raises
         :class:`IBSSamplingError` once a trial has drawn more than
-        ``max_samples_per_trial * n`` samples in it, surplus included. The
-        check follows every simulator call, whether or not that call
-        completed the draw. None disables the cap: an observed response
-        that the simulator cannot produce then makes a draw run forever.
+        ``max_samples_per_trial * n`` samples in it, surplus included, and
+        so is the sample of a ``first`` round (:func:`sample`) that it
+        discards. The check follows every simulator call, whether or not
+        that call completed the draw. None disables the cap: an observed
+        response that the simulator cannot produce then makes a draw run
+        forever.
     max_time : float, optional
         Time limit in seconds, > 0, of a draw (``ibslike.m``'s
         ``MaxTime``), counted from the ``start`` given to :func:`sample`.
@@ -868,7 +870,8 @@ def sample(
     first : _FirstRound or None, optional
         A simulator call already made for one sample of every trial, from
         :func:`first_round`. The draw takes it as its first round when that
-        round requests one sample of every trial, and otherwise ignores it.
+        round requests one sample of every trial, and otherwise discards its
+        outcomes; its sample of each trial counts toward the cap either way.
 
     Returns
     -------
@@ -992,11 +995,11 @@ def sample(
     estimate, whose value then depends on the sampling schedule, and
     compares the unweighted sum of the trials' terms with
     ``NegLogLikeThreshold``. Its vectorized path checks only the lowest
-    repeat still being sampled, and leaves the trials still sampling that
-    repeat out of the bound; its loop path samples one repeat at a time
-    and checks it after every call, with ``c_i + 1`` for the trials still
-    sampling it, as here. The bound of [1] takes ``c_i`` for those trials,
-    one term less. This sampler checks every repeat, bounds the
+    repeat still being sampled, with the open count ``c_i`` for the trials
+    still sampling it, as the bound of [1] does; its loop path samples one
+    repeat at a time and checks it after every call, with ``c_i + 1`` for
+    the trials still sampling it, one term more, as here. This sampler
+    checks every repeat, bounds the
     weighted sum, which is on the scale of a repeat's value, and returns
     -T for an ended repeat, as [1] does, so that every value is exactly
     ``max(Y_r, -T)``.
@@ -1041,6 +1044,9 @@ def sample(
             hits, elapsed = first.hits, first.elapsed
             used_first = True
         else:
+            if calls == 0 and first is not None:
+                # The discarded first round's samples count toward the cap.
+                trial_samples += 1
             hits, elapsed = _simulate(settings, theta, rng, trials, m)
         counts.absorb(trials, hits)
         if threshold is not None:

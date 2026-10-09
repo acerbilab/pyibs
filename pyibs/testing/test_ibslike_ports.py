@@ -22,8 +22,7 @@ import warnings
 
 import numpy as np
 
-from pyibs import _sampler
-from pyibs.testing import _helpers
+from pyibs import IBS
 
 SEED = 20260929
 SEEDS = (SEED, SEED + 1, SEED + 2)
@@ -34,12 +33,25 @@ def bernoulli(theta, idx, rng):
 
 
 def estimate(responses, p, n_repeats, rng, **options):
-    """IBS estimate of the log-likelihood of p, and its SE."""
-    settings = _sampler._Settings(bernoulli, responses, **options)
-    s = _helpers.summary(
-        _sampler.sample(settings, np.array([p]), n_repeats, rng)
+    """IBS estimate of the log-likelihood of p, and its SE.
+
+    ``IBS`` uses the generator ``rng`` as given, so the stream continues
+    from one estimate to the next.
+    """
+    ibs = IBS(
+        bernoulli, responses, vectorized=True, **options, random_seed=rng
     )
-    return s.mean, s.se
+    # At p = 1 every count is 1, and the SD is 0, which IBS warns about.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", "The IBS variance estimate is 0", UserWarning
+        )
+        return ibs(
+            np.array([p]),
+            num_reps=n_repeats,
+            additional_output="std",
+            return_positive=True,
+        )
 
 
 def passes_at_two_of_three_seeds(check, name):
@@ -121,7 +133,7 @@ def runtest3(rng):
             n_repeats,
             rng,
             acceleration=1,
-            neg_loglik_threshold=threshold,
+            neg_logl_threshold=threshold,
         )
         for p in p_model
     ]
