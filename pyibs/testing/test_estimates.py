@@ -61,6 +61,14 @@ def test_trial_weights_rejected(weights):
         trial_weights(weights, 3)
 
 
+@pytest.mark.parametrize(
+    "weights", [True, [True, False, True], "1.5", ["1", "2", "3"], [1, "2", 3]]
+)
+def test_trial_weights_refuse_booleans_and_strings(weights):
+    with pytest.raises(TypeError, match="booleans or strings"):
+        trial_weights(weights, 3)
+
+
 def test_trial_weights_rejects_bad_n_trials():
     for n in (0, 1.5, True):
         with pytest.raises(ValueError):

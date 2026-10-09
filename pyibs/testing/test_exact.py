@@ -173,9 +173,11 @@ def test_weights_validated():
 
 
 def test_rejects_bad_n():
-    for n in (0, -1, 1.5, True):
+    for n in (0, -1, 1.5):
         with pytest.raises(ValueError):
             draw(n)
+    with pytest.raises(TypeError):
+        draw(True)
 
 
 def test_scalar_weight_scales_values():

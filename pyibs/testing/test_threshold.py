@@ -14,6 +14,7 @@ from pyibs.testing._helpers import (
     bernoulli,
     cost,
     draw,
+    ibslike_samples,
     never_matches,
     summary,
 )
@@ -246,12 +247,15 @@ def test_threshold_ends_an_impossible_response():
 # Reference implementation, one sample and one repeat at a time
 
 
-def reference_sampler(streams, n, initial, acceleration, cap, w, T):
+def reference_sampler(
+    streams, n, initial, acceleration, max_samples, mem, w, T
+):
     """Rows-first IBS with the threshold rule, written as plain loops.
 
     After every round, every repeat that is not ended, complete or not, is
     checked, and the trials sampling an ended repeat move to the next one
-    that is not ended.
+    that is not ended. The samples per call are ``ibslike.m``'s, with the
+    level not bounded; ``mem`` is ``max_mem``.
     """
     n_trials = len(streams)
     pos = [0] * n_trials
@@ -272,7 +276,7 @@ def reference_sampler(streams, n, initial, acceleration, cap, w, T):
         open_trials = [i for i in range(n_trials) if current[i] < n]
         if not open_trials:
             break
-        m = max(1, min(math.floor(level), cap // len(open_trials)))
+        m = ibslike_samples(level, len(open_trials), max_samples, mem)
         sizes.append(len(open_trials) * m)
         for i in open_trials:
             for _ in range(m):
@@ -321,18 +325,23 @@ def reference_sampler(streams, n, initial, acceleration, cap, w, T):
     return values, var, int(sum(ended)), tv, ts, sizes
 
 
+# The default max_mem of 6 trials is 1000.
 @pytest.mark.parametrize(
-    "initial, acceleration, cap, T",
+    "initial, acceleration, max_samples, max_mem, T",
     [
-        (1, 1, 10**6, 4.1414),
-        (3, 1, 10**6, 3.6789),
-        (2, 1.5, 10**6, 4.6692),
-        (None, 1.5, 10**6, 4.1414),
-        (5, 2.0, 13, 3.6789),
-        (1, 1.5, 4, 4.6692),
+        (1, 1, 10**4, 1000, 4.1414),
+        (3, 1, 10**4, 1000, 3.6789),
+        (2, 1.5, 10**4, 1000, 4.6692),
+        (None, 1.5, 10**4, 1000, 4.1414),
+        (5, 2.0, 10**4, 13, 3.6789),
+        (1, 1.5, 10**4, 4, 4.6692),
+        (None, 1.5, 3, 1000, 4.1414),
+        (5, 2.0, 7, 10, 3.6789),
     ],
 )
-def test_matches_reference_sampler(initial, acceleration, cap, T):
+def test_matches_reference_sampler(
+    initial, acceleration, max_samples, max_mem, T
+):
     rng = np.random.default_rng(SEED)
     probs = np.linspace(0.1, 0.9, 6)
     w = np.linspace(0.5, 1.5, 6)
@@ -345,12 +354,20 @@ def test_matches_reference_sampler(initial, acceleration, cap, T):
         trial_weights=w,
         initial_samples=initial,
         acceleration=acceleration,
-        max_samples_per_call=cap,
+        max_samples=max_samples,
+        max_mem=max_mem,
         neg_loglik_threshold=T,
     )
     b = draw(settings, n, SEED)
     values, var, n_ended, tv, ts, sizes = reference_sampler(
-        streams, n, n if initial is None else initial, acceleration, cap, w, T
+        streams,
+        n,
+        n if initial is None else initial,
+        acceleration,
+        max_samples,
+        max_mem,
+        w,
+        T,
     )
     # Some repeats end and some do not.
     assert 0 < n_ended < n
@@ -502,11 +519,15 @@ def test_per_trial_outputs_exclude_ended_repeats(clipping):
 # Settings
 
 
-@pytest.mark.parametrize(
-    "threshold", [0.0, -1.0, math.inf, math.nan, True, "5", np.array([5.0])]
-)
+@pytest.mark.parametrize("threshold", [0.0, -1.0, math.inf, math.nan])
 def test_invalid_threshold_raises(threshold):
     with pytest.raises(ValueError, match="neg_loglik_threshold"):
+        _Settings(bernoulli, np.ones(3), neg_loglik_threshold=threshold)
+
+
+@pytest.mark.parametrize("threshold", [True, "5", np.array([5.0])])
+def test_threshold_of_the_wrong_type_raises(threshold):
+    with pytest.raises(TypeError, match="neg_loglik_threshold"):
         _Settings(bernoulli, np.ones(3), neg_loglik_threshold=threshold)
 
 

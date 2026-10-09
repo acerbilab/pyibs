@@ -75,6 +75,9 @@ def trial_weights(weights, n_trials):
 
     Raises
     ------
+    TypeError
+        If the weights are not real numbers: booleans and strings,
+        numeric or not, are refused.
     ValueError
         If the shape is wrong, or a weight is not finite or is negative.
     """
@@ -89,7 +92,13 @@ def trial_weights(weights, n_trials):
     n_trials = int(n_trials)
     if weights is None:
         return np.ones(n_trials)
-    w = np.array(weights, dtype=float)
+    w = np.asarray(weights)
+    if w.dtype.kind not in "iuf":
+        raise TypeError(
+            "Trial weights must be real numbers, not booleans or strings, "
+            f"got an array of dtype {w.dtype}."
+        )
+    w = np.array(w, dtype=float)
     if w.ndim == 0:
         w = np.full(n_trials, float(w))
     elif w.shape != (n_trials,):

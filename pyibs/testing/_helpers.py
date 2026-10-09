@@ -1,6 +1,7 @@
 """Simulators and helpers shared by the tests of the sampler."""
 
 import math
+from decimal import ROUND_HALF_UP, Decimal
 from types import SimpleNamespace
 
 import numpy as np
@@ -104,3 +105,14 @@ def summary(result):
         trial_loglik=trial_loglik,
         trial_nominal_var=trial_nominal_var,
     )
+
+
+def matlab_round(x):
+    """MATLAB's ``round``, which rounds halves away from zero."""
+    return int(Decimal(x).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+
+
+def ibslike_samples(level, n_open, max_samples, max_mem):
+    """``ibslike.m``'s samples per trial in one call (lines 281-283)."""
+    m = min(max_samples, max(1, matlab_round(level)))
+    return min(m, math.ceil(Decimal(max_mem) / n_open))

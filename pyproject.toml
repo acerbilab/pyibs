@@ -22,11 +22,18 @@ Issues = "https://github.com/acerbilab/pyibs/issues"
 
 [tool.setuptools]
 include-package-data = true
-# Every directory of the package
+# Every directory of the package; the examples are installed as
+# pyibs.examples
 packages = [
     "pyibs",
+    "pyibs.examples",
     "pyibs.testing",
 ]
+package-dir = {"pyibs.examples" = "examples"}
+
+[tool.setuptools.package-data]
+# Make sure to include example Notebooks:
+"pyibs.examples" = ["*.ipynb"]
 
 [project.optional-dependencies]
 # What the test suite needs (`pytest --pyargs pyibs`); CI installs it.
