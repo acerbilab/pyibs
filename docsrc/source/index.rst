@@ -14,15 +14,16 @@ An IBS estimate is noisy, so it serves as the target of an optimizer or an infer
 What's new in PyIBS 1.5
 -----------------------
 
-- **Rebuilt and checked against MATLAB IBS.** PyIBS is rebuilt on one
+- **Rebuilt and checked against MATLAB IBS.** PyIBS is rebuilt on a
   tested sampler that follows ``ibslike.m`` 0.96 and was checked against it
   line by line. A :mainbranch:`catalogue <pyibs/README.md>` lists where PyIBS
   differs from it on purpose, and why.
 - **Validated.** On 16 models with an exact log-likelihood, under every
-  setting of ``vectorized``, ``num_reps`` and the likelihood threshold that
-  was tested, 2,000 estimates each, no bias was detected; without the
-  threshold, the variance estimates are calibrated as those of exact IBS
-  draws are (:mainbranch:`the record <dev/results/2026-10-09-validation.md>`).
+  setting of ``vectorized`` and ``num_reps`` that was tested, 2,000
+  estimates each, no bias was detected, and the variance estimates are
+  calibrated as those of exact IBS draws are; under the likelihood
+  threshold, the estimates agree with the expected value of a thresholded
+  estimate (:mainbranch:`the record <dev/results/2026-10-09-validation.md>`).
 - **Ready for PyBADS and PyVBMC.** ``additional_output="std"`` returns the
   tuple of the estimate and its standard deviation, as Python floats, which
   PyBADS 1.5 and PyVBMC 1.5 take from a noisy target. A standard deviation
@@ -60,7 +61,7 @@ Suppose the model's simulator produces the observed response of a trial with pro
 
    \hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k},
 
-which is 0 for :math:`K = 1`. The estimate is exactly unbiased for every :math:`p`, and among the unbiased estimates from such sampling it has the least variance; its variance is bounded, by :math:`\pi^2/6`, however small :math:`p` is [`1 <#references>`__, Sections 2.4 and 4.3]. With :math:`K` known, :math:`\psi_1(1) - \psi_1(K)`, where :math:`\psi_1` is the trigamma function, estimates the variance, and the estimate is calibrated [`1 <#references>`__, Sections 4.3 and 4.6].
+which is 0 for :math:`K = 1`. The estimate is exactly unbiased for every :math:`p`, and among the unbiased estimates from such sampling it has the least variance; its variance is bounded, by :math:`\pi^2/6`, however small :math:`p` is [`1 <#references>`__, Sections 2.4 and 4.3]. With :math:`K` known, :math:`\psi_1(1) - \psi_1(K)`, where :math:`\psi_1` is the trigamma function, estimates the variance; summed over the trials of a data set, these variance estimates are calibrated [`1 <#references>`__, Sections 4.3 and 4.6].
 
 .. image:: _static/ibs-cost-and-variance.png
     :align: center
@@ -93,8 +94,10 @@ PyIBS suits a model that you can simulate but whose likelihood you cannot comput
 - **IBS also serves where guarantees on each dataset matter.** An amortized
   estimator can be accurate on some datasets and untrustworthy on others, so
   its results need diagnostics on each dataset and a fallback
-  [`3 <#references>`__]. IBS's estimates are unbiased, with a calibrated
-  variance, on every dataset, without training.
+  [`3 <#references>`__]. IBS's estimates are unbiased on every dataset,
+  without training, and come with an estimate of their variance; the
+  optimizer or the inference method that uses them still has errors of its
+  own, which you check as for any fit.
 - **Its cost grows with improbable responses.** A trial whose observed
   response the model produces with probability :math:`p` takes :math:`1/p`
   samples on average, so improbable responses are expensive; a lapse rate in
@@ -163,7 +166,7 @@ License and source
 
 PyIBS is released under the terms of the :mainbranch:`BSD 3-Clause License <LICENSE>`.
 The Python source code is on :labrepos:`GitHub <pyibs>`.
-You may also want to check out the original :labrepos:`MATLAB toolbox <ibs>`, `PyBADS <https://acerbilab.github.io/pybads/>`__ and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, which take PyIBS's estimates as their target, and the lab's other `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
+You may also want to check out `PyBADS <https://acerbilab.github.io/pybads/>`__ and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, which take PyIBS's estimates as their target, the original :labrepos:`MATLAB toolbox <ibs>` of IBS, and the lab's other `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
 
 Acknowledgments
 ###############

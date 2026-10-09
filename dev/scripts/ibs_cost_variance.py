@@ -1,4 +1,4 @@
-"""The figure of "How does it work?" in docsrc/source/index.rst.
+"""The figure of "How does it work?" in docsrc/source/index.rst and README.md.
 
 For a trial whose observed response the simulator produces with
 probability p, IBS takes K ~ Geometric(p) samples, 1/p on average, and the
@@ -6,8 +6,10 @@ variance of its estimate of log p is Li_2(1 - p) = scipy.special.spence(p),
 which tends to pi^2/6 as p -> 0 (van Opheusden, Acerbi & Ma, 2020,
 Sections 4.2 and 4.3).
 
-Run from the repository root as
-``.venv/bin/python dev/scripts/ibs_cost_variance.py OUT``, where OUT is
+It needs matplotlib, which the ``dev`` extra does not install. Run from
+the repository root as ``$PY dev/scripts/ibs_cost_variance.py OUT``, with
+``$PY`` the venv's interpreter (``.venv/Scripts/python.exe`` on Windows,
+``.venv/bin/python`` elsewhere) and OUT
 ``docsrc/source/_static/ibs-cost-and-variance.png``.
 """
 

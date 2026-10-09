@@ -327,7 +327,7 @@ numpy.random.Generator, optional
     attribute of the same name. ``response_matrix`` and ``design_matrix``
     hold read-only copies, ``max_mem`` the bound in use, ``vectorized`` the
     schedule as described under Attributes, and the other settings the
-    values given, the counts as integers.
+    values given, the counts as integers and the other numbers as floats.
 
     **Reproducibility.** Every random draw of a call comes from ``rng``,
     when the simulator draws from the ``rng`` it receives. Two objects

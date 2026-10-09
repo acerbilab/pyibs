@@ -18,8 +18,8 @@ An IBS estimate is noisy, so it serves as the target of an optimizer or an infer
 
 ## What's new in PyIBS 1.5
 
-- **Rebuilt and checked against MATLAB IBS.** PyIBS is rebuilt on one tested sampler that follows `ibslike.m` 0.96 and was checked against it line by line. A [catalogue](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md) lists where PyIBS differs from it on purpose, and why.
-- **Validated.** On 16 models with an exact log-likelihood, under every setting of `vectorized`, `num_reps` and the likelihood threshold that was tested, 2,000 estimates each, no bias was detected; without the threshold, the variance estimates are calibrated as those of exact IBS draws are ([the record](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)).
+- **Rebuilt and checked against MATLAB IBS.** PyIBS is rebuilt on a tested sampler that follows `ibslike.m` 0.96 and was checked against it line by line. A [catalogue](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md) lists where PyIBS differs from it on purpose, and why.
+- **Validated.** On 16 models with an exact log-likelihood, under every setting of `vectorized` and `num_reps` that was tested, 2,000 estimates each, no bias was detected, and the variance estimates are calibrated as those of exact IBS draws are; under the likelihood threshold, the estimates agree with the expected value of a thresholded estimate ([the record](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)).
 - **Ready for PyBADS and PyVBMC.** `additional_output="std"` returns the tuple of the estimate and its standard deviation, as Python floats, which PyBADS 1.5 and PyVBMC 1.5 take from a noisy target. A standard deviation of 0, which both refuse, comes with a warning that links the [FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
 - **Reproducible runs.** `IBS(..., random_seed=...)` seeds the object's random number generator, which a simulator with a parameter named `rng` receives.
 - **Fixes.** PyIBS 0.1.0's default `max_iter` was 15, which biased the estimates of trials with improbable responses, and responses of several columns raised an error. These and other defects are fixed.
@@ -45,7 +45,7 @@ PyIBS suits a model that you can simulate but whose likelihood you cannot comput
 - **When the likelihood can be computed, compute it.** The IBS paper recommends a closed form, or an analytical or numerical approximation, wherever one is tractable, with IBS estimates to check its implementation [[1](#references-and-citation), Section 6.4].
 - **Amortized simulation-based inference is often the better choice when one model is fitted to many datasets and its simulations are cheap.** A neural network trained once on simulations, as in neural posterior estimation, then gives the posterior of each new dataset almost at once [[3](#references-and-citation)].
 - **IBS remains the method of choice where amortization is hard because each trial's context can be unique.** In a model of game play, each move is conditioned on its board position, and a position may occur only once in the data [[1](#references-and-citation), Section 5.4; [2](#references-and-citation)].
-- **IBS also serves where guarantees on each dataset matter.** An amortized estimator can be accurate on some datasets and untrustworthy on others, so its results need diagnostics on each dataset and a fallback [[3](#references-and-citation)]. IBS's estimates are unbiased, with a calibrated variance, on every dataset, without training.
+- **IBS also serves where guarantees on each dataset matter.** An amortized estimator can be accurate on some datasets and untrustworthy on others, so its results need diagnostics on each dataset and a fallback [[3](#references-and-citation)]. IBS's estimates are unbiased on every dataset, without training, and come with an estimate of their variance; the optimizer or the inference method that uses them still has errors of its own, which you check as for any fit.
 - **Its cost grows with improbable responses.** A trial whose observed response the model produces with probability p takes 1/p samples on average, so improbable responses are expensive; a lapse rate in the model and the likelihood threshold of `IBS` bound the cost at poor parameters [[1](#references-and-citation), Sections 2.2 and 6.4, Appendix C.1]. Continuous responses must be binned, since a simulated continuous response never matches exactly [[1](#references-and-citation), Section 6.3].
 
 The FAQ answers [when to use IBS rather than amortized simulation-based inference](https://acerbilab.github.io/pyibs/faq.html#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference) at more length.
@@ -64,9 +64,9 @@ PyIBS is available via `pip` and `conda-forge`.
     ```
     PyIBS requires Python version 3.10 or newer, NumPy 2.0 or newer and SciPy 1.13 or newer. In an environment that holds NumPy 1.x, `conda` can install PyIBS 0.1.0 instead, without a warning: ask it for `"pyibs>=1.5"`.
 
-2. (Optional): Install [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc), to fit models with PyIBS's estimates as the examples do, and [Jupyter Notebook](https://jupyter.org/install), to run the examples:
+2. (Optional): Install [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc), among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/), to fit models with PyIBS's estimates as the examples do, and [Jupyter Notebook](https://jupyter.org/install), to run the examples:
    ```console
-   python -m pip install pybads pyvbmc notebook
+   python -m pip install --upgrade "pybads>=1.5.1" "pyvbmc>=1.5" notebook
    ```
    The example notebooks are installed with PyIBS, in the folder that this command prints:
    ```console
@@ -137,7 +137,7 @@ vbmc = VBMC(log_likelihood, x0, lb, ub, plb, pub, prior=prior, options={"specify
 vp, results = vbmc.optimize()
 ```
 
-Choose `num_reps` so that the standard deviation is about 1 near the optimum: the noise that PyBADS and PyVBMC handle best. Here 100 repeats give about 1.1 on 600 trials. For a reproducible run, seed both PyIBS and the method it serves, such as `IBS(..., random_seed=1)` and `BADS(..., options={"specify_target_noise": True, "random_seed": 2})`, and have the simulator draw from the `rng` it receives; the FAQ says [when a seed reproduces a run](https://acerbilab.github.io/pyibs/faq.html#faq-how-do-i-make-a-run-reproducible).
+Choose `num_reps` so that the standard deviation is about 1 near the optimum: PyBADS works best with noise of 1 or less there, and PyVBMC with about 1, and not much more than 3, where the posterior has its mass. Here 100 repeats give about 1.1 on 600 trials. For a reproducible run, seed both PyIBS and the method it serves, such as `IBS(..., vectorized=True, random_seed=1)` and `BADS(..., options={"specify_target_noise": True, "random_seed": 2})`, and have the simulator draw from the `rng` it receives; the FAQ says [when a seed reproduces a run](https://acerbilab.github.io/pyibs/faq.html#faq-how-do-i-make-a-run-reproducible).
 
 ## Next steps
 
@@ -149,9 +149,9 @@ For practical recommendations, such as how to choose `num_reps` and the likeliho
 
 Suppose the model's simulator produces the observed response of a trial with probability p, which is unknown. IBS draws responses from the simulator until one matches, which takes K draws, and estimates log p as
 
-$$\hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k},$$
+    -(1 + 1/2 + 1/3 + ... + 1/(K - 1)),
 
-which is 0 for K = 1. The estimate is exactly unbiased for every p, and among the unbiased estimates from such sampling it has the least variance; its variance is bounded, by π²/6, however small p is [[1](#references-and-citation), Sections 2.4 and 4.3]. With K known, ψ₁(1) − ψ₁(K), where ψ₁ is the trigamma function, estimates the variance, and the estimate is calibrated [[1](#references-and-citation), Sections 4.3 and 4.6].
+which is 0 for K = 1. The estimate is exactly unbiased for every p, and among the unbiased estimates from such sampling it has the least variance; its variance is bounded, by π²/6, however small p is [[1](#references-and-citation), Sections 2.4 and 4.3]. With K known, ψ₁(1) − ψ₁(K), where ψ₁ is the trigamma function, estimates the variance; summed over the trials of a data set, these variance estimates are calibrated [[1](#references-and-citation), Sections 4.3 and 4.6].
 
 **Fig 1: the cost and the variance of IBS.** For a trial whose observed response the simulator produces with probability p, IBS takes 1/p samples on average (left), while the variance of its estimate of log p, Li₂(1 − p), stays below π²/6 however small p is (right) [[1](#references-and-citation), Sections 4.2 and 4.3]. ![The expected number of samples, 1/p, and the variance of the IBS estimate, Li2(1 - p), against p](https://raw.githubusercontent.com/acerbilab/pyibs/main/docsrc/source/_static/ibs-cost-and-variance.png)
 

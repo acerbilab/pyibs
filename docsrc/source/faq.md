@@ -2,7 +2,8 @@
 
 This FAQ is curated by [Luigi Acerbi](https://lacerbi.github.io/), and in constant expansion.
 It is adapted for PyIBS 1.5 from the [MATLAB IBS FAQ](https://github.com/acerbilab/ibs/wiki),
-with further questions on the Python package.
+with further questions on the Python package. MATLAB IBS is, with PyIBS, one
+of the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 For a tutorial with detailed examples, see the [Jupyter notebook examples](examples.rst).
 
@@ -139,11 +140,10 @@ noisy log-likelihood can then use it: maximum-likelihood or
 maximum-a-posteriori estimation with PyBADS, the posterior and the model
 evidence with PyVBMC, and model comparison.
 
-**When amortized inference is the better choice.** Amortized methods, such as
-neural posterior estimation or neural likelihood estimation, train a neural
-network on simulations once; the network then gives the posterior of a new
-data set in near-instant time, so that the cost of the training is shared
-among all the data sets it serves ([Li et al., 2026](https://openreview.net/forum?id=osV7adJlKD),
+**When amortized inference is the better choice.** Amortized methods train a
+neural network on simulations once. In neural posterior estimation, the
+network then gives the posterior of a new data set in near-instant time, so
+that the cost of the training is shared among all the data sets it serves ([Li et al., 2026](https://openreview.net/forum?id=osV7adJlKD),
 Section 1). When one model is fitted to many data sets and its simulations
 are cheap, this is often the better choice: IBS draws new simulations for
 every data set, at every parameter vector that an optimizer or an inference
@@ -176,8 +176,8 @@ inference (Li et al., 2026, Section 2.3).
   therefore checks the amortized results of each data set with diagnostics,
   and falls back to slower methods with stronger guarantees, importance
   sampling and then MCMC, where the diagnostics fail. IBS's estimates are
-  unbiased, with a calibrated variance, on every data set, without training.
-  The optimizer or the inference method that uses them still has errors of
+  unbiased on every data set, without training, and come with an estimate
+  of their variance. The optimizer or the inference method that uses them still has errors of
   its own, which you check as for any fit, for instance by comparing runs.
 
 **Its costs.** A trial takes about `1 / p` samples for an observed response
@@ -265,7 +265,8 @@ MATLAB.
 To fit models with PyIBS's estimates, install
 [PyBADS](https://acerbilab.github.io/pybads/) (1.5.1 or newer) or
 [PyVBMC](https://acerbilab.org/pyvbmc/) (1.5 or newer) as well: both
-take PyIBS's output as it comes. To run the
+take PyIBS's output as it comes, and both are among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/). To run the
 [example notebooks](examples.rst) you also need Jupyter (see the
 [installation instructions](installation.rst)).
 
@@ -297,7 +298,7 @@ Run its test suite, which is installed with the package. Install PyIBS with
 its `test` extra, which adds pytest, then run the tests:
 
 ```console
-python -m pip install "pyibs[test]"
+python -m pip install --upgrade "pyibs[test]"
 python -m pytest --pyargs pyibs
 ```
 
@@ -731,11 +732,15 @@ It depends:
   noisy, and PyBADS estimates the noise itself. Since PyIBS gives the SD at
   no extra cost, give it: the PyBADS FAQ says so too
   ([Should I provide an estimate of the noise associated with each evaluation?](https://acerbilab.github.io/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation)).
-- If you are performing *Bayesian inference* with PyVBMC, it is *necessary*
-  to give it. Bayesian inference is very sensitive to noisy estimates of the
-  log-likelihood (or of the log posterior), so it is crucial to provide the
-  inference algorithm with all available information about the magnitude of
-  the noise.
+- If you are performing *Bayesian inference* with PyVBMC, give it. Bayesian
+  inference is very sensitive to noisy estimates of the log-likelihood (or of
+  the log posterior), so it matters to provide the inference algorithm with
+  all available information about the magnitude of the noise. PyVBMC can
+  also infer a noise level itself, with `options={"uncertainty_handling": True}`
+  and a target that returns the estimate alone, but its FAQ recommends a
+  target that returns the SD of each evaluation
+  ([Does VBMC automatically detect that the target function is noisy?](https://acerbilab.org/pyvbmc/faq.html#faq-does-vbmc-automatically-detect-that-the-target-function-is-noisy)),
+  which PyIBS gives at no extra cost.
 
 (faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help)=
 ### I have several questions about using PyBADS to optimize the log-likelihood. Can you help?
@@ -790,7 +795,7 @@ of a first, rough fit, tells you how many repeats you need:
 
 ```python
 _, sd = ibs(theta, num_reps=10, additional_output="std")
-num_reps = int(np.ceil(10 * sd**2))  # for an SD of about 1
+num_reps = max(1, int(np.ceil(10 * sd**2)))  # for an SD of about 1
 ```
 
 The SD of a single call is itself an estimate; a call with more repeats gives
@@ -803,9 +808,9 @@ at two other parameter vectors, whose negative log-likelihoods are higher by
 49 and 55 (the [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)).
 Farther from the optimum the SD can be larger, which is usually fine (the
 PyBADS FAQ says so of noise in general), and it is bounded: each trial
-adds at most `π²/6 ≈ 1.64` to the variance of one repeat ([1],
+adds at most `π²/6 ≈ 1.645` to the variance of one repeat ([1],
 Section 4.3), so with unit trial weights the SD is at most
-`sqrt(1.64 * N / num_reps)` for `N` trials.
+`sqrt(π²/6 * N / num_reps)` for `N` trials.
 
 If you cannot bring the SD down to about 1 within your computational budget,
 be as precise as you can afford.
@@ -993,7 +998,7 @@ The threshold has a price, where it acts:
   is meant for those that lie below it, which an optimizer only needs to know
   are poor. In the validation of PyIBS, on models whose exact negative
   log-likelihood lay at or near the chance level, the expected estimate lay
-  3.0 to 6.6 below it;
+  3.0 to 6.6 below the exact negative log-likelihood;
 - its variance estimate overstates the variance, about 2 to 3 times in the
   validation, since the variance estimate of an ended repeat describes the
   counts it had when it ended;
@@ -1004,6 +1009,12 @@ So use the threshold while optimizing, and not for the final estimate:
 evaluate the solution with an `IBS` object that has no threshold, the
 default `neg_logl_threshold=np.inf`
 ([see above](#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)).
+With PyVBMC, the threshold acts at parameter vectors whose log-likelihood
+lies near or below `-T`. When the model's best log-likelihood lies far above
+`-T`, as it does for a model that explains the data much better than chance,
+those vectors carry a negligible share of the posterior and of the evidence,
+so that the threshold saves their cost and changes either little; when that
+is in doubt, leave the threshold off.
 When the number of possible responses is hard to count for each trial, an
 average serves: for its four-in-a-row game, whose number of possible moves
 depends on the board, [1] took `N log(20)` (Appendix C.1).
@@ -1031,8 +1042,8 @@ warning, and raises `IBSSamplingError` for a trial without a completed
 repeat. A finite limit biases the estimates, also those of the calls that
 complete in time, since completing in time favours few samples, which give
 high log-likelihoods. Leave it at its default, `np.inf`, for estimates that
-you will use; the likelihood threshold and the cap bound the cost without
-that bias. A finite limit also makes the sampling depend on timing, so that
+you will use. The cap bounds the cost without a bias, and so does the
+likelihood threshold where the log-likelihood lies well above `-T`. A finite limit also makes the sampling depend on timing, so that
 a seed no longer reproduces a run.
 
 (faq-troubleshooting)=
@@ -1223,7 +1234,8 @@ repeats, with a warning; and `ibslike('test')` is the test suite,
 lists each difference between PyIBS and `ibslike.m`, and the didactic
 `ibs_basic.m`, with its reason. Runs of PyIBS and of `ibslike` do not match
 draw for draw, even with the same simulator: they draw their random numbers
-differently.
+differently. MATLAB IBS and PyIBS are among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 (faq-i-used-pyibs-010-what-do-i-need-to-change)=
 ### I used PyIBS 0.1.0. What do I need to change?

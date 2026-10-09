@@ -95,9 +95,11 @@ standard deviation:
   vp, results = vbmc.optimize()
 
 Choose ``num_reps`` so that the standard deviation is about 1 near the
-optimum: the noise that PyBADS and PyVBMC handle best. Here 100 repeats give
-about 1.1 on 600 trials. For a reproducible run, seed both PyIBS and the
-method it serves, such as ``IBS(..., random_seed=1)`` and
+optimum: PyBADS works best with noise of 1 or less there, and PyVBMC with
+about 1, and not much more than 3, where the posterior has its mass. Here
+100 repeats give about 1.1 on 600 trials. For a reproducible run, seed both
+PyIBS and the method it serves, such as
+``IBS(..., vectorized=True, random_seed=1)`` and
 ``BADS(..., options={"specify_target_noise": True, "random_seed": 2})``, and
 have the simulator draw from the ``rng`` it receives; the FAQ says
 :ref:`when a seed reproduces a run <faq-how-do-i-make-a-run-reproducible>`.

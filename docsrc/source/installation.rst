@@ -21,11 +21,12 @@ PyIBS is available via ``pip`` and ``conda-forge``.
    :ref:`FAQ <faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists>`.
 
 2. (Optional): Install `PyBADS <https://acerbilab.github.io/pybads/>`__ and
-   `PyVBMC <https://acerbilab.org/pyvbmc/>`__, to fit models with
-   PyIBS's estimates as the examples do, and
+   `PyVBMC <https://acerbilab.org/pyvbmc/>`__, among the lab's
+   `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__,
+   to fit models with PyIBS's estimates as the examples do, and
    `Jupyter Notebook <https://jupyter.org/install>`__, to run the examples::
 
-     python -m pip install pybads pyvbmc notebook
+     python -m pip install --upgrade "pybads>=1.5.1" "pyvbmc>=1.5" notebook
 
    The example notebooks are installed with PyIBS, in the folder that this
    command prints::
@@ -35,7 +36,7 @@ PyIBS is available via ``pip`` and ``conda-forge``.
 To install or upgrade PyIBS with its test dependencies and run the tests::
 
   python -m pip install --upgrade "pyibs[test]"
-  pytest --pyargs pyibs
+  python -m pytest --pyargs pyibs
 
 When PyBADS 1.5.1 or later, or PyVBMC 1.5 or later, is installed, the tests
 also fit the example model with it, which takes a few minutes;

@@ -157,12 +157,14 @@ needs a lower bound on every requirement of `dependencies` and of the
 with only a warning. `merge-tests.yml` runs the full matrix (Ubuntu,
 Windows, macOS × Python 3.10–3.14) on a pull request to `main` or to a
 `dev*` branch, only when its changes against that base touch `pyibs/`,
-`pyproject.toml`, `setup.py` or one of the three test workflows, so that a
+`examples/` (installed as `pyibs.examples`), `pyproject.toml`, `setup.py`
+or one of the three test workflows, so that a
 Dependabot update of an action they use is tested before it merges; a pull
 request that changes anything else runs no tests. `tests.yml` runs the full
 matrix on dispatch, and a smoke run, the matrix reduced to Ubuntu with
-Python 3.14, on each push to a `dev*` branch that touches the package,
-`pyproject.toml`, `setup.py`, `tests.yml` or `test-matrix.yml`.
+Python 3.14, on each push to a `dev*` branch that touches `pyibs/`,
+`examples/`, `pyproject.toml`, `setup.py`, `tests.yml` or
+`test-matrix.yml`.
 
 The documentation is built with
 `PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github` on Windows
@@ -177,10 +179,8 @@ pages: a new public class or function needs a hand-written `.rst` under
 docstring's Attributes section as an attribute, so a paragraph there
 renders as bogus attributes and goes in Notes instead, and it shows a
 property's own docstring in place of the property's Attributes entry, so
-the two say the same. `index.rst` restates the README's "What is it?",
-"What's new in PyIBS 1.5", "How does it work?" and "When should I use
-PyIBS?", so a change to one is made in the other; the figure of "How does
-it work?", which both show, is drawn by `dev/scripts/ibs_cost_variance.py`.
+the two say the same. The figure of "How does it work?", which the README
+and `index.rst` show, is drawn by `dev/scripts/ibs_cost_variance.py`.
 
 The notebooks in `examples/` ship in the wheel as `pyibs.examples` and are
 rendered without execution by the documentation's build; no CI job runs
@@ -188,16 +188,20 @@ them, so a change that breaks one goes unnoticed. `make -C
 examples/scripts run`, with the venv's interpreter first on `PATH` (the
 target calls `python`) and nbconvert, ipykernel, matplotlib, PyBADS and
 PyVBMC installed, reruns them in place in about two minutes, nearly all of
-it PyVBMC's; it sets `PYBADS_NO_UPDATE_REMINDER` and
+it PyVBMC's; nbconvert called directly would save each flush of a cell's
+output as an output of its own, and the cells' execution times in their
+metadata. The target sets `PYBADS_NO_UPDATE_REMINDER` and
 `PYVBMC_NO_UPDATE_REMINDER`, so that the outputs show neither package's
 reminder of an old release. Their seeds fix their outputs but for the
 elapsed times, the tip that PyBADS draws at random, and PyVBMC's run on a
-machine whose cached performance calibration differs. `examples/scripts/*.py`
-are generated from the notebooks by `make -B -C examples/scripts` (GNU
-Make, with nbconvert, IPython, and black 23.3.0 and isort 5.12.0, the
-versions of the pre-commit hooks), after the notebooks have run, since
-nbconvert cuts the last line of a script from a notebook never run; they
-are not edited by hand.
+machine whose cached performance calibration differs. The notebooks'
+markdown describes their outputs, so a rerun whose outputs change is read
+against it. `examples/scripts/*.py` are generated from the notebooks by
+`make -B -C examples/scripts` (GNU Make, with nbconvert, IPython, and
+black and isort at the versions of the pre-commit hooks), after the
+notebooks have run: for a notebook never run, nbconvert leaves out the
+script's closing blank line, and the Makefile's `head -n -1` then cuts its
+last line of code. The scripts are not edited by hand.
 
 Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
@@ -258,7 +262,7 @@ gave.
   them against the code: a change to one of those is made in the FAQ by
   hand. Its table of contents is written out by hand, each question carries
   a label `(faq-<slug>)=`, the slug the question's text lowercased with its
-  punctuation dropped and its spaces as hyphens, `skills/pyibs/SKILL.md`
+  punctuation but underscores dropped and its spaces as hyphens, `skills/pyibs/SKILL.md`
   names its sections and questions by their titles, and other files link
   its labels, so a question added or renamed, or a label changed, is
   updated there as well:
@@ -273,14 +277,26 @@ gave.
   - `faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists`:
     `installation.rst`.
 
-  The published FAQ is built from `main`, and an installed release keeps
-  the warning's link, so its label does not change once a release has
-  shipped it.
+  An installed release keeps the warning's link, and the README of each
+  release is its page on PyPI, so these labels do not change once a
+  release has shipped them. The FAQ and the notebooks also link labels of
+  the FAQs of PyBADS (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
+  (`acerbilab.org/pyvbmc/faq.html#…`), which nothing here checks: grep for
+  those addresses to check them against the two repositories' `faq.md`.
 - **When IBS fits.** What PyIBS is for, and when amortized
   simulation-based inference or a closed-form likelihood serves better, is
   stated, with its citations, in the README's "When should I use PyIBS?",
   its copy in `index.rst`, the FAQ's "General" section and the skill's
   "When PyIBS fits", so a change to it is made in all four.
+- **Text that the README shares.** `index.rst` restates the README's "What
+  is it?", "What's new in PyIBS 1.5", "How does it work?" and "When should
+  I use PyIBS?", its references, citation and acknowledgments (the grants
+  also in `about_us.rst`); `installation.rst` and `quickstart.rst` copy its
+  Installation and Quick start; and the skill quotes its section titles. The
+  requirements, Python 3.10, NumPy 2.0 and SciPy 1.13, are stated in the
+  README, `index.rst`, `installation.rst`, `development.rst`, the FAQ and
+  the changelog besides `pyproject.toml`. A change to one copy is made in
+  the others.
 - **The shared IBS reduction.** `repeat_estimates` in
   `pyibs/_estimates.py` turns matching counts into per-repeat values,
   variance estimates and per-trial sums, for the sampler and for the exact
