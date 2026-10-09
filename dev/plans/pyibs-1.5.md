@@ -498,7 +498,7 @@ examples/
 
 ### Phase 2: review against `ibslike.m`
 
-**Status**: in progress
+**Status**: done
 **Executor**: Opus (orchestrator), with two Opus sub-agents that only read
 and reason (no test runs or other heavy processes).
 **Needs**: `../ibs`, `../pubs-llms`.
@@ -523,13 +523,13 @@ listed in the catalogue with its reason or fixed.
    `dev/results/<YYYY-MM-DD>-port-review.md`: each finding with its
    verdict (deliberate difference, defect, or no issue) and its fix,
    catalogue entry or `dev/TODO.md` item. The PI rules on the verdicts.
-4. [~] Fix the defects, each with a test that fails before the fix, and
+4. [x] Fix the defects, each with a test that fails before the fix, and
    update the catalogue and the changelog. Index the ledger in
    `dev/README.md`. Commit.
 
 **Verification**:
-- [ ] Every finding of the ledger has a verdict and an outcome.
-- [ ] The suite and the pre-commit hooks pass.
+- [x] Every finding of the ledger has a verdict and an outcome.
+- [x] The suite and the pre-commit hooks pass.
 
 ### Phase 3: statistical validation, PyBADS and PyVBMC, timing
 
@@ -1253,8 +1253,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 - Commits: `cf8d732` (the phase's status), `6df6409` (`ibslike.m` under
   Octave), `b6fe6fb` (the checks of the review), `9221a1e` (the ledger and
   its evidence, step 3), `27e321c` (F-1), `cf0ed60` (F-2), `16790c6` (the
-  catalogue and documentation, step 4), and the commit after it (the
-  records and this entry).
+  catalogue and documentation, step 4), `3c63ec1` (the records); after the
+  review of the phase, `28a0891`, `463880f`, `09bda5a`, `2b2e299` and
+  `14b0958`, and the commit after it (the evidence and this entry).
 - The review (steps 1 to 3): two read-only Opus reviewers, A against
   `ibslike.m` and `ibs_basic.m` and B against [1] and for internal
   correctness. The ledger,
@@ -1262,28 +1263,38 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   holds twelve findings and four items of no issue. Two are defects: F-1,
   an object's first call with `vectorized=None` biased when the
   simulator's running time depends on its outcomes, since the timing
-  call's samples were used only when it decided False; and F-2,
-  `ibs_basic` looping forever on simulated responses of a kind that NumPy
-  never finds equal to the observed ones. The PI's rulings: for F-1, the
-  timing call is always the first round (D19 states it); for F-2, the
+  call's samples were used only when the first round requested one sample
+  per trial, at the default settings when the decision was False; and
+  F-2, `ibs_basic` looping forever on simulated responses of a kind that
+  NumPy never finds equal to the observed ones. The PI's rulings: for F-1,
+  the timing call is always the first round (D19 states it); for F-2, the
   kind check of `IBS`; for F-4, `max_iter` stays finite; the others as
-  proposed. The points that Phase 1 left: F-1 and N-1 to N-3, and the
-  shapes of `ibslike.m`'s per-trial arrays with one trial, F-3, which
-  Octave settled.
+  proposed. The points that Phase 1 left are F-1 to F-3, N-1 and N-2; F-3,
+  the shapes of `ibslike.m`'s per-trial arrays with one trial, Octave
+  settled.
 - Tests (step 4): F-1 adds
   `test_first_call_is_unbiased_when_the_timing_tracks_the_outcomes`
   (`test_ibs.py`, about 15 standard errors off before the fix) and
   replaces `test_first_round_is_ignored_on_more_samples_per_trial` by
-  `test_first_round_precedes_more_samples_per_trial` (`test_sampler.py`);
-  it changes `test_max_time_counts_the_timing_call` (the timing call's
-  miss is now the first sample of a count of 3, where the count was 2),
-  the parameters of `test_vectorized_none_counts_the_timing_call`, and the
-  name of `test_cap_counts_the_timing_call`, whose draw is unchanged. F-2
-  adds `test_responses_that_never_match_raise` (`test_ibs_basic.py`), F-3
-  an assertion on the shape of `neg_logl_var_trials`. The ports of the
-  self-tests run with `vectorized=True`, which F-1 does not reach, and
-  draw as before.
-- Verification: `$PY -m pytest`, 457 tests passed in about 8 s; the
+  `test_first_round_precedes_more_samples_per_trial` (`test_sampler.py`),
+  whose counts include the timing call's sample. It changes
+  `test_max_time_counts_the_timing_call` (the timing call's miss is now the
+  first sample of a count of 3, where the count was 2), the parameters of
+  `test_vectorized_none_counts_the_timing_call`, the cases of
+  `test_first_round_reproduces_the_draw_without_it`, which gain `max_mem`,
+  and the name of `test_cap_counts_the_timing_call`, whose simulator calls
+  are unchanged and whose first count is 20 where it was 19; and it drops
+  the assertions on `used_first`. F-2 adds
+  `test_responses_that_never_match_raise` (`test_ibs_basic.py`), F-3 an
+  assertion on the shape of `neg_logl_var_trials`, F-4 the case
+  `num_samples_per_call=math.inf` of `test_settings_out_of_range_raise`.
+  The check of object responses adds cases to
+  `test_responses_of_another_kind_raise` and
+  `test_responses_of_a_comparable_kind_match` (`test_sampler.py`), and
+  `test_responses_that_mix_numbers_and_text` (`test_ibs_basic.py`). The
+  ports of the self-tests run with `vectorized=True`, which F-1 does not
+  reach, and draw as before.
+- Verification: `$PY -m pytest`, 468 tests passed in about 8 s; the
   pre-commit hooks pass.
 - Deviations: GNU Octave was installed at the PI's request, and
   `ibslike.m`, unmodified, runs under it with two directories of shims;
@@ -1292,4 +1303,23 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   checks of `ibslike.m` under it where the steps planned reading only, and
   Reviewer B ran one check of PyIBS on a fake clock, about 1 s, for F-1;
   the record cites the checks from
-  `dev/experiments/port-review_20261009/`.
+  `dev/experiments/port-review_20261009/`. At the PI's request, the public
+  docstrings of `IBS` and the changelog no longer justify PyIBS's behaviour
+  by `ibslike.m`'s (`28a0891`), the catalogue holding the comparison, and
+  `2b2e299` checks the kinds of the elements of object responses, beyond
+  F-12's documentation.
+- Review (`/doublecheck`, three read-only Opus reviewers: the code and
+  tests, the statements about `ibslike.m`, the records): no defect in the
+  code. Fixed: the changelog entry of F-1, which PyIBS 0.1.0 shared; a
+  sampler test that did not see the timing call's sample; the docstrings
+  of `num_samples_per_call` and `initial_samples`; KD-6 on a per-trial
+  `Nreps` vector, which MATLAB's `&&` stops at line 193 and which fails at
+  line 361 or 372 once fewer than all trials are open; KD-11 on `MaxIter =
+  Inf`; KD-18's data checks; KD-19 and F-11, where `runtest3` sets the
+  acceleration to 1; F-2, whose example loops in `ibs_basic.m` too; the
+  ledger's commits, the runs behind its findings, F-1's condition, F-4's
+  test, F-5's message of exit flag 0, which is 0.1.0's, and an
+  interpretation; the evidence's commands, which name the commit of each
+  output; the Octave paragraph of `AGENTS.md`; and this entry. A
+  self-review before it rewrote the docstrings, comments and catalogue
+  entries of the phase that read badly (`463880f`).

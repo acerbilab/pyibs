@@ -8,8 +8,9 @@ MaxIter = 2, Vectorized = 1: ibslike:ConvergenceFail
 MaxIter = Inf, Vectorized = 0, p = 0.001: nlogL 22.481, exit flag 0
 MaxIter = 2, Vectorized = 0: ibslike:ConvergenceFail
 Nreps = [2; 3], vectorized, NsamplesPerCall = 4: nlogL_trials [1.6417 0], nlogLvar_trials [0.6159 0], exit flag 0
-Nreps = [2; 3], vectorized, NsamplesPerCall = 0: error "horizontal dimensions mismatch (1x1 vs 2x1)"
-Nreps = [2; 3], loop: error "zeros: dimensions must be scalars."
+Nreps = [2; 3], vectorized, NsamplesPerCall = 0: error at line 284, "horizontal dimensions mismatch (1x1 vs 2x1)"
+Nreps = [2; 3], loop: error at line 413, "zeros: dimensions must be scalars."
+Nreps = [2; 3], vectorized, NsamplesPerCall = 4, trial 1 done first: error at line 372, "=: nonconformant arguments (op1 is 3x1, op2 is 4x1)"
 MaxTime = 1e-9, Vectorized = 1: nlogL NaN, nlogLvar NaN, exit flag 2, funcCount 0, nlogL_trials [NaN NaN NaN]
 MaxTime = 1e-9, Vectorized = 0: nlogL NaN, nlogLvar NaN, exit flag 2, funcCount 0, nlogL_trials [NaN NaN NaN]
 TEST 1: Using IBS to compute log(p) of Bernoulli distributions with 1000 repeats.
