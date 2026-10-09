@@ -1,0 +1,797 @@
+"""IBS repeats from a simulator of the model's responses.
+
+:func:`sample` runs inverse binomial sampling (IBS) with a user-supplied
+simulator ([1]). For every trial it samples responses until one matches
+the observed response; the number of samples up to and including the
+match is the trial's matching count K. The algorithm is the vectorized
+sampling of MATLAB ``ibslike.m`` (https://github.com/acerbilab/ibs),
+redesigned to return per-repeat estimates.
+
+A draw of n repeats is sampled rows-first. Each trial's samples form one
+i.i.d. stream of match and no-match outcomes, and the stream is split at
+its matches: the r-th gap between matches is the trial's count in repeat r.
+Consecutive gaps of such a stream are i.i.d. geometric, and the n-th match
+is a stopping time, so the n repeats are independent complete IBS repeats,
+and the samples a trial draws after its n-th match can be discarded without
+bias. Each round asks the simulator, in one call, for several samples of
+every trial that still needs matches, so one call can complete several
+counts of a trial, or advance one count that spans several calls.
+
+An optional likelihood threshold ends a repeat as soon as its sampling
+shows that its log-likelihood lies below a lower bound, and returns the
+bound as the repeat's value, as in [1], Appendix C.1.
+
+References
+----------
+.. [1] van Opheusden, B., Acerbi, L. & Ma, W. J. (2020). Unbiased and
+   efficient log-likelihood estimation with inverse binomial sampling.
+   PLOS Computational Biology 16(12): e1008483.
+   https://doi.org/10.1371/journal.pcbi.1008483
+"""
+
+import math
+import numbers
+import time
+from collections.abc import Callable
+from dataclasses import KW_ONLY, dataclass
+
+import numpy as np
+
+from pyibs import _estimates
+
+
+class IBSSamplingError(RuntimeError):
+    """IBS sampling exceeded its cap on the samples of a trial.
+
+    IBS gives no estimate for a repeat in which some trial has not matched:
+    its partial count would bias the estimate. A draw that exceeds its cap
+    therefore raises rather than return an estimate. The usual cause is an
+    observed response that the simulator never, or almost never, produces
+    at the parameter vector.
+    """
+
+
+def _check_count(n, name):
+    """Return ``n`` as an int, which must be an integer >= 1."""
+    if isinstance(n, bool) or not isinstance(n, numbers.Integral) or n < 1:
+        raise ValueError(f"{name} must be an integer >= 1, got {n!r}.")
+    return int(n)
+
+
+def _check_real(x, name):
+    """Return ``x`` as a float, which must be a real number (not bool)."""
+    if isinstance(x, bool) or not isinstance(x, numbers.Real):
+        raise ValueError(f"{name} must be a real number, got {x!r}.")
+    return float(x)
+
+
+# Array kinds that NumPy compares by value: text, bytes, and numbers or
+# booleans. Arrays of two different kinds among these, one of them text or
+# bytes, compare as unequal whatever their values.
+_TEXT_KINDS = "US"
+_VALUE_KINDS = "USbiufc"
+
+
+def _check_kinds(simulated, observed):
+    """Raise TypeError if simulated rows can never equal the responses.
+
+    Object arrays, and kinds outside text, bytes, numbers and booleans,
+    are not checked.
+    """
+    a, b = simulated.dtype.kind, observed.dtype.kind
+    if (
+        a != b
+        and (a in _TEXT_KINDS or b in _TEXT_KINDS)
+        and a in _VALUE_KINDS
+        and b in _VALUE_KINDS
+    ):
+        raise TypeError(
+            f"The simulator returned responses of dtype {simulated.dtype}, "
+            "which NumPy never finds equal to the observed responses of "
+            f"dtype {observed.dtype}, so no sample would match. The "
+            "simulator must return responses of the observed kind: text, "
+            "bytes, or numbers and booleans."
+        )
+
+
+@dataclass(frozen=True, eq=False)
+class _Settings:
+    """The model, the data and the sampling settings of :func:`sample`.
+
+    The arrays are stored as read-only copies.
+
+    Parameters
+    ----------
+    simulator : callable
+        ``simulator(theta, design_rows, rng)`` returns one simulated
+        response row per requested trial, an array of length
+        ``len(design_rows)`` whose rows have the shape of the rows of
+        ``responses``. ``design_rows`` is ``design[idx]`` for the indices
+        ``idx`` of the requested trials, or ``idx`` itself (0-based trial
+        indices) when ``design`` is None. A trial appears in ``idx`` once
+        per requested sample, and every requested row must be an
+        independent draw. ``rng`` is the :class:`numpy.random.Generator`
+        of the call: a simulator that draws from NumPy's global state
+        instead makes runs irreproducible.
+    responses : array_like of shape (N,) or (N, C)
+        The observed responses of the N trials. A simulated row matches a
+        1-D response when it equals it, and a 2-D response only when every
+        column agrees, as in ``ibslike.m``. NumPy finds text, bytes, and
+        numbers or booleans unequal to one another whatever their values,
+        so the simulated rows must be of the responses' kind; an object
+        array on either side is compared element by element.
+    design : array_like of shape (N, ...), optional
+        Per-trial design, passed to the simulator row by row.
+    trial_weights : None, float or array_like of shape (N,), optional
+        Trial weights, finite and >= 0, as ``ibslike.m``'s ``TrialWeights``;
+        checked by :func:`pyibs._estimates.trial_weights`. None gives unit
+        weights and a scalar applies to every trial.
+    initial_samples : int or None, optional
+        Samples per open trial in the first simulator call of a draw, at
+        least 1 (``ibslike.m``'s ``NsamplesPerCall``). None, the default,
+        uses the number of repeats the draw asks for.
+    acceleration : float, optional
+        Factor >= 1 by which the samples per trial grow from one call to
+        the next (``ibslike.m``'s ``Acceleration``).
+    acceleration_threshold : float or None, optional
+        None, the default, grows the samples per trial after every call.
+        A time in seconds > 0 grows them only after calls to the simulator
+        that took less than this, as ``ibslike.m`` does. Which samples a
+        call requests then depends on the wall-clock time, and so does the
+        assignment of random numbers to trials: a seed no longer
+        reproduces a run.
+    max_samples_per_call : int, optional
+        Bound, at least 1, on the samples requested in one simulator call
+        (``ibslike.m``'s ``MaxMem``). A call requests at least one sample
+        per open trial, so with more open trials than this bound it
+        requests one sample each.
+    max_samples_per_trial : int or None, optional
+        Cap, at least 1, on the samples of one trial per repeat, the
+        counterpart of ``ibslike.m``'s ``MaxIter`` (10**5 per trial and
+        estimate, also the default here). A draw of n repeats raises
+        :class:`IBSSamplingError` once a trial has drawn more than
+        ``max_samples_per_trial * n`` samples in it, surplus included. The
+        check follows every simulator call, whether or not that call
+        completed the draw. None disables the cap: an observed response
+        that the simulator cannot produce then makes a draw run forever.
+    neg_loglik_threshold : float or None, optional
+        A likelihood threshold T, finite and > 0, on the scale of one
+        repeat's weighted negative log-likelihood (``ibslike.m``'s
+        ``NegLogLikeThreshold``). A repeat whose sampling shows that its
+        value lies below -T is ended, and its value is -T, so every
+        repeat's value is ``max(Y_r, -T)``, where ``Y_r`` is the value its
+        complete sampling would give ([1], Appendix C.1). This saves the
+        samples of poor parameter vectors at the price of an upward bias;
+        the negative log-likelihood of chance responding is the usual
+        choice (see the Notes of :func:`sample`). None, the default,
+        samples every repeat to completion.
+
+    Raises
+    ------
+    TypeError
+        If ``simulator`` is not callable.
+    ValueError
+        If ``responses`` is not a non-empty array of shape (N,) or (N, C),
+        the design has a length other than N, the weights are invalid, or
+        a sampling setting or the threshold is out of range.
+    """
+
+    simulator: Callable
+    responses: np.ndarray
+    design: np.ndarray | None = None
+    _: KW_ONLY
+    trial_weights: np.ndarray | None = None
+    initial_samples: int | None = None
+    acceleration: float = 1.5
+    acceleration_threshold: float | None = None
+    max_samples_per_call: int = 10**6
+    max_samples_per_trial: int | None = 10**5
+    neg_loglik_threshold: float | None = None
+
+    def __post_init__(self):
+        if not callable(self.simulator):
+            raise TypeError("simulator must be callable.")
+        responses = np.array(self.responses)
+        if responses.ndim not in (1, 2) or responses.size == 0:
+            raise ValueError(
+                "responses must be a non-empty array of shape (N,) or "
+                f"(N, C), got shape {responses.shape}."
+            )
+        n_trials = responses.shape[0]
+        responses.setflags(write=False)
+        design = self.design
+        if design is not None:
+            design = np.array(design)
+            if design.ndim == 0 or design.shape[0] != n_trials:
+                raise ValueError(
+                    f"design must have one row per trial ({n_trials}), got "
+                    f"shape {design.shape}."
+                )
+            design.setflags(write=False)
+        weights = _estimates.trial_weights(self.trial_weights, n_trials)
+        weights.setflags(write=False)
+        initial_samples = self.initial_samples
+        if initial_samples is not None:
+            initial_samples = _check_count(initial_samples, "initial_samples")
+        acceleration = _check_real(self.acceleration, "acceleration")
+        if not 1 <= acceleration < math.inf:
+            raise ValueError(
+                f"acceleration must be finite and >= 1, got {acceleration}."
+            )
+        acceleration_threshold = self.acceleration_threshold
+        if acceleration_threshold is not None:
+            acceleration_threshold = _check_real(
+                acceleration_threshold, "acceleration_threshold"
+            )
+            if not acceleration_threshold > 0:
+                raise ValueError(
+                    "acceleration_threshold must be None or > 0 seconds, "
+                    f"got {acceleration_threshold}."
+                )
+        max_samples_per_call = _check_count(
+            self.max_samples_per_call, "max_samples_per_call"
+        )
+        max_samples_per_trial = self.max_samples_per_trial
+        if max_samples_per_trial is not None:
+            max_samples_per_trial = _check_count(
+                max_samples_per_trial, "max_samples_per_trial"
+            )
+        threshold = self.neg_loglik_threshold
+        if threshold is not None:
+            threshold = _check_real(threshold, "neg_loglik_threshold")
+            if not 0 < threshold < math.inf:
+                raise ValueError(
+                    "neg_loglik_threshold must be None or finite and > 0, "
+                    f"got {threshold}."
+                )
+        for name, value in [
+            ("responses", responses),
+            ("design", design),
+            ("trial_weights", weights),
+            ("initial_samples", initial_samples),
+            ("acceleration", acceleration),
+            ("acceleration_threshold", acceleration_threshold),
+            ("max_samples_per_call", max_samples_per_call),
+            ("max_samples_per_trial", max_samples_per_trial),
+            ("neg_loglik_threshold", threshold),
+        ]:
+            object.__setattr__(self, name, value)
+
+    @property
+    def n_trials(self):
+        """Number of trials N."""
+        return self.responses.shape[0]
+
+
+@dataclass(frozen=True, eq=False)
+class _Draw:
+    """What :func:`sample` returns for a draw of n repeats of N trials.
+
+    Attributes
+    ----------
+    K : ndarray of int64, shape (n, N)
+        ``K[r, i]`` is trial i's matching count in repeat r. In a repeat
+        that the likelihood threshold ended, the counts that were not
+        completed are 0.
+    values : ndarray of shape (n,)
+        Each repeat's log-likelihood estimate, -T for an ended repeat.
+    var_estimates : ndarray of shape (n,)
+        Each repeat's variance estimate.
+    trial_value_sums, trial_var_sums : ndarray of shape (N,)
+        The unweighted sums of each trial's ``ibs_loglik(K)`` and
+        ``ibs_var(K)`` over the repeats that the threshold did not end.
+    ended : ndarray of bool, shape (n,)
+        Whether the likelihood threshold ended each repeat.
+    n_thresholded : int
+        The number of ended repeats.
+    calls : int
+        Calls of the simulator.
+    samples : int
+        Simulated response rows, surplus included.
+    seconds : float
+        Wall time spent inside the simulator. It is not reproducible from
+        a seed.
+    """
+
+    K: np.ndarray
+    values: np.ndarray
+    var_estimates: np.ndarray
+    trial_value_sums: np.ndarray
+    trial_var_sums: np.ndarray
+    ended: np.ndarray
+    n_thresholded: int
+    calls: int
+    samples: int
+    seconds: float
+
+    @property
+    def n(self):
+        """Number of repeats in the draw."""
+        return self.values.size
+
+
+class _MatchCounts:
+    """Matching counts of one draw of n repeats, filled rows-first.
+
+    Every trial works through the repeats that are not ended, in order.
+    Its open count is the number of samples it has drawn since its last
+    match, the part of its current count sampled so far.
+
+    Parameters
+    ----------
+    n : int
+        Repeats in the draw.
+    n_trials : int
+        Number of trials N.
+    weights : ndarray of shape (N,) or None, optional
+        The trial weights, given when the draw has a likelihood threshold:
+        the counts then keep the repeats' running bounds.
+
+    Attributes
+    ----------
+    n : int
+        Repeats in the draw.
+    K : ndarray of int64, shape (n, N)
+        ``K[r, i]`` is trial i's matching count in repeat r, once
+        completed, and 0 before.
+    completed : ndarray of bool, shape (n, N)
+        Whether ``K[r, i]`` is complete.
+    repeat : ndarray of int64, shape (N,)
+        The repeat each trial is sampling; n once the trial is done.
+    open_count : ndarray of int64, shape (N,)
+        Each trial's open count; 0 once the trial is done.
+    ended : ndarray of bool, shape (n,)
+        Whether each repeat was ended by the likelihood threshold.
+    ended_var : ndarray of shape (n,)
+        The variance estimate of each ended repeat, and 0 for the others.
+    """
+
+    def __init__(self, n, n_trials, weights=None):
+        self.n = n
+        self.K = np.zeros((n, n_trials), dtype=np.int64)
+        self.completed = np.zeros((n, n_trials), dtype=bool)
+        self.repeat = np.zeros(n_trials, dtype=np.int64)
+        self.open_count = np.zeros(n_trials, dtype=np.int64)
+        self.ended = np.zeros(n, dtype=bool)
+        self.ended_var = np.zeros(n)
+        self.weights = weights
+        # The repeats that are not ended, in order, followed by n.
+        self._active = np.arange(n + 1, dtype=np.int64)
+        # The completed trials' part of each repeat's running bound, the
+        # sum of w_i (digamma(K[r, i]) - digamma(1)); None without weights.
+        self._closed = None if weights is None else np.zeros(n)
+
+    def open_trials(self):
+        """Indices of the trials that need more matches, in order."""
+        return np.flatnonzero(self.repeat < self.n)
+
+    def absorb(self, trials, hits):
+        """Split one round's samples of the open trials at their matches.
+
+        Parameters
+        ----------
+        trials : ndarray of int, shape (n_open,)
+            The open trials, as returned by :meth:`open_trials`.
+        hits : ndarray of bool, shape (n_open, m)
+            Row j holds the outcomes of the m samples of ``trials[j]``, in
+            sampling order.
+        """
+        m = hits.shape[1]
+        n_hits = np.count_nonzero(hits, axis=1)
+        # The matches in trial-major sampling order, and each one's rank
+        # among its trial's matches in this round.
+        row, col = np.nonzero(hits)
+        first_hit = np.cumsum(n_hits) - n_hits
+        rank = np.arange(row.size) - first_hit[row]
+        # A count is the gap from the previous match of the same trial; the
+        # first match of a round closes the count left open before it.
+        gaps = np.empty_like(col)
+        gaps[1:] = col[1:] - col[:-1]
+        first = rank == 0
+        gaps[first] = col[first] + 1 + self.open_count[trials[row[first]]]
+        # A trial's matches close, in order, the repeats that are not ended
+        # from its current one on; pos is the current repeat's position
+        # among them. Matches beyond the last of them are surplus.
+        pos = np.searchsorted(self._active, self.repeat[trials])
+        needed = self._active.size - 1 - pos
+        keep = rank < needed[row]
+        trial = trials[row[keep]]
+        repeat = self._active[pos[row[keep]] + rank[keep]]
+        self.K[repeat, trial] = gaps[keep]
+        self.completed[repeat, trial] = True
+        if self._closed is not None:
+            self._closed += np.bincount(
+                repeat,
+                weights=-self.weights[trial]
+                * _estimates.ibs_loglik(gaps[keep]),
+                minlength=self.n,
+            )
+        # Open counts: samples after the last match, or all m added to the
+        # previous open count when there was no match.
+        open_count = self.open_count[trials] + m
+        has_hit = n_hits > 0
+        last_col = col[(first_hit + n_hits - 1)[has_hit]]
+        open_count[has_hit] = m - 1 - last_col
+        self.repeat[trials] = self._active[pos + np.minimum(n_hits, needed)]
+        open_count[self.repeat[trials] >= self.n] = 0
+        self.open_count[trials] = open_count
+
+    def bounds(self):
+        """Running bounds on the repeats' negative log-likelihoods.
+
+        Available when the counts have weights.
+
+        Returns
+        -------
+        bounds : ndarray of shape (n,)
+            For each repeat r that is not ended, B_r, the sum over the
+            trials of ``w_i (digamma(k_i) - digamma(1))``, where k_i is
+            ``K[r, i]`` for a trial that has completed r, ``c_i + 1`` for a
+            trial sampling r with open count c_i, and 1 otherwise. The
+            entries of ended repeats have no meaning.
+        """
+        sampling = np.flatnonzero(self.repeat < self.n)
+        open_part = np.bincount(
+            self.repeat[sampling],
+            weights=-self.weights[sampling]
+            * _estimates.ibs_loglik(self.open_count[sampling] + 1),
+            minlength=self.n,
+        )
+        return self._closed + open_part
+
+    def end_above(self, threshold):
+        """End the incomplete repeats whose running bound exceeds threshold.
+
+        The bound of a repeat that every trial has completed is its
+        complete negative log-likelihood, and ending such a repeat changes
+        no sampling; :meth:`clipped_estimates` checks those repeats on
+        their exact values instead.
+
+        Parameters
+        ----------
+        threshold : float
+            The likelihood threshold T.
+
+        Returns
+        -------
+        ended : ndarray of int
+            The repeats ended, in order.
+        """
+        # The repeats before the lowest one that a trial is sampling are
+        # complete or ended; every repeat from it on that is not ended is
+        # incomplete.
+        lo = int(self.repeat.min())
+        if lo == self.n:
+            return np.empty(0, dtype=np.int64)
+        over = self.bounds()[lo:] > threshold
+        rows = lo + np.flatnonzero(over & ~self.ended[lo:])
+        if rows.size == 0:
+            return rows
+        # The counts of the bound: completed counts, c + 1 for the trials
+        # sampling a repeat, and 1 for the trials that have not reached it.
+        sampling = np.flatnonzero(np.isin(self.repeat, rows))
+        at = np.searchsorted(rows, self.repeat[sampling])
+        bound_counts = np.where(self.completed[rows], self.K[rows], 1)
+        bound_counts[at, sampling] = self.open_count[sampling] + 1
+        _, var, _, _ = _estimates.repeat_estimates(bound_counts, self.weights)
+        self.ended_var[rows] = var
+        self.ended[rows] = True
+        self._active = np.append(np.flatnonzero(~self.ended), self.n)
+        # The trials sampling an ended repeat drop their open count and
+        # move on to the next repeat that is not ended.
+        self.repeat[sampling] = self._active[
+            np.searchsorted(self._active, self.repeat[sampling])
+        ]
+        self.open_count[sampling] = 0
+        return rows
+
+    def clipped_estimates(self, threshold):
+        """Estimates of a finished draw under a likelihood threshold.
+
+        The repeats that are not ended are complete, and a complete
+        repeat's bound is its negative value. Those whose value lies below
+        ``-threshold`` are ended here, with their complete variance
+        estimate; :meth:`end_above` leaves them to this check.
+
+        Parameters
+        ----------
+        threshold : float
+            The likelihood threshold T.
+
+        Returns
+        -------
+        values, var_estimates : ndarray of shape (n,)
+            -T for the ended repeats and the complete value otherwise, and
+            the variance estimates.
+        trial_value_sums, trial_var_sums : ndarray of shape (N,)
+            The per-trial sums over the repeats that are not ended.
+        """
+        kept = np.flatnonzero(~self.ended)
+        v, s, tv, ts = _estimates.repeat_estimates(self.K[kept], self.weights)
+        below = -v > threshold
+        if np.any(below):
+            self.ended_var[kept[below]] = s[below]
+            self.ended[kept[below]] = True
+            kept, v, s = kept[~below], v[~below], s[~below]
+            _, _, tv, ts = _estimates.repeat_estimates(
+                self.K[kept], self.weights
+            )
+        values = np.full(self.n, -threshold)
+        values[kept] = v
+        var_estimates = self.ended_var.copy()
+        var_estimates[kept] = s
+        return values, var_estimates, tv, ts
+
+
+def sample(settings, theta, n, rng):
+    """Draw n repeats of IBS at ``theta``.
+
+    Parameters
+    ----------
+    settings : _Settings
+        The simulator, the data and the sampling settings.
+    theta : ndarray of shape (D,)
+        The parameter vector, passed to every simulator call of the draw.
+    n : int
+        Repeats in the draw, at least 1.
+    rng : numpy.random.Generator
+        The generator, passed to every simulator call of the draw.
+
+    Returns
+    -------
+    draw : _Draw
+        The counts, the per-repeat values and variance estimates, the
+        per-trial sums, the ended repeats and the cost of the draw.
+
+    Raises
+    ------
+    IBSSamplingError
+        If a trial draws more than ``max_samples_per_trial * n`` samples.
+    ValueError
+        If ``n`` is not an integer >= 1, or the simulator returns an array
+        whose shape is not that of the requested responses.
+    TypeError
+        If the simulated rows are of a kind that NumPy never finds equal
+        to the responses.
+
+    Notes
+    -----
+    **Sampling.** A draw of n repeats needs n matches of every trial, or
+    fewer when the likelihood threshold ends repeats. In each round, the
+    trials that still need matches are open, and one simulator call
+    requests m samples of each, in trial-major order
+    (``idx = np.repeat(open_trials, m)``). The samples of a trial are
+    taken in order; each match closes the trial's current count and
+    starts the next. Samples after a trial's last needed match are
+    surplus: they are counted in the cost and discarded.
+
+    **Samples per call.** A round with ``n_open`` open trials requests
+    ``m = max(1, min(floor(level), max_samples_per_call // n_open))``
+    samples of each. The level starts at ``initial_samples`` (n by
+    default) and is multiplied by ``acceleration`` after every round (or,
+    with ``acceleration_threshold``, after every fast round). The default
+    schedule depends only on the outcomes, so a seed reproduces a run.
+    ``initial_samples=1, acceleration=1`` requests one sample per open
+    trial per call, and draws no surplus.
+
+    **Output.** With the counts K of shape (n, N), repeat r's value is
+    ``sum_i w_i ibs_loglik(K[r, i])`` and its variance estimate
+    ``sum_i w_i**2 ibs_var(K[r, i])``. The per-trial outputs are the
+    unweighted column sums of ``ibs_loglik(K)`` and ``ibs_var(K)`` over
+    the repeats that the likelihood threshold did not end, which are all n
+    without a threshold. All four come from
+    :func:`pyibs._estimates.repeat_estimates`. A draw holds its n x N
+    counts in memory.
+
+    **Cost.** The draw's ``calls`` counts the simulator calls, its
+    ``samples`` the simulated rows, surplus included, and its ``seconds``
+    the time spent inside the simulator. The samples drawn for the repeats
+    that the likelihood threshold ended count in ``samples``.
+
+    **Checks.** After every simulator call, a draw raises ``ValueError``
+    if the simulator returned an array whose shape is not that of the
+    requested responses; ``TypeError`` if the simulated rows are text and
+    the responses bytes or numbers, or the other way round; and
+    :class:`IBSSamplingError` if a trial has drawn more than
+    ``max_samples_per_trial * n`` samples in the draw.
+
+    **Likelihood threshold** ([1], Appendix C.1). With a threshold T, the
+    sampler keeps a running bound B_r on each repeat's negative
+    log-likelihood: the sum over the trials of
+    ``w_i (digamma(k_i) - digamma(1))``, where k_i is the count
+    ``K[r, i]`` of a trial that has completed repeat r, ``c_i + 1`` for a
+    trial sampling it with open count c_i (its count will be at least
+    that), and 1 for a trial that has not reached it. As the weights are
+    >= 0, B_r never decreases while the repeat is sampled, and it reaches
+    the repeat's complete negative log-likelihood -Y_r when every trial
+    has completed it. After every round, including the last, every repeat
+    with ``B_r > T`` is ended: the trials sampling it drop their open
+    count and move on to the next repeat that is not ended, and the trials
+    that reach it later skip it. A repeat is therefore ended exactly when
+    ``-Y_r > T``. Its value is -T, so every repeat's value is
+    ``max(Y_r, -T)``, a function of the repeat's own draws: the repeats
+    stay independent. The variance estimate of an ended repeat is its
+    bound's counterpart, ``sum_i w_i**2 ibs_var(k_i)`` with the counts k_i
+    at the time it was ended. The value -T does not depend on the
+    sampling schedule, but this variance estimate does: its counts are
+    those at the end of the round after which the bound was checked, and
+    a round of many samples per trial carries them further past T than a
+    round of one. The draw's ``n_thresholded`` counts the ended repeats.
+    The usual choice of T is the chance-level bound of [1], the negative
+    log-likelihood of a model that assigns uniform probability to the
+    possible responses: ``sum_i w_i log(n_i)`` with n_i possible responses
+    on trial i, or ``N log 2`` for N unweighted binary choices.
+
+    The clipped values are biased upward: the expectation of
+    ``max(Y_r, -T)`` exceeds the log-likelihood by the expectation of
+    ``max(-T - Y_r, 0)``. [1] notes that this bias is exponentially small
+    in N when the log-likelihood lies well above -T.
+
+    The per-trial outputs cover only the repeats that were not ended, n
+    less ``n_thresholded``. These are the repeats whose values are at
+    least -T, not a random sample of the repeats, so the per-trial sums
+    divided by their number of repeats are biased estimates of each
+    trial's log p_i, and their sum over the trials differs from the mean
+    of the repeat values.
+
+    ``ibslike.m`` checks only the lowest repeat still being sampled, its
+    vectorized sampler leaves the trials still sampling that repeat out of
+    the bound, and it keeps the partial counts of an ended repeat in its
+    estimate, whose value then depends on the sampling schedule. It also
+    compares the unweighted sum of the trials' terms with
+    ``NegLogLikeThreshold``. This sampler checks every repeat, bounds the
+    weighted sum, which is on the scale of a repeat's value, and returns
+    -T for an ended repeat, as [1] does, so that every value is exactly
+    ``max(Y_r, -T)``.
+    """
+    n = _check_count(n, "n")
+    threshold = settings.neg_loglik_threshold
+    counts = _MatchCounts(
+        n,
+        settings.n_trials,
+        None if threshold is None else settings.trial_weights,
+    )
+    cap = settings.max_samples_per_call
+    limit = (
+        None
+        if settings.max_samples_per_trial is None
+        else settings.max_samples_per_trial * n
+    )
+    # Samples each trial has drawn in this draw, surplus included.
+    trial_samples = np.zeros(settings.n_trials, dtype=np.int64)
+    # Levels at or above cap give the same m, so bounding the level by
+    # cap changes no round and keeps it finite.
+    initial = (
+        n if settings.initial_samples is None else settings.initial_samples
+    )
+    level = float(min(initial, cap))
+    calls, samples, seconds = 0, 0, 0.0
+    while True:
+        trials = counts.open_trials()
+        if trials.size == 0:
+            break
+        m = max(1, min(math.floor(level), cap // trials.size))
+        hits, elapsed = _simulate(settings, theta, rng, trials, m)
+        counts.absorb(trials, hits)
+        if threshold is not None:
+            counts.end_above(threshold)
+        calls += 1
+        samples += trials.size * m
+        seconds += elapsed
+        trial_samples[trials] += m
+        if limit is not None:
+            over = trials[trial_samples[trials] > limit]
+            if over.size:
+                raise _cap_error(
+                    settings, n, limit, over, trial_samples[over], counts
+                )
+        if (
+            settings.acceleration_threshold is None
+            or elapsed < settings.acceleration_threshold
+        ):
+            level = min(level * settings.acceleration, cap)
+    if threshold is None:
+        v, s, tv, ts = _estimates.repeat_estimates(
+            counts.K, settings.trial_weights
+        )
+    else:
+        v, s, tv, ts = counts.clipped_estimates(threshold)
+    return _Draw(
+        K=counts.K,
+        values=v,
+        var_estimates=s,
+        trial_value_sums=tv,
+        trial_var_sums=ts,
+        ended=counts.ended,
+        n_thresholded=int(np.count_nonzero(counts.ended)),
+        calls=calls,
+        samples=samples,
+        seconds=seconds,
+    )
+
+
+def _cap_error(settings, n, limit, over, drawn, counts):
+    """The error of a draw in which trials exceeded the cap.
+
+    Parameters
+    ----------
+    settings : _Settings
+        The settings of the draw.
+    n : int
+        Repeats in the draw.
+    limit : int
+        ``max_samples_per_trial * n``.
+    over : ndarray of int
+        The trials over the cap, in order.
+    drawn : ndarray of int
+        Their samples in the draw.
+    counts : _MatchCounts
+        The draw's counts after the call that crossed the cap.
+    """
+    over, drawn = over.tolist(), drawn.tolist()
+    if len(over) == 1:
+        which = (
+            f"trial {over[0]} drew {drawn[0]} samples, more than "
+            f"max_samples_per_trial * n = {limit}."
+        )
+    else:
+        listed = ", ".join(
+            f"trial {i} drew {k}" for i, k in zip(over[:5], drawn[:5])
+        )
+        if len(over) > 5:
+            listed += f", and {len(over) - 5} more"
+        which = (
+            f"{len(over)} trials drew more than max_samples_per_trial * "
+            f"n = {limit} samples: {listed}."
+        )
+    n_open = counts.open_trials().size
+    if n_open:
+        state = (
+            f"{n_open} of {settings.n_trials} trials still need matches, "
+            "and IBS returns no estimate for an incomplete repeat."
+        )
+    else:
+        state = (
+            "The simulator call that crossed the cap completed the "
+            "draw, but a draw over the cap returns no estimate."
+        )
+    return IBSSamplingError(
+        f"In a draw of {n} repeat{'' if n == 1 else 's'}, {which} "
+        f"{state} Check that the simulator can produce every observed "
+        "response at this parameter vector, or raise "
+        "max_samples_per_trial."
+    )
+
+
+def _simulate(settings, theta, rng, trials, m):
+    """Call the simulator for m samples of each trial, trial-major.
+
+    Raises ``ValueError`` if the simulated array does not have the
+    shape of the requested responses, and ``TypeError`` if its kind
+    can never equal theirs.
+
+    Returns
+    -------
+    hits : ndarray of bool, shape (trials.size, m)
+        Whether each sample matches its trial's response.
+    elapsed : float
+        Seconds spent inside the simulator.
+    """
+    idx = np.repeat(trials, m)
+    observed = settings.responses[idx]
+    design_rows = idx if settings.design is None else settings.design[idx]
+    start = time.perf_counter()
+    simulated = settings.simulator(theta, design_rows, rng)
+    elapsed = time.perf_counter() - start
+    simulated = np.asarray(simulated)
+    if simulated.shape != observed.shape:
+        raise ValueError(
+            f"The simulator was asked for {idx.size} response rows of "
+            f"shape {observed.shape[1:]}, an array of shape "
+            f"{observed.shape}, and returned shape {simulated.shape}."
+        )
+    _check_kinds(simulated, observed)
+    hits = simulated == observed
+    if hits.ndim == 2:
+        hits = np.all(hits, axis=1)
+    return hits.reshape(trials.size, m), elapsed
