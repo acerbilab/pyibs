@@ -1489,8 +1489,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   phase, `90e4852` and `68b46c1`; `674039d` (this entry); after the PI's
   decisions below, `7fb53fd` (the 0.1.0 text that remained, and
   `LICENSE`), `1fdf1e7` and `b7b2cfa` (when IBS fits) and `cda9de4` (the
-  floor on the SD, to `dev/TODO.md`); after their review, the commit that
-  follows `cda9de4`.
+  floor on the SD, to `dev/TODO.md`); after their review, `18c8686` (the
+  message of exit flag 0) and `0422903` (the rest).
 - Verification: the documentation builds with no warning
   (`make -C docsrc github` after `make -C docsrc clean`), and every link
   into it from the README, the changelog, the skill, the notebooks and the
@@ -1563,7 +1563,7 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   many and richly structured, with the board game as its one example.
 - Review of the commits after the first review (`/doublecheck`, two
   read-only Opus reviewers: the code, CI and packaging; the documents and
-  records). Fixed in the commit that follows `cda9de4`: the message of
+  records). Fixed in `18c8686` and `0422903`: the message of
   exit flag 0, which claimed an unbiased estimate also under a finite
   `max_time`; the README and `index.rst`, which read as if the variance
   estimates were calibrated under the threshold too; the FAQ's claim of a
