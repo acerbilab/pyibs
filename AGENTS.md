@@ -25,8 +25,9 @@ posterior and evidence inference.
 The released version is 0.1.0, published on PyPI and conda-forge as
 `pyibs`. Version 1.5.0 is prepared on the branch `dev-next` by the plan
 `dev/plans/pyibs-1.5.md`, which states its scope, its phases and its
-decisions. Until its first phases land, the package in this tree is the
-0.1.0 code, which has no tests.
+decisions. The package holds the engine (`pyibs/_estimates.py`,
+`pyibs/_sampler.py`) and its tests next to the 0.1.0 interface, which
+Phase 1 of the plan replaces.
 
 - `dev/` holds the maintainer records: plans, findings, the evidence they
   cite and the tooling that produced it. `dev/README.md` says where each
@@ -81,15 +82,58 @@ venv is created with uv:
 
 ```console
 uv venv --python 3.12 .venv
-uv pip install -e ".[dev]" pre-commit
+uv pip install -e ".[dev]"
 $PY -m pre_commit install
 ```
+
+The version comes from git tags through setuptools_scm, which writes the
+gitignored `pyibs/_version.py`.
+
+```console
+$PY -m pytest                                           # CI adds -x -vv
+$PY -m pytest pyibs/testing/test_sampler.py::test_cost
+```
+
+The tests live in `pyibs/testing/`, and default discovery is limited to
+them (`testpaths` in `pyproject.toml`), with the tests marked
+`integration` deselected (`addopts`).
+
+The test job is defined once, in `.github/workflows/test-matrix.yml`, which
+installs PyIBS with its `test` extra and runs the suite. `merge-tests.yml`
+runs the full matrix (Ubuntu, Windows, macOS × Python 3.10–3.14) on a pull
+request to `main` or to a `dev*` branch, only when its changes against that
+base touch `pyibs/`, `pyproject.toml` or `setup.py`; a pull request that
+changes anything else, the workflows included, runs no tests. `tests.yml`
+runs the full matrix on dispatch, and a smoke run (Ubuntu, Python 3.14) on
+each push to a `dev*` branch that touches the package, `pyproject.toml`,
+`setup.py` or the two workflows of the test job.
+
+Formatting is enforced by the pre-commit hooks alone (black at line length
+79 on every Python file and the notebooks' code cells, isort with the black
+profile, pycln); no CI job checks it, and the whole tree passes them. The
+commit that first formatted the tree is listed in `.git-blame-ignore-revs`;
+`git config blame.ignoreRevsFile .git-blame-ignore-revs` hides it from
+`git blame`.
 
 Run one heavy process at a time (the test suite, a validation or timing
 run, a PyBADS or PyVBMC run): concurrent runs, each multi-threaded, can
 bring a workstation down. A long run writes its output unbuffered
 (`python -u`) to a uniquely named log under `dev/scripts/runs/`, which a
 fresh clone creates first (`mkdir -p dev/scripts/runs`).
+
+## What spans files
+
+- **The shared IBS reduction.** `repeat_estimates` in
+  `pyibs/_estimates.py` turns matching counts into per-repeat values,
+  variance estimates and per-trial sums, for the sampler and for the exact
+  draws of the tests (`pyibs/testing/_exact.py`). Two of its properties
+  keep its results bitwise equal whether it reduces the counts in one
+  block or in several, and with the likelihood threshold or without, and
+  tests rely on them: its sum over the trials is
+  `np.sum(... * w, axis=1)`, never `@`; and each term equals `ibs_loglik`
+  or `ibs_var` of its count bitwise, whether looked up in its table of the
+  formulas, whose extent depends on the size of the count matrix, or
+  evaluated directly.
 
 ## Conventions
 
@@ -103,7 +147,7 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
   commits again.
 - **Code** follows PyBADS and PyVBMC: plain NumPy/SciPy, numpydoc
   docstrings, black at line length 79, isort with the black profile and
-  pycln. The pre-commit hooks alone enforce the formatting.
+  pycln, which the pre-commit hooks enforce ("Setup and commands").
 - **Random numbers.** Every random draw of the package goes through an
   explicit `numpy.random.Generator`, so that a seed reproduces a run
   wherever no timing decides the sampling, and every test that draws
