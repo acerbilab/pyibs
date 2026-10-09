@@ -87,10 +87,13 @@ PyIBS suits a model that you can simulate but whose likelihood you cannot comput
   neural network trained once on simulations, as in neural posterior
   estimation, then gives the posterior of each new dataset almost at once
   [`3 <#references>`__].
-- **IBS remains the method of choice where amortization is hard because each
-  trial's context can be unique.** In a model of game play, each move is
-  conditioned on its board position, and a position may occur only once in
-  the data [`1 <#references>`__, Section 5.4; `2 <#references>`__].
+- **IBS remains the method of choice where amortization is hard, because the
+  trials' contexts are many and richly structured.** An amortized estimator
+  has to learn the model's behaviour across every context it may meet, while
+  IBS only simulates the model in the contexts of the data. A model of game
+  play is a case in point: each move is conditioned on its board position,
+  and a position may occur only once in the data [`1 <#references>`__,
+  Section 5.4; `2 <#references>`__].
 - **IBS also serves where guarantees on each dataset matter.** An amortized
   estimator can be accurate on some datasets and untrustworthy on others, so
   its results need diagnostics on each dataset and a fallback

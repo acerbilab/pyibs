@@ -156,13 +156,14 @@ inference (Li et al., 2026, Section 2.3).
 
 **Where IBS remains the method of choice.**
 
-- *Each trial's context can be unique.* In a model of game play, each move
-  is conditioned on its board position, and a position may occur only once
-  in the data ([1], Section 5.4; B. van Opheusden et al., 2023, "Expertise
-  increases planning depth in human gameplay", *Nature* 618: 1000–1005,
-  <https://doi.org/10.1038/s41586-023-06124-2>). An amortized estimator has
-  to learn the model's behaviour across all the contexts it may meet; IBS
-  only simulates the model in the contexts of the data. In the four-in-a-row
+- *The trials' contexts are many and richly structured.* An amortized
+  estimator has to learn the model's behaviour across every context it may
+  meet, while IBS only simulates the model in the contexts of the data. A
+  model of game play is a case in point: each move is conditioned on its
+  board position, and a position may occur only once in the data ([1],
+  Section 5.4; B. van Opheusden et al., 2023, "Expertise increases planning
+  depth in human gameplay", *Nature* 618: 1000–1005,
+  <https://doi.org/10.1038/s41586-023-06124-2>). In the four-in-a-row
   game of [1], Section 5.4, whose data sets drew their positions from 5,482
   positions of human play, the model's distribution over moves cannot be
   computed, even numerically, and IBS estimates its log-likelihood from
