@@ -534,7 +534,7 @@ listed in the catalogue with its reason or fixed.
 
 ### Phase 3: statistical validation, PyBADS and PyVBMC, timing
 
-**Status**: pending
+**Status**: in progress
 **Executor**: Opus (orchestrator), running one heavy process at a time on
 the PI's workstation.
 **Needs**: PyBADS and PyVBMC as step 2 installs them.
@@ -543,7 +543,7 @@ across models and settings, that PyBADS 1.5 and PyVBMC 1.5 run with it as
 their target, and how its speed compares with 0.1.0's.
 
 **Steps**:
-1. `dev/scripts/validate.py`, over these models, each with an exact
+1. [~] `dev/scripts/validate.py`, over these models, each with an exact
    log-likelihood:
    - Bernoulli: 100 trials at each p in {0.001, 0.01, 0.1, 0.5, 0.9,
      0.999}, the responses drawn at that p;
@@ -578,7 +578,7 @@ their target, and how its speed compares with 0.1.0's.
    Separately, a model whose trials all have p = 1 returns a value and a
    variance of exactly 0. Report every failing cell to the PI before
    going on.
-2. Integration tests, `pyibs/testing/integration/test_pybads.py` and
+2. [ ] Integration tests, `pyibs/testing/integration/test_pybads.py` and
    `test_pyvbmc.py`, with the marker `integration`, and each skipping
    through `pytest.importorskip` when its package is absent (the wheel
    ships the tests, and `pytest --pyargs pyibs` ignores `addopts`);
@@ -595,7 +595,7 @@ their target, and how its speed compares with 0.1.0's.
    each file alone, unbuffered, logged under `dev/scripts/runs/`:
    `$PY -u -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v > dev/scripts/runs/it_pybads_$(date +%s).log 2>&1`.
    `AGENTS.md` gains the procedure.
-3. `dev/scripts/timing.py`: the wall time of one estimate at N = 100,
+3. [ ] `dev/scripts/timing.py`: the wall time of one estimate at N = 100,
    1,000 and 10,000 trials and `num_reps` 10 and 100, with a fast
    simulator and one that sleeps 0.2 s per call, for PyIBS 1.5 and for
    0.1.0, installed from PyPI in a separate venv (`uv venv --python 3.12
@@ -606,7 +606,7 @@ their target, and how its speed compares with 0.1.0's.
    projects the runtime first, since 0.1.0's loop path with the slow
    simulator can take minutes per estimate, and the PI approves the full
    run. MATLAB is not part of the comparison.
-4. The record: `dev/experiments/validation_<YYYYMMDD>/` with its
+4. [ ] The record: `dev/experiments/validation_<YYYYMMDD>/` with its
    `README.md` and provenance (`dev/README.md`), and the summary
    `dev/results/<YYYY-MM-DD>-validation.md`, both indexed in
    `dev/README.md`. Commit.
