@@ -345,12 +345,14 @@ examples/
      enough calls, and `math.floor(inf)` raises).
    - `vectorized` (D7, D19): `False` requests one sample per open trial
      per call, without acceleration; `True` the accelerated schedule.
-     `None` is decided at the object's first call by timing one simulation
-     of all trials against `vectorized_threshold`, as `ibslike.m` does
-     (`False` at the threshold or above, or when `num_reps == 1`), and the
+     `None` is decided at the object's first call with `num_reps > 1` by
+     timing one simulation of all trials against `vectorized_threshold`,
+     as `ibslike.m` does (`False` at the threshold or above), and the
      decision is kept for the object's later calls, readable as an
-     attribute. `True` with `num_reps == 1` falls back to `False` with a
-     warning, as in `ibslike.m`.
+     attribute. A call with `num_reps == 1` requests one sample per open
+     trial per call whatever the setting, as `ibslike.m` does; `True` with
+     `num_reps == 1` falls back to `False` with a warning, as in
+     `ibslike.m`.
    - `max_time` (D3): checked after every call; once exceeded, sampling
      stops, each trial's value averages its completed repeats, a trial
      with none raises `IBSSamplingError`, and the exit flag is 2. Under the
@@ -959,12 +961,16 @@ from the README, the documentation and the model-fitting page.
   `simulator_takes_rng=True` (one more option to get right); always three
   positional arguments (stops every 0.1.0 simulator).
 - **D19. `vectorized=None` is decided once per `IBS` object, at its first
-  call, and kept** (PI, 2026-10-09) — by timing one simulation of all
-  trials, as `ibslike.m` does, so the decision follows MATLAB's rule
-  while later calls stay on one schedule; `True` or `False` given
-  explicitly makes a run fully reproducible. Rejected: `ibslike.m`'s
-  decision at every call (results depend on the timing whenever the
-  decision flips).
+  call with `num_reps > 1`, and kept** (PI, 2026-10-09) — by timing one
+  simulation of all trials, as `ibslike.m` does, so the decision follows
+  MATLAB's rule while later calls stay on one schedule; `True` or `False`
+  given explicitly makes a run fully reproducible. A call with
+  `num_reps = 1` samples one sample per trial and call whatever the
+  setting, as in `ibslike.m`, and so decides nothing. Rejected:
+  `ibslike.m`'s decision at every call (results depend on the timing
+  whenever the decision flips); the decision at the object's first call
+  whatever its `num_reps` (a first call with `num_reps = 1` would hold a
+  fast model to the one-sample schedule for every later call).
 - **D20. CI tests the minimum versions** (PI, 2026-10-09) — a job of
   `test-matrix.yml` runs the suite on Python 3.10 with the lowest NumPy,
   SciPy and pytest that `pyproject.toml` allows (D9), which uv resolves
@@ -1177,11 +1183,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   tests passed in 4.9 s
   ([run 37927122127](https://github.com/acerbilab/pyibs/actions/runs/37927122127)).
 - Deviations: `vectorized=None` is decided at the object's first call with
-  `num_reps > 1`, where step 2 and D19 say "at its first call": a call with
-  `num_reps=1` samples one sample per trial and call whatever the setting,
-  as `ibslike.m` does (lines 177-178), so it needs no decision, and
-  deciding False there would hold a fast model to that schedule for every
-  later call. For the PI's ruling. Where the steps are silent: the timing
+  `num_reps > 1`, where step 2 and D19 said "at its first call"; the PI
+  ruled for it on 2026-10-09, and step 2 and D19 now say so, D19 with the
+  reason. Where the steps are silent: the timing
   call of `vectorized=None` is the sampling's first round when that round
   requests one sample of every trial, as in `ibslike.m`, and otherwise its
   sample counts toward the cap; the time limit is checked after every
