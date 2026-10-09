@@ -378,8 +378,10 @@ numbers by their codes. A simulator that returns responses of another of
 these kinds than the observed ones would never match, and every trial
 would sample until the cap, or forever in `ibs_basic`; `IBS` raises
 `TypeError` after the first such simulator call, and `ibs_basic` after the
-first such response. Object arrays are compared element by element and not
-checked.
+first such response. An object array of simulated rows is compared element
+by element and not checked. An object array of responses is checked by the
+kinds of its elements, so that rows that NumPy has made text, as it does of
+rows that mix numbers and text, raise against responses holding numbers.
 - PyIBS: `_check_kinds`, `_simulate` (`pyibs/_sampler.py`); `ibs_basic`
   (`pyibs/ibs_basic.py`).
 - MATLAB: `ibslike.m:316`, `450`; `ibs_basic.m:33`.

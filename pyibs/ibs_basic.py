@@ -36,8 +36,9 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
         The observed responses, one row per trial. A simulated response
         matches a trial's only when every column agrees. Responses that mix
         numbers and text are given as an object array (``dtype=object``),
-        and the simulator returns each as one: NumPy otherwise turns them
-        into text, which never equals a number.
+        and the simulator returns each as one: an array that NumPy makes of
+        such a mix holds text, which never equals a number, and raises
+        ``TypeError``.
     S : array_like of shape (N, ...), optional
         The design of each trial, one row per trial. None, the default,
         passes the trial index instead.
@@ -82,18 +83,24 @@ numpy.random.Generator, optional
         def draw(s):
             return sample_from_model(theta, s)
 
-    def simulate(s):
+    object_kinds = _sampler._object_kinds(R)
+
+    def simulate(i, s):
         r = np.asarray(draw(s))
         # A response of a kind that NumPy never finds equal to R, such as
         # text for numbers, could never match.
-        _sampler._check_kinds(r, R)
+        _sampler._check_kinds(
+            r,
+            R[i : i + 1],
+            None if object_kinds is None else object_kinds[i : i + 1],
+        )
         return r
 
     L = np.zeros(N)
     for i in range(N):  # Loop over all trials (rows)
         s = i if S is None else S[i]
         K = 1
-        while not np.all(simulate(s) == R[i]):
+        while not np.all(simulate(i, s) == R[i]):
             K += 1  # Sample until the generated response is a match
         L[i] = 0.0 - np.sum(1 / np.arange(1, K))  # IBS estimator of trial i
     return float(np.sum(L))  # Summed log-likelihood

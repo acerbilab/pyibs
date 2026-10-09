@@ -154,6 +154,8 @@ def test_invalid_inputs_raise(R, S, match):
         (np.ones(3), "1"),
         (np.array(["a", "b"]), b"a"),
         (np.array(["1", "0"]), 1.0),
+        # NumPy makes text of a row that mixes numbers and text.
+        (np.array([[1, "a"], [2, "b"]], dtype=object), [1, "a"]),
     ],
 )
 def test_responses_that_never_match_raise(R, output):
@@ -173,3 +175,14 @@ def test_responses_that_never_match_raise(R, output):
     with pytest.raises(TypeError, match="never finds equal"):
         ibs_basic(simulator, THETA, R)
     assert calls == 1
+
+
+def test_responses_that_mix_numbers_and_text():
+    # Trial 0 matches at its second sample, trial 1 at its first.
+    R = np.array([[1, "a"], [2, "b"]], dtype=object)
+    outputs = {0: [[1, "b"], [1, "a"]], 1: [[2, "b"]]}
+
+    def simulator(theta, i):
+        return np.array(outputs[i].pop(0), dtype=object)
+
+    assert ibs_basic(simulator, THETA, R) == -1.0

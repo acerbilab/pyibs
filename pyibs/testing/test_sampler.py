@@ -964,6 +964,16 @@ def test_default_max_samples_per_trial():
         (np.array([b"a", b"b"]), lambda n: np.full(n, "a")),
         (np.array([True, False]), lambda n: np.full(n, b"1")),
         (np.array([["a", "b"], ["c", "d"]]), lambda n: np.zeros((n, 2))),
+        # Object arrays of responses, by the kinds of their elements: text
+        # that NumPy makes of rows mixing numbers and text, text for numbers,
+        # numbers for text, and text for bytes.
+        (
+            np.array([[1, "a"], [2, "b"]], dtype=object),
+            lambda n: np.array([[1, "a"]] * n),
+        ),
+        (np.array([1, 2], dtype=object), lambda n: np.full(n, "1")),
+        (np.array(["a", "b"], dtype=object), lambda n: np.zeros(n)),
+        (np.array([b"a", "a"], dtype=object), lambda n: np.full(n, "a")),
     ],
 )
 def test_responses_of_another_kind_raise(responses, output):
@@ -986,6 +996,13 @@ def test_responses_of_another_kind_raise(responses, output):
         (np.array(["a", "a"], dtype=object), lambda n: np.full(n, "a")),
         (np.array(["a", "a"]), lambda n: np.full(n, "a", dtype=object)),
         (np.ones(2), lambda n: np.full(n, 1, dtype=object)),
+        (
+            np.array([[1, "a"], [1, "a"]], dtype=object),
+            lambda n: np.array([[1, "a"]] * n, dtype=object),
+        ),
+        # An object array of numbers or booleans takes numbers.
+        (np.array([1, 1], dtype=object), lambda n: np.ones(n)),
+        (np.array([True, True], dtype=object), lambda n: np.ones(n, int)),
         # Text of different lengths is one kind.
         (np.array(["ab", "ab"]), lambda n: np.full(n, "ab", dtype="<U5")),
     ],

@@ -37,7 +37,7 @@ import math
 import numbers
 import time
 from collections.abc import Callable
-from dataclasses import KW_ONLY, dataclass
+from dataclasses import KW_ONLY, dataclass, field
 
 import numpy as np
 
@@ -170,26 +170,67 @@ _TEXT_KINDS = "US"
 _VALUE_KINDS = "USbiufc"
 
 
-def _check_kinds(simulated, observed):
+# The kinds of the elements of an object array of responses that
+# _check_kinds tells apart, one bit each, with the kind of a NumPy array of
+# them: text, bytes, and numbers or booleans.
+_OBJECT_KINDS = (("U", str), ("S", bytes), ("f", (numbers.Number, np.bool_)))
+
+
+def _object_kinds(responses):
+    """The kinds of the elements of each trial's response, as bits.
+
+    Bit k of entry i is set when the response of trial i holds an element
+    of the k-th kind of ``_OBJECT_KINDS``; other elements, such as None,
+    set no bit. None when the responses are not an object array.
+    """
+    if responses.dtype.kind != "O":
+        return None
+    rows = responses.reshape(responses.shape[0], -1)
+    bits = np.zeros(rows.shape[0], dtype=np.uint8)
+    for i, row in enumerate(rows):
+        for x in row:
+            for k, (_, types) in enumerate(_OBJECT_KINDS):
+                if isinstance(x, types):
+                    bits[i] |= 1 << k
+    bits.setflags(write=False)
+    return bits
+
+
+def _check_kinds(simulated, observed, object_kinds=None):
     """Raise TypeError if simulated rows can never equal the responses.
 
-    Object arrays, and kinds outside text, bytes, numbers and booleans,
-    are not checked.
+    ``observed`` holds the responses of the requested trials, and
+    ``object_kinds``, when they are an object array, their
+    :func:`_object_kinds`, without which they are not checked. An object
+    array of simulated rows is not checked, nor are kinds outside text,
+    bytes, numbers and booleans.
     """
-    a, b = simulated.dtype.kind, observed.dtype.kind
-    if (
-        a != b
-        and (a in _TEXT_KINDS or b in _TEXT_KINDS)
-        and a in _VALUE_KINDS
-        and b in _VALUE_KINDS
-    ):
-        raise TypeError(
-            f"The simulator returned responses of dtype {simulated.dtype}, "
-            "which NumPy never finds equal to the observed responses of "
-            f"dtype {observed.dtype}, so no sample would match. The "
-            "simulator must return responses of the observed kind: text, "
-            "bytes, or numbers and booleans."
-        )
+    a = simulated.dtype.kind
+    if a not in _VALUE_KINDS:
+        return
+    if observed.dtype.kind != "O":
+        kinds = [observed.dtype.kind]
+    elif object_kinds is not None:
+        bits = int(np.bitwise_or.reduce(object_kinds, initial=0))
+        kinds = [c for k, (c, _) in enumerate(_OBJECT_KINDS) if bits >> k & 1]
+    else:
+        return
+    for b in kinds:
+        if (
+            a != b
+            and (a in _TEXT_KINDS or b in _TEXT_KINDS)
+            and b in _VALUE_KINDS
+        ):
+            what = {"U": "text", "S": "bytes"}.get(b, "numbers or booleans")
+            raise TypeError(
+                f"The simulator returned responses of dtype "
+                f"{simulated.dtype}, which NumPy never finds equal to the "
+                f"{what} among the observed responses, so no sample of "
+                "their trials would match. The simulator must return "
+                "responses of the observed kind: text, bytes, or numbers "
+                "and booleans, and responses that mix them as an object "
+                "array (dtype=object)."
+            )
 
 
 @dataclass(frozen=True, eq=False)
@@ -217,9 +258,11 @@ class _Settings:
         response only when every column agrees, as in ``ibslike.m``. NumPy
         finds text, bytes, and numbers or booleans unequal to one another
         whatever their values, so the simulated rows must be of the
-        responses' kind; an object array on either side is compared element
-        by element. A NaN response, an element not equal to itself, never
-        matches, and is refused.
+        responses' kind. An object array of responses is compared element
+        by element and checked by the kinds of its elements: responses that
+        mix numbers and text take simulated rows as an object array too. A
+        NaN response, an element not equal to itself, never matches, and is
+        refused.
     design : array_like of shape (N, ...), optional
         Per-trial design; the simulator receives its rows for the
         requested trials.
@@ -307,6 +350,10 @@ class _Settings:
     max_time: float = math.inf
     neg_loglik_threshold: float | None = None
     names: tuple = ("max_samples_per_trial", "n")
+    # The _object_kinds of the responses, set from them.
+    object_kinds: np.ndarray | None = field(
+        init=False, default=None, repr=False
+    )
 
     def __post_init__(self):
         if not callable(self.simulator):
@@ -371,13 +418,19 @@ class _Settings:
             ("max_time", max_time),
             ("neg_loglik_threshold", threshold),
             ("names", tuple(self.names)),
+            ("object_kinds", _object_kinds(responses)),
         ]:
             object.__setattr__(self, name, value)
 
     def __setstate__(self, state):
         # Pickling and deep copies give writable arrays.
         self.__dict__.update(state)
-        for array in (self.responses, self.design, self.trial_weights):
+        for array in (
+            self.responses,
+            self.design,
+            self.trial_weights,
+            self.object_kinds,
+        ):
             if array is not None:
                 array.setflags(write=False)
 
@@ -949,8 +1002,9 @@ def sample(
     if the simulator returned an array of a shape that the responses do
     not take: (r,) or (r, 1) for r requested rows of responses of one
     column, and (r, C) for responses of C > 1 columns; ``TypeError`` if
-    the simulated rows and the responses are of two different kinds among
-    text, bytes, and numbers or booleans, which NumPy never finds equal;
+    the simulated rows and the responses, or the elements of an object
+    array of responses, are of two different kinds among text, bytes, and
+    numbers or booleans, which NumPy never finds equal;
     and :class:`IBSSamplingError` if a trial has drawn more than
     ``max_samples_per_trial * n`` samples in the draw.
 
@@ -1228,7 +1282,10 @@ def _simulate(settings, theta, rng, trials, m):
             f"{responses.shape[1]} columns and returned an array of shape "
             f"{simulated.shape}, where it must return shape {observed.shape}."
         )
-    _check_kinds(simulated, observed)
+    object_kinds = settings.object_kinds
+    if object_kinds is not None:
+        object_kinds = object_kinds[trials]
+    _check_kinds(simulated, observed, object_kinds)
     hits = simulated == observed
     if hits.ndim == 2:
         hits = np.all(hits, axis=1)

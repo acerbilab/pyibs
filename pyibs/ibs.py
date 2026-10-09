@@ -220,9 +220,9 @@ class IBS:
         booleans, text, bytes, or objects compared by ``==``. A simulator
         must return them of the same kind, since NumPy never finds text or
         bytes equal to numbers. Responses that mix numbers and text are
-        given as an object array (``dtype=object``), which the simulator
-        returns too: NumPy otherwise turns them into text, which never
-        equals a simulated number.
+        given as an object array (``dtype=object``), and the simulator
+        returns them as one: an array that NumPy makes of such a mix holds
+        text, which never equals a number, and raises ``TypeError``.
     design_matrix : array_like of shape (N, ...), optional
         The design of each trial, one row per trial, which the simulator
         receives for the requested trials. None, the default, passes the
