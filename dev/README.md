@@ -35,3 +35,7 @@ A file or directory is created with its first entry.
 
 - [plans/pyibs-1.5.md](plans/pyibs-1.5.md): PyIBS 1.5, from the 0.1.0 code
   to a release on the level of PyBADS 1.5 and PyVBMC 1.5.
+- [results/2026-10-09-port-review.md](results/2026-10-09-port-review.md):
+  the review of PyIBS against MATLAB `ibslike.m` and the IBS paper, with
+  its ledger of findings; its evidence is
+  [experiments/port-review_20261009/](experiments/port-review_20261009/).

@@ -1,0 +1,2 @@
+PyIBS 0.1.dev54+g40e7d7748, NumPy 2.5.3
+M = 3000: mean estimate 0.5076 +- 0.0090 (SE); exact 0.6931, z = -20.5; expected if the timing call is kept exactly when it matched 0.5199

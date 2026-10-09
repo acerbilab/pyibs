@@ -1,0 +1,29 @@
+Octave 8.4.0
+N = 1, Vectorized = 1, p = 0.3: nlogL 1.0833, nlogLvar 0.1614; size(nlogL_trials) [1 1], size(nlogLvar_trials) [5 1], sum(nlogL_trials) 1.0833, sum(nlogLvar_trials) 0.1614
+N = 1, Vectorized = 1, p = 1.0: nlogL 0.0000, nlogLvar 0.0000; size(nlogL_trials) [1 1], size(nlogLvar_trials) [1 1], sum(nlogL_trials) 0.0000, sum(nlogLvar_trials) 0.0000
+N = 1, Vectorized = 0, p = 0.3: nlogL 0.4000, nlogLvar 0.0800; size(nlogL_trials) [5 1], size(nlogLvar_trials) [5 1], sum(nlogL_trials) 0.4000, sum(nlogLvar_trials) 0.0800
+N = 1, Vectorized = 0, p = 1.0: nlogL 0.0000, nlogLvar 0.0000; size(nlogL_trials) [1 1], size(nlogLvar_trials) [1 1], sum(nlogL_trials) 0.0000, sum(nlogLvar_trials) 0.0000
+MaxIter = Inf, Vectorized = 1, p = 0.001: nlogL 20.805, exit flag 0
+MaxIter = 2, Vectorized = 1: ibslike:ConvergenceFail
+MaxIter = Inf, Vectorized = 0, p = 0.001: nlogL 22.481, exit flag 0
+MaxIter = 2, Vectorized = 0: ibslike:ConvergenceFail
+Nreps = [2; 3], vectorized, NsamplesPerCall = 4: nlogL_trials [1.6417 0], nlogLvar_trials [0.6159 0], exit flag 0
+Nreps = [2; 3], vectorized, NsamplesPerCall = 0: error "horizontal dimensions mismatch (1x1 vs 2x1)"
+Nreps = [2; 3], loop: error "zeros: dimensions must be scalars."
+MaxTime = 1e-9, Vectorized = 1: nlogL NaN, nlogLvar NaN, exit flag 2, funcCount 0, nlogL_trials [NaN NaN NaN]
+MaxTime = 1e-9, Vectorized = 0: nlogL NaN, nlogLvar NaN, exit flag 2, funcCount 0, nlogL_trials [NaN NaN NaN]
+TEST 1: Using IBS to compute log(p) of Bernoulli distributions with 1000 repeats.
+We consider p = [0.001 0.00215 0.00464 0.01 0.0215 0.0464 0.1 0.215 0.464 1].
+Average RMSE of log(p) estimates across p: 0.0260.
+Test PASSED. IBS estimates are calibrated and close to ground truth.
+TEST 2: Using IBS to compute the log-likelihood of a binomial distribution.
+Parameters: p_true=0.89, p_model=0.35, 100 trials per experiment.
+The distribution of z-scores should approximate a standard normal distribution (mean 0, SD 1).
+Distribution of z-scores (2000 experiments). Mean: 0.01526. Standard deviation: 1.02.
+Test PASSED. We verified that IBS is unbiased (~zero mean) and calibrated (SD ~1).
+TEST 3: Log-likelihood thresholding at log(p) = -4.605.
+Using IBS to compute thresholded log(p) of Bernoulli distributions with 100 repeats.
+We consider p = [0.001 0.00167 0.00278 0.00464 0.00774 0.0129 0.0215 0.0359 0.0599 0.1].
+Average RMSE of log(p) estimates across p: 0.0386.
+Test PASSED. IBS estimates are calibrated and close to (thresholded) ground truth.
+ibslike('test'): 0
