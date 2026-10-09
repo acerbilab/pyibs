@@ -28,6 +28,7 @@ packages = [
     "pyibs",
     "pyibs.examples",
     "pyibs.testing",
+    "pyibs.testing.integration",
 ]
 package-dir = {"pyibs.examples" = "examples"}
 

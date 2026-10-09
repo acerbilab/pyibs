@@ -86,6 +86,22 @@ target returns a pair `(value, sd)`.
 - Both call the target with one parameter vector, 1-D, in the original
   parameter space.
 
+The integration tests, `pyibs/testing/integration/`, fit the example model
+with each of them, an IBS estimate as the noisy target. They carry the
+marker `integration`, which `addopts` deselects, and each file skips
+through `pytest.importorskip` when its package is absent; `pytest
+--pyargs pyibs`, run outside the checkout, reads no `addopts` and so runs
+them whenever the packages are installed. They need PyBADS 1.5.1 or later
+and PyVBMC 1.5, installed into the venv with
+`uv pip install "pybads>=1.5.1" "pyvbmc>=1.5.0"`. PyVBMC 1.5.0 is not on
+PyPI before 2026-10-13; until then it comes from its release branch,
+`uv pip install "pyvbmc @ git+https://github.com/acerbilab/pyvbmc@feat-release-1.5-preparation"`,
+whose installed version reads 1.0.5.devN, the branch having no tag. Each
+file is a heavy process (about 40 s and 2 min), run alone, unbuffered and
+logged:
+`$PY -u -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v > dev/scripts/runs/it_pybads_$(date +%s).log 2>&1`,
+and `test_pyvbmc.py` likewise.
+
 ## Setup and commands
 
 The development environment is a venv at `.venv` (gitignored). No shell
