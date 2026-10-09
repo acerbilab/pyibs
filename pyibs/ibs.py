@@ -2,9 +2,7 @@
 
 :class:`IBS` holds a model's simulator, the observed data and the sampling
 settings, and estimates the log-likelihood of a parameter vector each time
-it is called, with an estimate of the estimate's variance ([1]). It follows
-MATLAB ``ibslike.m`` (https://github.com/acerbilab/ibs); ``pyibs/README.md``
-lists where it differs on purpose.
+it is called, with an estimate of the estimate's variance ([1]).
 
 References
 ----------
@@ -255,6 +253,9 @@ class IBS:
         The cap on the samples of one trial, per repeat: a call of
         ``num_reps`` repeats raises :class:`IBSSamplingError` once a trial
         has drawn more than ``max_iter * num_reps`` samples. Default 10**5.
+        Any finite integer is taken: a very large one, such as 10**18, sets
+        a cap that no call reaches, and a call whose simulator cannot
+        produce an observed response then never ends.
     max_time : float, optional
         The time limit of a call, in seconds, > 0, checked after every
         simulator call. Once it is reached, the sampling stops, and each
@@ -270,9 +271,9 @@ class IBS:
         Default 10**4.
     acceleration_threshold : float or None, optional
         None, the default, grows the samples per call after every call. A
-        time in seconds > 0 grows them only after calls that took less,
-        as ``ibslike.m`` does; the samples drawn then depend on the
-        wall-clock time, and a seed no longer reproduces a run.
+        time in seconds > 0 grows them only after calls that took less;
+        the samples drawn then depend on the wall-clock time, and a seed
+        no longer reproduces a run.
     vectorized_threshold : float, optional
         The time in seconds, > 0, of one simulation of all trials at or
         above which ``vectorized=None`` decides False. Default 0.1.
@@ -280,8 +281,7 @@ class IBS:
         The bound on the samples of one simulator call, which a call
         exceeds by less than its number of trials: each trial gets at most
         ``ceil(max_mem / n_open)`` samples, with ``n_open`` trials still
-        sampled. None, the default, sets ``max(min(N, 10**4), 10) * 100``,
-        as ``ibslike.m`` does.
+        sampled. None, the default, sets ``max(min(N, 10**4), 10) * 100``.
     neg_logl_threshold : float, optional
         The likelihood threshold T, > 0. A repeat whose sampling shows
         that its negative log-likelihood exceeds T is ended and counts -T,

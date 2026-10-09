@@ -21,7 +21,7 @@ says where PyIBS differs from it, and why.
   samples of one trial per repeat, where 0.1.0 counted rounds of simulator
   calls; its default is 10**5 (0.1.0's, written `10 ^ 5`, was 15).
 - `max_mem` defaults to `max(min(N, 10**4), 10) * 100` samples per
-  simulator call, as in `ibslike.m`, instead of 1e6.
+  simulator call, instead of 1e6.
 - The samples per simulator call grow after every call by default, so that
   a seed reproduces a run; `acceleration_threshold=0.1` restores 0.1.0's
   rule, which grows them only after calls faster than 0.1 s.
@@ -34,7 +34,7 @@ says where PyIBS differs from it, and why.
 - `vectorized=None` is decided once per `IBS` object, at its first call
   with `num_reps > 1`, where 0.1.0 timed a simulation at every call. A
   call with `num_reps=1` requests one sample per trial and simulator call,
-  as `ibslike.m` does, with a warning when `vectorized=True` was given.
+  with a warning when `vectorized=True` was given.
 - A NaN in `response_matrix` raises `ValueError` when `IBS` is created,
   where 0.1.0 sampled its trial until the iteration limit, with exit flag 3.
 - `IBS` checks its settings, and `num_reps`, `trial_weights` and
@@ -68,8 +68,8 @@ says where PyIBS differs from it, and why.
   `random_seed` likewise.
 - **Per-trial estimates.** `additional_output="full"` returns each trial's
   negative log-likelihood estimate and its variance estimate,
-  `neg_logl_trials` and `neg_logl_var_trials`, as `ibslike.m` does; they
-  are NaN when the likelihood threshold ended a repeat.
+  `neg_logl_trials` and `neg_logl_var_trials`; they are NaN when the
+  likelihood threshold ended a repeat.
 - **Optional design.** `design_matrix` defaults to None, which passes the
   trial indices to the simulator.
 - **A warning on a zero variance.** A call that returns a variance
@@ -81,11 +81,10 @@ says where PyIBS differs from it, and why.
 
 ### Changed
 
-- **Sampling.** PyIBS is rebuilt on a tested port of the `ibslike.m`
-  sampler, whose two schedules one sampler runs: `vectorized=True`
-  requests several samples per trial and simulator call, a number that
-  grows from call to call, and `vectorized=False` one sample per trial and
-  call. The samples per call follow `ibslike.m`'s formula.
+- **Sampling.** PyIBS is rebuilt on one tested sampler, which runs two
+  schedules: `vectorized=True` requests several samples per trial and
+  simulator call, a number that grows from call to call, and
+  `vectorized=False` one sample per trial and call.
 - **Likelihood threshold.** Every repeat is checked against
   `neg_logl_threshold`, on the scale of the weighted negative
   log-likelihood, and a repeat that exceeds it counts exactly

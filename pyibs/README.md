@@ -259,7 +259,8 @@ over the cap by their 0-based indices and the samples each drew.
 `MaxIter = Inf` disables `ibslike.m`'s cap: its loops then run until the
 sampling ends (lines 260, 269, 427). `max_iter` is a finite integer, since
 a response that the simulator cannot produce would otherwise sample
-forever, with nothing that names the cause.
+forever, with nothing that names the cause; a very large one, such as
+`10**18`, sets a cap that no call reaches.
 - PyIBS: `sample`, `_cap_error`, `IBSSamplingError` (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:95`, `180-189`, `260`, `269-276`, `390-393`, `410`,
   `427-430`, `477-480`.
