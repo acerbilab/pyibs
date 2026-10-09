@@ -105,14 +105,20 @@ The tests live in `pyibs/testing/`, and default discovery is limited to
 them (`testpaths` in `pyproject.toml`), with the tests marked
 `integration` deselected (`addopts`).
 
-The test job is defined once, in `.github/workflows/test-matrix.yml`, which
-installs PyIBS with its `test` extra and runs the suite. `merge-tests.yml`
-runs the full matrix (Ubuntu, Windows, macOS × Python 3.10–3.14) on a pull
-request to `main` or to a `dev*` branch, only when its changes against that
-base touch `pyibs/`, `pyproject.toml` or `setup.py`; a pull request that
-changes anything else, the workflows included, runs no tests. `tests.yml`
-runs the full matrix on dispatch, and a smoke run (Ubuntu, Python 3.14) on
-each push to a `dev*` branch that touches the package, `pyproject.toml`,
+The test jobs are defined once, in `.github/workflows/test-matrix.yml`, and
+every run of `tests.yml` or `merge-tests.yml` includes both. The matrix job
+installs PyIBS with its `test` extra and runs the suite on the operating
+systems and Python versions it is given. The minimum-versions job runs it
+on Ubuntu with Python 3.10 and the lowest NumPy, SciPy and pytest that
+`pyproject.toml` allows, which uv resolves (`--resolution lowest-direct`).
+That job and the matrix lists name Python 3.10 themselves, so a change of
+`requires-python` changes them too. `merge-tests.yml` runs the full matrix
+(Ubuntu, Windows, macOS × Python 3.10–3.14) on a pull request to `main` or
+to a `dev*` branch, only when its changes against that base touch `pyibs/`,
+`pyproject.toml` or `setup.py`; a pull request that changes anything else,
+the workflows included, runs no tests. `tests.yml` runs the full matrix on
+dispatch, and a smoke run, the matrix reduced to Ubuntu with Python 3.14,
+on each push to a `dev*` branch that touches the package, `pyproject.toml`,
 `setup.py`, `tests.yml` or `test-matrix.yml`.
 
 Formatting is enforced by the pre-commit hooks alone (black at line length

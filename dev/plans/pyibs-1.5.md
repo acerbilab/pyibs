@@ -920,6 +920,16 @@ from the README, the documentation and the model-fitting page.
   explicitly makes a run fully reproducible. Rejected: `ibslike.m`'s
   decision at every call (results depend on the timing whenever the
   decision flips).
+- **D20. CI tests the minimum versions** (PI, 2026-10-09) — a job of
+  `test-matrix.yml` runs the suite on Python 3.10 with the lowest NumPy,
+  SciPy and pytest that `pyproject.toml` allows (D9), which uv resolves
+  from `pyproject.toml` itself, in every run of the workflows. The matrix
+  installs the newest release for each Python, so without the job the
+  oldest versions tested would be those of the newest release for Python
+  3.10 (NumPy 2.2.6 and SciPy 1.15.3 on 2026-10-09). Rejected: the versions
+  pinned in the workflow (a second place to change with D9); a check at the
+  release gate only (code of Phases 1 to 4 could pass the matrix and fail
+  at the minimum versions until then).
 
 ## Open Questions
 

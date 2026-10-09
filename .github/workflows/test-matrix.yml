@@ -1,6 +1,7 @@
-# The test job, defined once. Called by tests.yml (manual dispatch, pushes
-# to dev* branches) and merge-tests.yml (PRs to main and dev* branches). Not
-# triggered on its own.
+# The test jobs, defined once: the matrix, and one run at the minimum
+# versions. Called by tests.yml (manual dispatch, pushes to dev* branches)
+# and merge-tests.yml (PRs to main and dev* branches), each run with both
+# jobs. Not triggered on its own.
 name: test-matrix
 
 on:
@@ -39,6 +40,33 @@ jobs:
 
       - name: Install PyIBS
         run: python -m pip install -e ".[test]"
+
+      - name: Run tests
+        run: python -m pytest -x -vv
+
+  # The oldest versions pyproject.toml allows: Python 3.10, its
+  # requires-python, and the lowest NumPy, SciPy and pytest it admits,
+  # which uv resolves from pyproject.toml itself. The matrix installs the
+  # newest release for each Python and so never reaches them.
+  minimum-versions:
+    name: tests (minimum versions)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PyIBS
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+
+      - name: Install PyIBS at its minimum versions
+        run: |
+          python -m pip install uv
+          python -m uv pip install --system --resolution lowest-direct -e ".[test]"
 
       - name: Run tests
         run: python -m pytest -x -vv
