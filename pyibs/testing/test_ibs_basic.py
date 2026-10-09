@@ -146,3 +146,30 @@ def never_called(theta, s):
 def test_invalid_inputs_raise(R, S, match):
     with pytest.raises(ValueError, match=match):
         ibs_basic(never_called, THETA, R, S)
+
+
+@pytest.mark.parametrize(
+    "R, output",
+    [
+        (np.ones(3), "1"),
+        (np.array(["a", "b"]), b"a"),
+        (np.array(["1", "0"]), 1.0),
+    ],
+)
+def test_responses_that_never_match_raise(R, output):
+    # NumPy finds text, bytes and numbers unequal to one another whatever
+    # their values, so no sample of such a simulator can match; without the
+    # check, ibs_basic would sample forever, which the guard turns into
+    # RuntimeError.
+    calls = 0
+
+    def simulator(theta, s):
+        nonlocal calls
+        calls += 1
+        if calls > 50:
+            raise RuntimeError("ibs_basic is still sampling after 50 calls")
+        return output
+
+    with pytest.raises(TypeError, match="never finds equal"):
+        ibs_basic(simulator, THETA, R)
+    assert calls == 1

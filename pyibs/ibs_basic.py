@@ -54,6 +54,10 @@ numpy.random.Generator, optional
         If ``R`` is not a non-empty array of shape (N,) or (N, C), or holds
         a NaN, which no simulated response equals; or if ``S`` does not
         have N rows.
+    TypeError
+        If the simulator returns a response of a kind that NumPy never
+        finds equal to ``R``: text, bytes, or numbers and booleans, one for
+        another.
 
     References
     ----------
@@ -68,19 +72,26 @@ numpy.random.Generator, optional
     rng = _rng(random_seed)
     if _takes_rng(sample_from_model):
 
-        def simulate(s):
+        def draw(s):
             return sample_from_model(theta, s, rng=rng)
 
     else:
 
-        def simulate(s):
+        def draw(s):
             return sample_from_model(theta, s)
+
+    def simulate(s):
+        r = np.asarray(draw(s))
+        # A response of a kind that NumPy never finds equal to R, such as
+        # text for numbers, could never match.
+        _sampler._check_kinds(r, R)
+        return r
 
     L = np.zeros(N)
     for i in range(N):  # Loop over all trials (rows)
         s = i if S is None else S[i]
         K = 1
-        while not np.all(np.asarray(simulate(s)) == R[i]):
+        while not np.all(simulate(s) == R[i]):
             K += 1  # Sample until the generated response is a match
         L[i] = 0.0 - np.sum(1 / np.arange(1, K))  # IBS estimator of trial i
     return float(np.sum(L))  # Summed log-likelihood

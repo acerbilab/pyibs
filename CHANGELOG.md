@@ -129,4 +129,6 @@ says where PyIBS differs from it, and why.
 
 - `ibs_basic` works without a design (`S=None`, its default), when the
   simulator receives the trial index. A NaN response raises `ValueError`,
-  where `ibs_basic` sampled forever.
+  and a simulator that returns responses of a kind that NumPy never finds
+  equal to the observed ones, such as text for numbers, raises
+  `TypeError`, where `ibs_basic` sampled forever.

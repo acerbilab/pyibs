@@ -355,10 +355,13 @@ NumPy compares text, bytes, and numbers or booleans as unequal to one
 another whatever their values, where MATLAB compares characters with
 numbers by their codes. A simulator that returns responses of another of
 these kinds than the observed ones would never match, and every trial
-would sample until the cap; PyIBS raises `TypeError` after the first such
-call. Object arrays are compared element by element and not checked.
-- PyIBS: `_check_kinds`, `_simulate` (`pyibs/_sampler.py`).
-- MATLAB: `ibslike.m:316`, `450`.
+would sample until the cap, or forever in `ibs_basic`; `IBS` raises
+`TypeError` after the first such simulator call, and `ibs_basic` after the
+first such response. Object arrays are compared element by element and not
+checked.
+- PyIBS: `_check_kinds`, `_simulate` (`pyibs/_sampler.py`); `ibs_basic`
+  (`pyibs/ibs_basic.py`).
+- MATLAB: `ibslike.m:316`, `450`; `ibs_basic.m:33`.
 - Kind: Python-only feature.
 
 **KD-17. A NaN response raises `ValueError` when `IBS` is created.**
@@ -378,15 +381,19 @@ checked: a design of NaN serves a simulator that reads only its size, as
 ## ibs_basic
 
 **KD-18. `ibs_basic` runs without a design, passes a generator, and
-raises on a NaN response.**
-`ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33),
-and loops forever on a NaN response, since `NaN ~= NaN` (line 33). PyIBS's
+raises on its data and on responses that cannot match.**
+`ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33);
+it returns 0 for empty responses (lines 28-29, 39), ignores extra rows of
+`S` and fails at an index when rows are missing (line 33); and it loops
+forever on a NaN response, since `NaN ~= NaN` (line 33). PyIBS's
 `ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None)`
 passes the 0-based trial index when `S` is None, as `IBS` does (KD-5),
 creates a generator from `random_seed` and passes it to a simulator that
-takes `rng`, as `IBS` does (KD-4), and refuses a NaN response, as `IBS`
-does (KD-17). It returns the log-likelihood estimate, not its negative, as
-`ibs_basic.m` does (line 39).
+takes `rng`, as `IBS` does (KD-4), checks `R` and `S` as `IBS` checks its
+data (KD-6), and refuses a NaN response (KD-17) and a simulated response of
+a kind that NumPy never finds equal to `R` (KD-16), as `IBS` does. It
+returns the log-likelihood estimate, not its negative, as `ibs_basic.m`
+does (line 39).
 - PyIBS: `ibs_basic` (`pyibs/ibs_basic.py`).
 - MATLAB: `ibs_basic.m:28-39`.
 - Settled by: D23 (the NaN response). Kind: deliberate change.
