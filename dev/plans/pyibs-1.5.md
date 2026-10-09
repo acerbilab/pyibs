@@ -147,7 +147,7 @@ from the original maintainer on 2026-10-09.
 | Samples per call | `min(1e4, max(1, round(level)))`, with MATLAB's `round` (halves away from zero), then at most `ceil(MaxMem / n_open)` | `max(1, min(floor(level), 10**6 // n_open))` | `ibslike.m`'s formula and defaults (D6) |
 | Likelihood threshold | Vectorized path: checks the lowest repeat still sampled, keeps the partial counts of an ended repeat, compares the unweighted sum. Loop path: checks each repeat, keeps partial counts | Every repeat against a weighted bound; an ended repeat is worth exactly -T | As the engine (D5, deliberate difference) |
 | Cap | `MaxIter` rounds (times `Nreps` in the vectorized path); error | More than `max_samples_per_trial * n` samples of one trial in a draw of n repeats; error | As the engine, with `max_iter` as `max_samples_per_trial`, default `10**5` (D3, D6, deliberate difference) |
-| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning (D3, deliberate differences) |
+| Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning; with the likelihood threshold, D24 (D3, D24, deliberate differences) |
 | Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21, deliberate difference) |
 | Sample count | The vectorized path adds the number of open trials per call, whatever the samples requested of each | Every simulated row | As the engine (deliberate difference) |
 | Simulator | `fun(params, dmat, varargin{:})`, global random state | Called with the generator of the draw | `sample_from_model(params, design_rows)`, with `rng=` when its signature has a parameter named `rng` (D8, D18) |
@@ -353,9 +353,9 @@ examples/
      warning, as in `ibslike.m`.
    - `max_time` (D3): checked after every call; once exceeded, sampling
      stops, each trial's value averages its completed repeats, a trial
-     with none raises `IBSSamplingError`, and the exit flag is 2. Its
-     combination with the likelihood threshold is an open question (Open
-     Questions), which the PI settles before this step.
+     with none raises `IBSSamplingError`, and the exit flag is 2. Under the
+     likelihood threshold, the repeats it ended count -T each and the
+     others are averaged per trial, as D24 states.
    - The shape check of `_simulate` (D22): when the responses have one
      column, an output of shape (r,) or (r, 1) for r rows requested is
      compared with that column; otherwise the output's shape is that of
@@ -450,11 +450,14 @@ examples/
      (`np.testing.assert_allclose`, since they agree to rounding), whatever
      `return_positive`; the warning on a zero variance (trials that always
      match); `max_time` with a simulator that sleeps, with margins wide
-     enough for slow CI runners; validation errors, and whole-number floats
-     accepted for the counts; reproducibility (two objects with one seed
-     and a simulator that takes the generator give equal estimates; a
-     simulator without a generator parameter works); and agreement in
-     distribution of the `vectorized` settings.
+     enough for slow CI runners; the reduction of D24 on given counts and
+     ended repeats, without timing (its value, its variance, its two
+     limits, the exit flag and a trial with no completed count); validation
+     errors, and whole-number floats accepted for the counts;
+     reproducibility (two objects with one seed and a simulator that takes
+     the generator give equal estimates; a simulator without a generator
+     parameter works); and agreement in distribution of the `vectorized`
+     settings.
    - `test_ibs_basic.py`, a NaN response among its cases, and
      `test_examples.py`: the IBS estimate of the example model agrees with
      its closed form within 4.5 standard errors at three seeded parameter
@@ -1011,18 +1014,33 @@ from the README, the documentation and the model-fitting page.
   or the threshold (the whole cap's cost, or a silent -T, with nothing that
   names the cause).
 
+- **D24. When the time limit stops a draw in which the likelihood threshold
+  ended repeats, the ended repeats count -T each and the others are
+  averaged per trial** (PI, 2026-10-09) — of the n repeats, n_e ended;
+  trial i has m_i completed counts in the other repeats, whose `ibs_loglik`
+  average is ā_i. The log-likelihood estimate is (n_e / n)(-T) +
+  (1 - n_e / n) Σ_i w_i ā_i, and its variance estimate is (Σ of the ended
+  repeats' variance estimates) / n² + (1 - n_e / n)² Σ_i w_i² (Σ of the
+  trial's `ibs_var` over its completed counts) / m_i². The exit flag is 2,
+  with D3's warning, which also gives n_e; the per-trial arrays are NaN
+  (D21); a trial with m_i = 0 raises, as in D3. Each rule acts on the
+  repeats it governs: D5 values an ended repeat as a whole, and D3
+  summarizes the repeats left unfinished by trial, so the estimate is D3's
+  when no repeat ended and -T when every repeat did, and the bias it adds
+  to the threshold's is the time limit's, which the flag and the warning
+  report. Rejected: the complete repeats alone, with their values
+  max(Y_r, -T) (the counts that faster trials completed beyond them are
+  lost, and with few complete repeats the call raises, which D3 exists to
+  avoid); refusing the combination (`ibslike.m` allows it, and the user
+  would lose the time limit under a threshold); -T whenever a repeat ended
+  (one ended repeat does not put the parameter vector below the threshold);
+  `ibslike.m`'s per-trial average over every count, the partial counts of
+  ended repeats included (at odds with D5).
+
 ## Open Questions
 
-- **The time limit together with the likelihood threshold.** Once
-  `max_time` is exceeded, each trial's value averages its completed repeats
-  (D3); a repeat that the threshold ended is worth -T as a whole, with no
-  share in any trial (D5, D21). When both happen in one call, the plan
-  defines neither the total nor its variance, the exit flag or the
-  per-trial arrays. Before Phase 1, step 2, the executor states the options
-  and their consequences, and the PI decides.
-
-The PI settled the plan's other questions on 2026-10-09: D17 to D19, and
-timings against 0.1.0 only, with no MATLAB installation in the
+None. The PI settled the plan's questions on 2026-10-09: D17 to D19, D24,
+and timings against 0.1.0 only, with no MATLAB installation in the
 comparison (Phase 3, step 3).
 
 ## Worklog
@@ -1112,4 +1130,4 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   `ibslike.m`, D23's case under a threshold and its definition of NaN, the
   per-trial variances, the Phase 1 steps for the review's remaining inputs,
   the changelog entries in each commit, and the open question on the time
-  limit with the threshold.
+  limit with the threshold, which the PI settled as D24.
