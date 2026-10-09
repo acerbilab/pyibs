@@ -177,7 +177,6 @@ class IBS:
             )
 
         def compute_logl(self, params, num_reps, weights, return_positive, t0):
-
             simulated_data = None
             elapsed_time = 0
             num_reps = int(num_reps)
@@ -367,7 +366,6 @@ class IBS:
                     )
 
                     def get_K_from_hits(hits_temp):
-
                         # Build matrix of new hits (sandwich with buffer of hits, then removed)
                         hits_new = np.concatenate(
                             (
@@ -557,7 +555,6 @@ class IBS:
                 exit_flag = 0
 
                 for i_Rep in range(num_reps):
-
                     if exit_flag == 2:
                         break
                     if (
@@ -577,7 +574,6 @@ class IBS:
                     hits = np.zeros(num_trials, dtype=bool)
 
                     for iter in range(max_iter):
-
                         T = trials[hits == False]
                         if len(T) == 0:
                             break
