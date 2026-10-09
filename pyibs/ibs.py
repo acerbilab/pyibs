@@ -455,7 +455,8 @@ numpy.random.Generator, optional
 
     @property
     def num_samples_per_call(self):
-        """The samples per trial of the first call; 0 for ``num_reps``."""
+        """The level at which the samples per call start; 0 for
+        ``num_reps``."""
         return self._num_samples_per_call
 
     @property

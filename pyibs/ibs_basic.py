@@ -34,7 +34,10 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
         The parameter vector, passed to the simulator as given.
     R : array_like of shape (N,) or (N, C)
         The observed responses, one row per trial. A simulated response
-        matches a trial's only when every column agrees.
+        matches a trial's only when every column agrees. Responses that mix
+        numbers and text are given as an object array (``dtype=object``),
+        and the simulator returns each as one: NumPy otherwise turns them
+        into text, which never equals a number.
     S : array_like of shape (N, ...), optional
         The design of each trial, one row per trial. None, the default,
         passes the trial index instead.

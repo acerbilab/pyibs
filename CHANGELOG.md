@@ -123,6 +123,11 @@ says where PyIBS differs from it, and why.
 - With the default settings, no seed reproduced a run: the samples
   requested depended on the timing of the simulator calls, and the
   simulator could only draw from NumPy's global state.
+- With `vectorized=None`, a call discarded the responses of the simulation
+  that times the simulator whenever it went on to request several samples
+  per trial and simulator call, which biased the estimate when the
+  simulator's running time depended on the responses it simulated. Those
+  responses are now always used.
 
 #### ibs_basic
 

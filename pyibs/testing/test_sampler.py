@@ -544,26 +544,36 @@ def test_first_round_precedes_more_samples_per_trial(captured_counts):
     # The schedule's first round requests n = 2 samples of each trial, so
     # the call of first_round is an extra round before it, after which the
     # level does not grow: the next round requests 2 samples of each trial,
-    # not round(2 * 1.5) = 3. Every sample matches.
-    sim = ScriptedSimulator([[1] * 20] * 3)
+    # not round(2 * 1.5) = 3. Every trial misses at the call of
+    # first_round and matches at every later sample, so its first count, 2,
+    # includes that call's sample.
+    sim = ScriptedSimulator([[0] + [1] * 20] * 3)
     settings = _Settings(sim, np.ones(3))
     rng = np.random.default_rng(SEED)
     first = _sampler.first_round(settings, np.zeros(1), rng)
     b = _sampler.sample(settings, np.zeros(1), 2, rng, first=first)
     (K,) = captured_counts
-    assert np.array_equal(K, np.ones((2, 3)))
+    assert np.array_equal(K, [[2, 2, 2], [1, 1, 1]])
     assert [r.size for r in sim.requests] == [3, 6]
     assert b.calls == 2
     assert b.samples == 9
 
 
-@pytest.mark.parametrize("vectorized", [False, True])
-def test_first_round_reproduces_the_draw_without_it(vectorized):
+@pytest.mark.parametrize(
+    "vectorized, options",
+    [
+        (False, {}),
+        (True, dict(initial_samples=1)),
+        (True, dict(max_mem=P.size)),
+    ],
+)
+def test_first_round_reproduces_the_draw_without_it(vectorized, options):
     # A first round drawn from the draw's generator gives the draw that the
     # same generator gives without it, when the schedule's first round
-    # requests one sample of every trial (initial_samples=1).
+    # requests one sample of every trial: on the one-sample schedule, at a
+    # starting level of 1, or with max_mem allowing one sample per trial.
     settings = _Settings(
-        bernoulli, np.ones(P.size), trial_weights=W, initial_samples=1
+        bernoulli, np.ones(P.size), trial_weights=W, **options
     )
     plain = _sampler.sample(
         settings,
