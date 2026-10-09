@@ -135,9 +135,8 @@ their noisy-target interface requires of a target.
 ### Release access
 
 Publishing 1.5.0 needs owner access to the `pyibs` project on PyPI and
-maintainer access to `conda-forge/pyibs-feedstock`. We are waiting to
-obtain both from the original maintainer. Phase 5 from step 3 on waits for
-them; everything before proceeds without them.
+maintainer access to `conda-forge/pyibs-feedstock`. The lab obtained both
+from the original maintainer on 2026-10-09.
 
 ### Parity with `ibslike.m`
 
@@ -205,7 +204,7 @@ them; everything before proceeds without them.
 
 ### Phase 0: tooling, references and the engine
 
-**Status**: pending
+**Status**: done through the review of step 11; the push awaits the PI
 **Executor**: Opus (orchestrator), on the PI's machine
 **Needs**: `dev/private/extraction.md` and what it names; `../pybads`;
 `../pyvbmc` at its branch `feat-release-1.5-preparation` (the CI matrix).
@@ -214,14 +213,14 @@ reference at hand, and the engine with its tests in the package, pushed so
 that every later phase can start from a clone.
 
 **Steps**:
-1. Commit the plan and the files that come with it, as they stand:
+1. [x] Commit the plan and the files that come with it, as they stand:
    `git add AGENTS.md CLAUDE.md dev .gitignore`, then check with
    `git status --short` that nothing under `dev/private/` is staged, and
    commit as `docs: plan for PyIBS 1.5, AGENTS.md and CLAUDE.md`.
-2. Line endings: copy `../pybads/.gitattributes`, `git add .gitattributes`,
+2. [x] Line endings: copy `../pybads/.gitattributes`, `git add .gitattributes`,
    `git add --renormalize .`, and commit the result alone as
    `chore: normalize line endings`.
-3. Clone the MATLAB reference and its wiki:
+3. [x] Clone the MATLAB reference and its wiki:
    `git clone https://github.com/acerbilab/ibs ../ibs` and
    `git clone https://github.com/acerbilab/ibs.wiki.git ../ibs.wiki`.
    Record `git -C ../ibs rev-parse HEAD`, `git -C ../ibs.wiki rev-parse
@@ -229,7 +228,7 @@ that every later phase can start from a clone.
    in the Worklog. Expected: Version 0.96. If the header shows another
    version, or `ibslike.m` differs from the description under Context,
    stop and report.
-4. Packaging, after `../pybads/pyproject.toml`, `MANIFEST.in` and
+4. [x] Packaging, after `../pybads/pyproject.toml`, `MANIFEST.in` and
    `.gitignore`:
    - `pyproject.toml`: `name = "PyIBS"`, `dynamic = ["version"]`, the
      description, `readme`, `license = "BSD-3-Clause"`,
@@ -253,20 +252,20 @@ that every later phase can start from a clone.
    - `.gitignore`: `pyibs/_version.py`, `docs/`, `docsrc/_build/`,
      `docsrc/source/_examples/` and `.venv-*/`.
    Commit as `build: packaging for PyIBS 1.5`.
-5. Pre-commit and the venv: copy `../pybads/.pre-commit-config.yaml` (its
+5. [x] Pre-commit and the venv: copy `../pybads/.pre-commit-config.yaml` (its
    hook versions), keeping the `exclude` patterns that apply here. Create
    the venv, `uv venv --python 3.12 .venv`, `uv pip install -e ".[dev]"`,
    `$PY -m pre_commit install`. Run `$PY -m pre_commit run --all-files`
    and commit the reformatting alone as `style: format the tree with the
    pre-commit hooks`; list that commit's hash in a new
    `.git-blame-ignore-revs`, as PyBADS does, in a second commit.
-6. `CHANGELOG.md` with PyBADS's header (Keep a Changelog) and an empty
+6. [x] `CHANGELOG.md` with PyBADS's header (Keep a Changelog) and an empty
    `## [Unreleased]`. Commit.
-7. The engine: follow `dev/private/extraction.md`, which yields
+7. [x] The engine: follow `dev/private/extraction.md`, which yields
    `pyibs/_estimates.py`, `pyibs/_sampler.py`, `pyibs/testing/_exact.py`,
    `pyibs/testing/_helpers.py` and the tests listed under Context. If that
    file is absent, stop. Commit as `feat: IBS engine and its tests`.
-8. Check the installation and the build:
+8. [x] Check the installation and the build:
    `$PY -c "import importlib.metadata as m; print(m.version('pyibs'))"`
    prints a development version from setuptools_scm;
    `$PY -m build` builds an sdist and a wheel; the wheel's `METADATA`
@@ -274,7 +273,7 @@ that every later phase can start from a clone.
    (`unzip -p dist/*.whl '*/METADATA' | grep Requires-Dist`); and the sdist
    holds no file of `dev/` (`tar -tzf dist/*.tar.gz | grep /dev/` prints
    nothing).
-9. CI: copy `../pybads/.github/workflows/test-matrix.yml`,
+9. [x] CI: copy `../pybads/.github/workflows/test-matrix.yml`,
    `merge-tests.yml` and `tests.yml`, adapted: no gpyreg pin and no drift
    run (PyIBS does not depend on gpyreg); paths `pyibs/`,
    `pyproject.toml` and `setup.py`; the matrix Ubuntu, Windows and macOS ×
@@ -282,7 +281,7 @@ that every later phase can start from a clone.
    files parse:
    `$PY -c "import sys, yaml; [yaml.safe_load(open(f)) for f in sys.argv[1:]]" .github/workflows/*.yml`
    (PyYAML comes with pre-commit). Commit as `ci: test workflows`.
-10. `AGENTS.md`: "Setup and commands" gains the version from git tags
+10. [x] `AGENTS.md`: "Setup and commands" gains the version from git tags
     through setuptools_scm and the generated `pyibs/_version.py`, the test
     command (`$PY -m pytest`), the CI workflows and what triggers each,
     the pre-commit hooks as the only enforcement of formatting, and
@@ -292,17 +291,17 @@ that every later phase can start from a clone.
     "The project", the sentence on the 0.1.0 code becomes: the package
     holds the engine (`pyibs/_estimates.py`, `pyibs/_sampler.py`) and its
     tests next to the 0.1.0 interface, which Phase 1 replaces. Commit.
-11. `/doublecheck` on the phase. Then, on the PI's instruction,
+11. [~] `/doublecheck` on the phase. Then, on the PI's instruction,
     `git push -u origin dev-next`, and check that the smoke run of
     `tests.yml` passes (`gh run list --branch dev-next`).
 
 **Verification**:
-- [ ] `$PY -m pytest` passes; the Worklog records the number of tests and
+- [x] `$PY -m pytest` passes; the Worklog records the number of tests and
       the runtime.
-- [ ] The check of `dev/private/extraction.md` passes, and
+- [x] The check of `dev/private/extraction.md` passes, and
       `git ls-files dev/private` prints nothing.
-- [ ] `$PY -m pre_commit run --all-files` passes.
-- [ ] The installation, build and YAML checks of steps 8 and 9 pass.
+- [x] `$PY -m pre_commit run --all-files` passes.
+- [x] The installation, build and YAML checks of steps 8 and 9 pass.
 - [ ] After the push, the smoke run of `tests.yml` passes.
 
 ### Phase 1: the interface and parity with `ibslike.m`
@@ -931,3 +930,55 @@ comparison (Phase 3, step 3).
 ## Worklog
 
 Entries are added per phase as `### Phase N — YYYY-MM-DD`.
+
+### Phase 0 — 2026-10-09
+
+- Commits: `e2ccd24` (step 1), `8f14f63` (2), `23d43ec` (4), `2fe31bc`
+  and `e8b99d3` (5), `dba7a46` (5, `.git-blame-ignore-revs`), `adf4201`
+  (6), `79d2c45` (7), `bb8e821` (9), `6b725f1` (10); after the review,
+  `1a76aa4` and `7cc3e8f`.
+- References (step 3): `../ibs` at
+  `2229c00c4a19eb9f236f9f257100dab9e87b6f92`, `../ibs.wiki` at
+  `15d62f2f55dc627cd5e51677c94d995c08bf28e8`; `ibslike.m` reads
+  "Version: 0.96" and "Release date: Jan 21, 2021", and its options,
+  hard-coded values, outputs and self-tests match the Context.
+- Engine (step 7): extracted as `dev/private/extraction.md` states, which
+  records the details.
+- Verification: `$PY -m pytest`, 173 tests passed in about 5 s (11 s on
+  a cold first run); the check of the private brief passes and
+  `git ls-files dev/private` prints nothing; the pre-commit hooks pass;
+  the installed version reads `0.1.dev75+g23d43ec76.d20261009`; `$PY -m
+  build` builds an sdist and a wheel, whose `METADATA` requires only
+  `numpy>=2.0.0` and `scipy>=1.13.0` outside the extras, and the sdist
+  holds no file of `dev/`; the three workflows parse. The smoke run after
+  the push is pending.
+- Deviations: the hooks' new versions are a commit of their own
+  (`2fe31bc`), so that the formatting commit holds only the reformatting
+  (black 23.3 removed four blank lines of `pyibs/ibs.py`); the packaging
+  commit adds an empty `pyibs/testing/__init__.py`, so that the
+  `packages` it names exist; the renormalization of step 2 changed no
+  file, since every blob was LF already; the hook `exclude` patterns
+  `\.patch$` and `docs/tutorials` are dropped as matching nothing here;
+  `.gitignore`'s `docs/_build/` gives way to `docs/`. Beyond step 10,
+  `AGENTS.md` states that `packages` lists every directory and that the
+  tests ship in the wheel. The Context's "Release access" records the
+  PI's access, obtained on 2026-10-09.
+- Review (`/doublecheck`, three read-only Opus reviewers: the extraction,
+  the tooling and documents, the engine's code): no finding to be fixed
+  before the push. Fixed: the statement of `repeat_estimates`'s bitwise
+  properties in `AGENTS.md`; the engine's docstrings on `ibslike.m`'s
+  threshold (its loop path checks each repeat with `c_i + 1` for its open
+  trials) and tables, on the kinds of responses that raise, and on the
+  cap's error; a test of the level's bound under a large acceleration.
+- For Phase 1, from the review: the cap's error names
+  `max_samples_per_trial * n` and 0-based trial indices, which `IBS`
+  exposes as `max_iter` and `num_reps`; when the threshold ends every
+  repeat, the per-trial sums cover no repeat, and once it ends any, the
+  total is not the weighted sum of the per-trial values (as it is in
+  `ibslike.m`), so step 3 needs a rule for the `"full"` per-trial arrays;
+  responses of shape (N, 1) with a simulator returning shape (n,) raise
+  `ValueError`, where `ibslike.m` compares row by row; trial weights
+  accept booleans and numeric strings, which the other settings refuse;
+  a NaN response never matches and samples until the cap; the `runtest2`
+  port checks `ibslike.m`'s fixed tolerances at one seed, so a schedule
+  that consumes the generator differently (D6) can fail it by chance.
