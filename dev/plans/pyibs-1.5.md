@@ -739,6 +739,16 @@ instruction.
 can fork repositories.
 **Goal**: PyIBS 1.5.0 on GitHub, PyPI and conda-forge, by the procedure of
 `../pybads/AGENTS.md`, "Setup and commands".
+**Timing**: steps 1 to 3 change nothing outside the repository and may run
+before the release (PI, 2026-10-09), once the PI says to start: the
+workflows of step 1 run only on `main`, on a published release or on
+dispatch; the gate of step 2 is run again on the head that goes into the
+pull request, its integration tests and notebooks with PyVBMC 1.5.0 from
+PyPI; step 3 takes the expected release date, corrected if the release
+moves, and from then on a change for 1.5.0 goes into the section
+`[1.5.0]`, which `AGENTS.md` ("Changelog") then says. PyVBMC 1.5.0 is on
+PyPI, and its documentation published, before step 4: the README and the
+installation pages install `pyvbmc>=1.5` and link that documentation.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
@@ -1578,6 +1588,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   on PyPI and its documentation published (2026-10-13); the README's badges
   of `docs.yml` and `build.yml` wait for those workflows; the README and
   `installation.rst` promise conda-forge's package for Python 3.10, which
-  its recipe has to keep; the notebooks are rerun before the release. For
-  Phase 6: the labels of PyBADS's and PyVBMC's FAQs that PyIBS links join
-  those repositories' lists of linked labels.
+  its recipe has to keep; the README's badge of `tests.yml` names `main`,
+  where nothing runs that workflow, so it shows no status until a run
+  there (a dispatch after the merge, a schedule, or another target); the
+  notebooks are rerun before the release. For Phase 6: the labels of
+  PyBADS's and PyVBMC's FAQs that PyIBS links join those repositories'
+  lists of linked labels.
