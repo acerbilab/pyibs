@@ -204,7 +204,7 @@ from the original maintainer on 2026-10-09.
 
 ### Phase 0: tooling, references and the engine
 
-**Status**: done through the review of step 11; the push awaits the PI
+**Status**: done
 **Executor**: Opus (orchestrator), on the PI's machine
 **Needs**: `dev/private/extraction.md` and what it names; `../pybads`;
 `../pyvbmc` at its branch `feat-release-1.5-preparation` (the CI matrix).
@@ -291,7 +291,7 @@ that every later phase can start from a clone.
     "The project", the sentence on the 0.1.0 code becomes: the package
     holds the engine (`pyibs/_estimates.py`, `pyibs/_sampler.py`) and its
     tests next to the 0.1.0 interface, which Phase 1 replaces. Commit.
-11. [~] `/doublecheck` on the phase. Then, on the PI's instruction,
+11. [x] `/doublecheck` on the phase. Then, on the PI's instruction,
     `git push -u origin dev-next`, and check that the smoke run of
     `tests.yml` passes (`gh run list --branch dev-next`).
 
@@ -302,7 +302,7 @@ that every later phase can start from a clone.
       `git ls-files dev/private` prints nothing.
 - [x] `$PY -m pre_commit run --all-files` passes.
 - [x] The installation, build and YAML checks of steps 8 and 9 pass.
-- [ ] After the push, the smoke run of `tests.yml` passes.
+- [x] After the push, the smoke run of `tests.yml` passes.
 
 ### Phase 1: the interface and parity with `ibslike.m`
 
@@ -950,8 +950,12 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   the installed version reads `0.1.dev75+g23d43ec76.d20261009`; `$PY -m
   build` builds an sdist and a wheel, whose `METADATA` requires only
   `numpy>=2.0.0` and `scipy>=1.13.0` outside the extras, and the sdist
-  holds no file of `dev/`; the three workflows parse. The smoke run after
-  the push is pending.
+  holds no file of `dev/`; the three workflows parse. After the push,
+  with `b99e39e` at the head of `dev-next`, the smoke run of `tests.yml`
+  passed
+  ([run 37906670683](https://github.com/acerbilab/pyibs/actions/runs/37906670683)):
+  Ubuntu with Python 3.14.8, NumPy 2.5.3 and SciPy 1.18.1, 173 tests
+  passed in 4.1 s, the package installed as `0.1.dev85+gb99e39e37`.
 - Deviations: the hooks' new versions are a commit of their own
   (`2fe31bc`), so that the formatting commit holds only the reformatting
   (black 23.3 removed four blank lines of `pyibs/ibs.py`); the packaging
