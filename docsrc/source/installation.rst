@@ -21,7 +21,7 @@ PyIBS is available via ``pip`` and ``conda-forge``.
    :ref:`FAQ <faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists>`.
 
 2. (Optional): Install `PyBADS <https://acerbilab.github.io/pybads/>`__ and
-   `PyVBMC <https://acerbilab.github.io/pyvbmc/>`__, to fit models with
+   `PyVBMC <https://acerbilab.org/pyvbmc/>`__, to fit models with
    PyIBS's estimates as the examples do, and
    `Jupyter Notebook <https://jupyter.org/install>`__, to run the examples::
 

@@ -80,7 +80,7 @@ target returns the negative log-likelihood and its standard deviation:
   bads = BADS(target, x0, lb, ub, plb, pub, options={"specify_target_noise": True})
   result = bads.optimize()
 
-With `PyVBMC <https://acerbilab.github.io/pyvbmc/>`__, given a prior, the
+With `PyVBMC <https://acerbilab.org/pyvbmc/>`__, given a prior, the
 target returns the log-likelihood (``return_positive=True``) and its
 standard deviation:
 

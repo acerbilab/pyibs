@@ -2,14 +2,14 @@
 PyIBS
 *****
 
-PyIBS is one of the open-source `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__ from `Luigi Acerbi's group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki. Check out our other tools, such as `PyBADS <https://acerbilab.github.io/pybads/>`__ for point estimates and `PyVBMC <https://acerbilab.github.io/pyvbmc/>`__ for the posterior and the model evidence.
+PyIBS is one of the open-source `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__ from `Luigi Acerbi's group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki. Check out our other tools, such as `PyBADS <https://acerbilab.github.io/pybads/>`__ for point estimates and `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for the posterior and the model evidence.
 
 What is it?
 ###########
 
 PyIBS is a Python implementation of inverse binomial sampling (IBS), a method that estimates the log-likelihood of a model that can be simulated but whose likelihood cannot be computed, for data with discrete responses [`1 <#references>`__]. For each trial, IBS draws responses from the model's simulator until one matches the observed response. The number of draws gives an estimate of the trial's log-likelihood that is exactly unbiased, and IBS also returns an estimate of the estimate's variance, which is calibrated. PyIBS follows ``ibslike.m`` of :labrepos:`MATLAB IBS <ibs>`, the reference implementation.
 
-An IBS estimate is noisy, so it serves as the target of an optimizer or an inference method that takes noisy targets: `PyBADS <https://acerbilab.github.io/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, and `PyVBMC <https://acerbilab.github.io/pyvbmc/>`__ for the posterior and the model evidence. Both take PyIBS's estimate and its standard deviation as they come. PyIBS, PyBADS and PyVBMC are among the lab's `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
+An IBS estimate is noisy, so it serves as the target of an optimizer or an inference method that takes noisy targets: `PyBADS <https://acerbilab.github.io/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, and `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for the posterior and the model evidence. Both take PyIBS's estimate and its standard deviation as they come. PyIBS, PyBADS and PyVBMC are among the lab's `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
 
 What's new in PyIBS 1.5
 -----------------------
@@ -163,7 +163,7 @@ License and source
 
 PyIBS is released under the terms of the :mainbranch:`BSD 3-Clause License <LICENSE>`.
 The Python source code is on :labrepos:`GitHub <pyibs>`.
-You may also want to check out the original :labrepos:`MATLAB toolbox <ibs>`, `PyBADS <https://acerbilab.github.io/pybads/>`__ and `PyVBMC <https://acerbilab.github.io/pyvbmc/>`__, which take PyIBS's estimates as their target, and the lab's other `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
+You may also want to check out the original :labrepos:`MATLAB toolbox <ibs>`, `PyBADS <https://acerbilab.github.io/pybads/>`__ and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, which take PyIBS's estimates as their target, and the lab's other `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
 
 Acknowledgments
 ###############
