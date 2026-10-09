@@ -7,6 +7,7 @@ for data with discrete responses, with an estimate of their variance.
 from importlib.metadata import PackageNotFoundError, version
 
 from pyibs._sampler import IBSSamplingError
+from pyibs._update_check import check_for_updates
 from pyibs.ibs import IBS, EstimateResult
 from pyibs.ibs_basic import ibs_basic
 
@@ -20,5 +21,6 @@ __all__ = [
     "EstimateResult",
     "IBSSamplingError",
     "ibs_basic",
+    "check_for_updates",
     "__version__",
 ]

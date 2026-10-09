@@ -625,7 +625,7 @@ their target, and how its speed compares with 0.1.0's.
 
 ### Phase 4: documentation, examples, update check and skill
 
-**Status**: pending
+**Status**: in progress
 **Executor**: Opus (orchestrator); the documentation site, the FAQ and the
 notebooks may each go to an Opus sub-agent, one at a time for anything
 that runs code on the PI's workstation.
@@ -667,7 +667,7 @@ is cited; the transcriptions in `../pubs-llms/publications/`
 the other two.
 
 **Steps**:
-1. The update check (D12): `pyibs/_update_check.py` with
+1. [x] The update check (D12): `pyibs/_update_check.py` with
    `check_for_updates()`, exported by `pyibs/__init__.py`, copied and
    adapted from `../pybads/pybads/_update_check.py`, with its tests
    (which do not reach the network). It keeps PyBADS's rule that its
@@ -675,14 +675,14 @@ the other two.
    `../pybads/dev/plans/version-check.md` is the design; its old-release
    reminder and `RELEASE_DATE` are not carried over. Its changelog entry
    comes with it.
-2. `examples/`: notebooks 1, basic use and calibration, after
+2. [~] `examples/`: notebooks 1, basic use and calibration, after
    `../ibs/ibs_example.m`; 2, maximum-likelihood estimation with PyBADS;
    3, posterior and evidence with PyVBMC; and
    `examples/scripts/Makefile` after PyBADS's. Rerun the notebooks with
    the venv's interpreter first on `PATH`:
    `PATH="$PWD/.venv/Scripts:$PATH" make -C examples/scripts run`
    (`.venv/bin` elsewhere), and commit their outputs.
-3. `README.md`, after `../pybads/README.md`'s sections: What is it?,
+3. [ ] `README.md`, after `../pybads/README.md`'s sections: What is it?,
    What's new in PyIBS 1.5, Documentation, When should I use PyIBS?,
    Installation, Quick start (with the calls for PyBADS and PyVBMC), Next
    steps, How does it work?, Troubleshooting and contact, References and
@@ -693,14 +693,14 @@ the other two.
    holder, as PyBADS's does: `Copyright (c) 2026, acerbilab`. If any part
    of 0.1.0 is kept after all, its copyright line stays beside the lab's,
    as the licence requires.
-4. `docsrc/` after `../pybads/docsrc/`: `Makefile`, `make.bat`,
+4. [ ] `docsrc/` after `../pybads/docsrc/`: `Makefile`, `make.bat`,
    `.nojekyll` (which the `github` target copies into `docs/`), and under
    `docsrc/source/`: `conf.py`, `index.rst`, `installation.rst`,
    `quickstart.rst`, `documentation.rst`, hand-written API pages under
    `api/` (`IBS`, `EstimateResult`, `IBSSamplingError`, `ibs_basic`,
    `check_for_updates`), `examples.rst`, `faq.md`, `development.rst`,
    `about_us.rst`, `_static/` and `css/`.
-5. `docsrc/source/faq.md`: port the FAQ of `../ibs.wiki` (the commit of
+5. [ ] `docsrc/source/faq.md`: port the FAQ of `../ibs.wiki` (the commit of
    Phase 0), translated to PyIBS's names, with its section on `ibslike.m`
    rewritten for `IBS`. Add answers on: when to use IBS rather than
    amortized simulation-based inference, per the Positioning above; the
@@ -711,13 +711,13 @@ the other two.
    `random_seed`; and the differences from MATLAB, which link the
    catalogue. A label linked from elsewhere is listed in `AGENTS.md`, as
    PyBADS's are.
-6. `skills/pyibs/SKILL.md` after `../pybads/skills/pybads/SKILL.md`; what
+6. [ ] `skills/pyibs/SKILL.md` after `../pybads/skills/pybads/SKILL.md`; what
    it tells an agent about when PyIBS fits a problem follows the
    Positioning above.
-7. Build the documentation:
+7. [ ] Build the documentation:
    `PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github`
    (`.venv/bin` elsewhere).
-8. `AGENTS.md`: the documentation build, the FAQ's linked labels, the
+8. [ ] `AGENTS.md`: the documentation build, the FAQ's linked labels, the
    examples and their rerun, and the network rule of the update check, as
    in `../pybads/AGENTS.md`. Commit.
 

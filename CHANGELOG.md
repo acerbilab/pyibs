@@ -75,6 +75,9 @@ says where PyIBS differs from it, and why.
 - **A warning on a zero variance.** A call that returns a variance
   estimate of 0, as it is when every trial matches at its first sample,
   warns that PyBADS and PyVBMC refuse an SD of 0, and links the FAQ.
+- **Update check.** `pyibs.check_for_updates()` asks PyPI whether a newer
+  version of PyIBS exists and gives the command that installs it. It is
+  PyIBS's only network access, made only when the function is called.
 - **Tests and version.** The tests ship with the package and run with
   `pytest --pyargs pyibs`, with the `test` extra installed;
   `pyibs.__version__` gives the installed version.
