@@ -140,19 +140,19 @@ counts (`num_reps`, `num_samples_per_call`, `max_iter`, `max_samples`,
 booleans, fractions and infinity; `num_samples_per_call` is at least 0, the
 others at least 1. `ibslike.m` takes `MaxIter = Inf`, which disables its
 cap (KD-11), and `NsamplesPerCall = Inf`, which starts the samples per
-call at their bounds (lines 264-266, 281-283). `acceleration` is finite. Trial weights are real numbers,
-finite and at least 0, and refuse booleans and strings. `num_reps` is one
-integer: `ibslike.m` reads `Nreps` as a vector of per-trial repeats in
-places (lines 248, 259-260), which no documentation offers and its code
-runs only in special cases: the loop path fails at line 413, and the
-vectorized path at line 284 unless `NsamplesPerCall` is set, and otherwise
-at line 361 once a round's open trials are neither all of them nor one
-(lines 264, 281-284, 361, 413). The data are checked
-too: the responses are a non-empty array of one or two dimensions; the
-design has one row per trial, where `ibslike.m` ignores extra rows and
-fails at an index when rows are missing (lines 185, 296, 439); and the
-trial weights are a scalar or have shape (N,), where `ibslike.m` flattens
-any array of one or N elements (line 163).
+call at their bounds (lines 264-266, 281-283). `acceleration` is finite.
+Trial weights are real numbers, finite and at least 0, and refuse booleans
+and strings. `num_reps` is one integer: `ibslike.m` reads `Nreps` as a
+vector of per-trial repeats in places (lines 248, 259-260), which no
+documentation offers and its code runs only in special cases: the loop
+path fails at line 413, and the vectorized path at line 284 unless
+`NsamplesPerCall` is set, and otherwise at line 361 once a round's open
+trials are neither all of them nor one (lines 264, 281-284, 361, 413). The
+data are checked too: the responses are a non-empty array of one or two
+dimensions; the design has one row per trial, where `ibslike.m` ignores extra
+rows and fails at an index when rows are missing (lines 185, 296, 439); and the
+trial weights are a scalar or have shape (N,), where `ibslike.m` flattens any
+array of one or N elements (line 163).
 - PyIBS: `IBS.__init__`, `IBS.__call__` (`pyibs/ibs.py`); `_check_count`,
   `_check_real`, `_Settings` (`pyibs/_sampler.py`); `trial_weights`
   (`pyibs/_estimates.py`).
@@ -198,10 +198,10 @@ round of the sampling: the schedule's first round when that round requests
 one sample of every trial, as in `ibslike.m` (lines 287-289, 433-434), and
 otherwise an extra round before it, after which the samples per call do
 not grow, so that the rounds after it are those of `ibslike.m`'s schedule.
-`ibslike.m` discards them in that case (lines 287-289): whether it uses the
-samples then depends on how long the call took, which, for a simulator
-whose running time depends on what it simulates, depends on the samples
-themselves, and biases the estimate. The decision follows `ibslike.m`'s
+`ibslike.m` discards them in that case (lines 287-289), so it uses them only
+when the timing call was slow; when the simulator's running time depends on
+what it simulates, whether the samples are used then depends on their
+values, and the estimate is biased. The decision follows `ibslike.m`'s
 rule, and the object's later calls stay on one schedule however the timing
 of their simulations varies.
 - PyIBS: `IBS.__call__` (`pyibs/ibs.py`); `first_round`, `sample`
@@ -251,10 +251,10 @@ its last match included, checked after every simulator call, so that it
 too raises after the simulator call that crosses the cap even if that call
 completes the sampling. The cap thus means what `MaxIter`'s description
 says, "per trial and estimate" (line 95), scaled by the repeats as the
-vectorized path scales it. The sample that the timing call of
-`vectorized=None` draws of each trial counts toward the cap, as the first
-round it is (KD-8), where `ibslike.m`'s timing call is a round only when its
-first round requests one sample of every trial. The error names the trials
+vectorized path scales it. The timing call of `vectorized=None` is a
+round (KD-8), so its sample of each trial counts toward the cap;
+`ibslike.m`'s timing call is a round only when its first round requests one
+sample of every trial. The error names the trials
 over the cap by their 0-based indices and the samples each drew.
 `MaxIter = Inf` disables `ibslike.m`'s cap: its loops then run until the
 sampling ends (lines 260, 269, 427). `max_iter` is a finite integer, since
@@ -344,9 +344,9 @@ the weighted sum of the trials' averages. The call has exit flag 2 and
 issues a `UserWarning`, since the exit flag is not seen in the `"std"`
 output that PyBADS and PyVBMC take. A trial with no completed count
 raises `IBSSamplingError`. In `ibslike.m` as in PyIBS, a finite time
-limit also biases the calls that complete in time, which have exit flag 0: completing in time is
-more likely with small counts, which give high log-likelihoods, so only an
-infinite `max_time` gives unbiased estimates.
+limit also biases the calls that complete in time, which have exit flag 0:
+completing in time is more likely with small counts, which give high
+log-likelihoods, so only an infinite `max_time` gives unbiased estimates.
 - PyIBS: `sample`, `_limited_estimates` (`pyibs/_sampler.py`);
   `IBS.__call__` (`pyibs/ibs.py`).
 - MATLAB: `ibslike.m:86`, `210-213`, `272-275`, `347-373`, `396-398`,

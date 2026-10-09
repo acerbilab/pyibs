@@ -453,7 +453,6 @@ def test_scalar_responses_are_one_trial():
     ibs = IBS(ScriptedSimulator([[0, 1, 1, 1]]), 1.0, vectorized=False)
     assert ibs.response_matrix.shape == (1,)
     res = ibs(THETA, num_reps=2, additional_output="full")
-    # One entry for the trial, where ibslike.m gives one per repeat.
     assert res.neg_logl_trials.shape == (1,)
     assert res.neg_logl_var_trials.shape == (1,)
     assert_allclose(res.neg_logl, 0.5, **EXACT)

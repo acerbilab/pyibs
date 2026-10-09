@@ -875,8 +875,8 @@ from the README, the documentation and the model-fitting page.
   schedule; it changes the cost, the variance estimate of a repeat that
   the threshold ends, whether a call reaches the cap, which counts the
   samples drawn after a trial's last match, and, under the time limit,
-  which repeats complete. Rejected: `ibslike.m`'s default, which makes the samples requested
-  depend on the wall-clock time.
+  which repeats complete. Rejected: `ibslike.m`'s default, which makes
+  the samples requested depend on the wall-clock time.
 - **D5. The likelihood threshold follows [1], Appendix C.1, as the
   engine implements it** — every repeat is checked against a weighted
   bound, and an ended repeat is worth exactly -T, whatever the schedule.
@@ -1027,9 +1027,9 @@ from the README, the documentation and the model-fitting page.
   NaN, `NaT` and a NaN in an object array, and never flags text. The design
   is not checked: `ibslike.m`'s own examples call their simulator with a
   design of NaN (lines 57, 511, 587), and a port that passes such a design
-  to `IBS` keeps working. `ibs_basic` raises in the same way. Rejected: leaving it to the cap
-  or the threshold (the whole cap's cost, or a silent -T, with nothing that
-  names the cause).
+  to `IBS` keeps working. `ibs_basic` raises in the same way. Rejected:
+  leaving it to the cap or the threshold (the whole cap's cost, or a
+  silent -T, with nothing that names the cause).
 
 - **D24. When the time limit stops a draw in which the likelihood threshold
   ended repeats, the ended repeats count -T each and the others are

@@ -491,7 +491,7 @@ def first_round(settings, theta, rng):
     """Simulate one sample of every trial, in trial order, and time it.
 
     This is the call that ``ibslike.m`` times to choose its sampling path.
-    :func:`sample` takes it as its first round, whatever its outcomes.
+    :func:`sample` takes it as its first round.
 
     Parameters
     ----------
@@ -876,13 +876,13 @@ def sample(
         counts; None, the default, counts it from the start of the draw.
     first : _FirstRound or None, optional
         A simulator call already made for one sample of every trial, from
-        :func:`first_round`, which the draw takes as its first round. When
-        the schedule's first round requests one sample of every trial, it
-        is that round; otherwise it is an extra round before it, after
-        which the level does not grow. Whether the draw uses its samples
-        thus never depends on their outcomes, which keeps the repeats
-        independent even when the call's duration, which can decide
-        ``vectorized``, depends on them.
+        :func:`first_round`, which the draw takes as its first round: as
+        the schedule's first round when that round requests one sample of
+        every trial, and otherwise as an extra round before it, after which
+        the level does not grow. Its samples are always used, since the
+        call's duration can decide ``vectorized``: using them only under
+        one decision would bias the draw whenever the duration depends on
+        the simulated responses.
 
     Returns
     -------
@@ -920,10 +920,10 @@ def sample(
     round(level)))`` samples of each, and at most ``ceil(max_mem /
     n_open)``, as ``ibslike.m`` does, with MATLAB's ``round``, which
     rounds halves away from zero. The level starts at ``initial_samples``
-    (n by default) and is multiplied by ``acceleration`` after every round
-    (or, with ``acceleration_threshold``, after every fast round) but an
-    extra first round given as ``first``, and bounded by ``max_samples``,
-    which changes no m. This default schedule
+    (n by default), is multiplied by ``acceleration`` after every round
+    except an extra first round from ``first`` (with
+    ``acceleration_threshold``, only after the rounds faster than it), and
+    is bounded by ``max_samples``, which changes no m. This default schedule
     depends only on the outcomes, so a seed reproduces a run. With
     ``vectorized=False``, every round requests one sample of each open
     trial, as ``ibslike.m``'s loop path does for one repeat at a time:
@@ -1052,8 +1052,8 @@ def sample(
             if vectorized
             else 1
         )
-        # The call given as first is the first round, whatever its outcomes,
-        # so that using its samples never depends on them. When the
+        # The timing call given as first is always the first round, so that
+        # using its samples does not depend on how long it took. When the
         # schedule's first round requests more than one sample per trial,
         # it is an extra round, after which the level does not grow.
         grow = True

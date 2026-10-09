@@ -232,15 +232,14 @@ class IBS:
         per simulator call, a number that grows from call to call
         (``acceleration``); False requests one sample of every trial that
         still needs one. None, the default, decides at the object's first
-        call with ``num_reps > 1``, by timing one simulation of all trials,
-        whose samples are that call's first round: False if it takes
-        ``vectorized_threshold`` seconds or more, True otherwise. The
-        decision is kept for the object's later calls and read as the
-        attribute ``vectorized``. The timing includes any warm-up of the
-        simulator at its first call, such as a just-in-time compilation,
-        which can make the decision False for good: give such a simulator
-        True, or call it once before. A call with ``num_reps=1`` samples as
-        with False, with a warning when True was given.
+        call with ``num_reps > 1``, by timing one simulation of all trials:
+        False if it takes ``vectorized_threshold`` seconds or more, True
+        otherwise. The decision is kept for the object's later calls and
+        read as the attribute ``vectorized``. A simulator that is slow only
+        at its first call, such as one compiled just in time, can make the
+        decision False for good: give it True, or call it once before the
+        object's first call. A call with ``num_reps=1`` samples as with
+        False, with a warning when True was given.
     acceleration : float, optional
         The factor, finite and >= 1, by which the samples requested per
         trial grow from one call to the next. Default 1.5.
@@ -253,19 +252,19 @@ class IBS:
         The cap on the samples of one trial, per repeat: a call of
         ``num_reps`` repeats raises :class:`IBSSamplingError` once a trial
         has drawn more than ``max_iter * num_reps`` samples. Default 10**5.
-        Any finite integer is taken: a very large one, such as 10**18, sets
-        a cap that no call reaches, and a call whose simulator cannot
-        produce an observed response then never ends.
+        A very large value, such as 10**18, sets a cap that no call
+        reaches; a call whose simulator cannot produce an observed response
+        then never ends.
     max_time : float, optional
         The time limit of a call, in seconds, > 0, checked after every
         simulator call. Once it is reached, the sampling stops, and each
         trial's value averages its completed repeats, while a repeat that
         the likelihood threshold ended counts -T; the result has exit flag
         2, with a warning, and a trial with no completed repeat raises
-        :class:`IBSSamplingError`. A finite limit also biases the calls
-        that complete in time: completing in time is more likely with few
-        samples, which give high log-likelihoods. The default, ``np.inf``,
-        sets none, and only it keeps the estimates unbiased.
+        :class:`IBSSamplingError`. The default, ``np.inf``, sets none. A
+        finite limit biases the estimates, also those of the calls that
+        complete in time: completing in time favours few samples, which
+        give high log-likelihoods.
     max_samples : int, optional
         The bound on the samples of one trial in one simulator call.
         Default 10**4.
@@ -287,11 +286,11 @@ class IBS:
         that its negative log-likelihood exceeds T is ended and counts -T,
         which saves the samples of poor parameter vectors at the price of
         an upward bias of the log-likelihood estimate ([1], Appendix C.1).
-        T bounds the weighted negative log-likelihood, and the usual
-        choice is its chance level, that of uniform responding:
-        ``sum_i w_i log(k_i)`` for trial weights w_i and k_i possible
-        responses on trial i, ``N log 2`` for N binary choices of weight 1.
-        The default, ``np.inf``, sets none.
+        T applies to the weighted negative log-likelihood. The usual choice
+        is the chance level, the negative log-likelihood of responding at
+        random: ``sum_i w_i log(k_i)`` for k_i possible responses and
+        weight w_i on trial i, or ``N log 2`` for N binary choices of
+        weight 1. The default, ``np.inf``, sets none.
     random_seed : None, int, numpy.random.SeedSequence or \
 numpy.random.Generator, optional
         The seed of ``rng``, keyword only. None, the default, derives the

@@ -56,8 +56,7 @@ numpy.random.Generator, optional
         have N rows.
     TypeError
         If the simulator returns a response of a kind that NumPy never
-        finds equal to ``R``: text, bytes, or numbers and booleans, one for
-        another.
+        finds equal to ``R``, such as text for numeric responses.
 
     References
     ----------
