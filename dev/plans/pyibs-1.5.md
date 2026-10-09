@@ -534,7 +534,7 @@ listed in the catalogue with its reason or fixed.
 
 ### Phase 3: statistical validation, PyBADS and PyVBMC, timing
 
-**Status**: in progress
+**Status**: done
 **Executor**: Opus (orchestrator), running one heavy process at a time on
 the PI's workstation.
 **Needs**: PyBADS and PyVBMC as step 2 installs them.
@@ -574,7 +574,14 @@ their target, and how its speed compares with 0.1.0's.
    samples are reported, not gated, at `num_reps=1` and in the threshold
    cells: the variance estimate of a repeat that the threshold ends
    describes its counts when it was ended, not the variance of
-   `max(Y, -T)`, and ended repeats draw fewer samples.
+   `max(Y, -T)`, and ended repeats draw fewer samples; elsewhere at
+   `vectorized=False`, the samples are within 4.5 standard errors of
+   their expectation. In the models whose data hold no rare response, so
+   that all their trials match with probability 0.999, the calibration is
+   reported and not gated either, since exact IBS fails its gate there
+   too, and every cell is gated instead on the number of estimates whose
+   variance estimate is 0, binomial with its exact probability (PI,
+   2026-10-09, after the smoke pass).
    Separately, a model whose trials all have p = 1 returns a value and a
    variance of exactly 0. Report every failing cell to the PI before
    going on.
@@ -1337,69 +1344,110 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 ### Phase 3 — 2026-10-09
 
 - References: `../ibs` at `2229c00c4a19eb9f236f9f257100dab9e87b6f92`,
-  Phase 2's commit, for `ibs_example.m`'s data set, bounds, starts and
-  prior; `../ibs.wiki` at `15d62f2`, for its advice on the noise of the
-  estimate. PyBADS 1.5.1 from PyPI with gpyreg 1.4.0; PyVBMC from
-  `feat-release-1.5-preparation` at `89007a4`, whose installed version reads
-  `1.0.5.dev1379+g89007a4eb`; PyIBS 0.1.0 from PyPI in `.venv-0.1`.
-- Commits: `c73ca08` (step 2), `c76b5ac` (the scripts of steps 1 and 3),
-  `5e1876b` (the phase's status), `4e4f0d9` (the replication of step 1),
-  and the commit after it (the record of step 4 and this entry).
+  Phase 2's commit, for `ibs_example.m`'s recipe of its data set, its
+  bounds, starts and prior; `../ibs.wiki` at `15d62f2`, for its advice on
+  the noise of the estimate. PyBADS 1.5.1 from PyPI with gpyreg 1.4.0;
+  PyVBMC from `feat-release-1.5-preparation` at `89007a4`, whose installed
+  version reads `1.0.5.dev1379+g89007a4eb`; PyIBS 0.1.0 from PyPI in
+  `.venv-0.1`.
+- Commits: `c73ca08` (step 2), `c76b5ac` (the scripts of steps 1 and 3,
+  and the phase's status), `5e1876b` (the steps' marks), `4e4f0d9` (the
+  replication of step 1), `46f62c8` (the record of step 4); after the
+  review of the phase, `55af9e2` (the code) and the commit after it (the
+  record and this entry).
 - The record:
   [`dev/results/2026-10-09-validation.md`](../results/2026-10-09-validation.md),
   with its evidence in
   [`dev/experiments/validation_20261009/`](../experiments/validation_20261009/).
   Every cell of step 1 passes its gates, under the PI's ruling below; both
-  integration files pass; PyIBS 1.5 is faster than 0.1.0 in every timing
-  cell, 1.4 to 2.1 times with the fast simulator and 1.2 to 3.8 times with
-  the slow one.
+  integration files pass; PyIBS 1.5 is faster than 0.1.0 run to completion
+  in every timing cell, 1.3 to 2.1 times with the fast simulator and 1.2 to
+  3.8 times with the slow one.
 - The smoke passes and the PI's rulings (2026-10-09). The validation's
   smoke pass, 100 estimates per cell, projected its full run at 1.5 h on
   the container's 4 workers, and found six cells failing the calibration
   gate: `num_reps=10` in `bernoulli_p0.001` and `bernoulli_p0.999`, whose
   seeded data hold no rare response, so that all their trials match with
-  probability 0.999 and 37% of the variance estimates are 0, for exact
-  IBS draws as for PyIBS. The PI approved all 243 cells at 2,000 estimates,
-  and ruled that the calibration of those two models is reported and not
-  gated, their share of zero variance estimates being gated against its
-  exact probability instead. The timing's smoke pass projected 4.4 h, with
-  the slow cells run one at a time; the PI approved running the slow
-  cells together after the fast ones, each sleeping for nearly all of its
-  time, beside the validation.
-- Verification: the full run of step 1 has no failing cell and passes the
-  zero check (`validation.json`); both integration files pass, also when
-  rerun from the clean commit `5e1876b`, where each printed what it had
-  printed before the commit; the record names the commit, the clean tree,
-  the versions and the platform of every output. `$PY -m pytest`, 468
-  tests passed and 2 deselected; the integration files skip when their
-  package is absent; the wheel holds `pyibs/testing/integration`; the
-  pre-commit hooks pass.
+  probability 0.999 and 37% of the variance estimates are 0, for exact IBS
+  draws as for PyIBS. The PI approved all 243 cells at 2,000 estimates, and
+  ruled that the calibration of those two models is reported and not
+  gated, all their cells being gated instead on the number of zero
+  variance estimates against its exact probability; step 1 states the
+  ruling. The timing's smoke pass projected 4.4 h, with the slow cells
+  run one at a time; the PI approved running the slow cells together after
+  the fast ones, each sleeping for nearly all of its time, beside the
+  validation.
+- Verification: the validation has no failing cell and passes the zero
+  check (`validation.json`); both integration files pass; the record names
+  the commit, the clean tree, the versions and the platform of every
+  output. `$PY -m pytest`, 468 tests passed and 2 deselected; the
+  integration files skip when their package is absent or too old (checked
+  with stand-ins for PyBADS 1.0.4 and a PyVBMC without `seed`); collected
+  from outside the checkout, they raise no warning on their marker; the
+  wheel holds `pyibs/testing/integration`; the pre-commit hooks pass.
 - Deviations: the phase ran in a cloud container (Linux, 4 CPUs), not on
-  the PI's workstation, and its runs overlapped as the PI approved. Where
-  the steps are silent: the threshold cells cover the two weighted models
-  too, the Bernoulli model at p = 0.5, whose chance level `sum_i w_i log 2`
-  uses the weights, and not the text, two-column and example models; the
-  two-column model's first column has a probability that varies over the
-  trials, its second 3 outcomes; the integration tests take 100 repeats,
-  an SD of about 1 near the optimum, which PyBADS's FAQ and the IBS wiki
-  advise, and require no minimum version, since PyVBMC's branch reads as
-  1.0.5. Beyond the steps: `validate.py` reports, beside each cell's mean
-  squared z-score, that of exact IBS estimates drawn from geometric
-  counts, the ratio of the estimates' SD to the exact SD, the share of
-  zero variance estimates against its exact probability and, under the
-  threshold, the share of exit flag 1 against its exact probability; the
-  cell `bernoulli_p0.999_vF_n10`, whose share of zero variance estimates
-  was 3.51 standard errors high, was drawn again at ten other run seeds
-  (`zero_share_replication.py`), which showed it to be chance; the
-  changelog gains an entry for the speed-up, with a link to the record;
-  the evidence's outputs are `.txt` files, since `.gitignore` ignores
-  `*.log`.
+  the PI's workstation, and the validation and the timing ran together as
+  the PI approved. Where the steps are silent: the threshold cells cover
+  the two weighted models too, the Bernoulli model at p = 0.5, whose
+  chance level `sum_i w_i log 2` uses the weights, and not the text,
+  two-column and example models; the two-column model's first column has a
+  probability that varies over the trials, its second 3 outcomes; the
+  integration tests take 100 repeats, an SD of about 1 near the optimum,
+  which PyBADS's FAQ and the IBS wiki advise. Step 1 leaves open whether
+  the samples are gated where they are not "reported, not gated": they
+  are gated at `vectorized=False` without the threshold and at `num_reps`
+  of 10 or more, which all 32 such cells pass. Beyond the steps:
+  `validate.py` reports, beside each cell's mean squared z-score, that of
+  exact IBS estimates drawn from geometric counts, the ratio of the
+  estimates' SD to the exact SD, the number of zero variance estimates
+  against its exact probability and, under the threshold, the share of
+  exit flag 1 against its exact probability; it takes the calibration of
+  the threshold cells about the expected value of a thresholded
+  estimate; the cell `bernoulli_p0.999_vF_n10`, whose number of zero
+  variance estimates was 3.51 standard errors high, was drawn again at ten
+  other run seeds (`zero_share_replication.py`), which showed it to be
+  chance; the changelog gains an entry for the speed-up, with a link to the
+  record; the evidence's outputs are `.txt` files, since `.gitignore`
+  ignores `*.log`.
+- Review (`/doublecheck`, three read-only Opus reviewers: the code, the
+  statistical method, the records). Fixed in `55af9e2`: the PyVBMC test
+  failed, rather than skipped, with PyVBMC 1.0.4, the release on PyPI and
+  conda-forge, whose `VBMC` takes no `seed`, and the PyBADS test had no
+  minimum version; the integration tests drew their start, their IBS
+  estimates and the fit from the data's seed, whose stream the IBS draws
+  then repeated; their marker was unknown to `pytest --pyargs pyibs`
+  outside the checkout; the gate on the number of zero variance estimates
+  rested on a normal approximation that fails where fewer than one is
+  expected (a spurious failure in about 4.5% of full runs); the
+  calibration of the threshold cells was centred on the exact value, so
+  that it measured the threshold's bias; the zero check did not reach the
+  exit status; the samples' z-score was printed where it has no
+  expectation; `timing.py` gave the upper middle value as the median of an
+  even number of estimates. The estimates being seeded, `validate.py
+  --restat` recomputed the full run's statistics at `55af9e2` from its
+  saved estimates rather than draw them again: every verdict stands, and
+  the gates added since pass. The integration tests ran again at
+  `55af9e2`. Fixed in the record: the changelog's speed-up, which holds
+  against 0.1.0 run to completion and not at its default `max_iter`; three
+  values of the timing table; the decision of `vectorized=None`, which
+  `num_reps=1` does not make; the growth of the slow simulator's gain,
+  which at N = 100 does not grow with `num_reps`; claims of unbiasedness
+  and calibration, now stated as what the evidence resolves, with the
+  `num_reps=1` cells and the threshold cells' variance estimates, which
+  overstate the variance about 2 to 3 times where the threshold acts; the
+  data set, drawn as `ibs_example.m` draws its own; the README's commands,
+  environments, seeds and the smoke passes' outputs, which are not kept.
 - For Phase 4: the FAQ and the examples can cite the record on the noise
   of an estimate (100 repeats give an SD of about 1.1 on the example's 600
-  trials at its generating parameters) and on the cost of a slow
-  simulator (an estimate of 100 repeats with 0.2 s per call takes 15 to 27
-  minutes, since its calls are about the number of samples that the
-  slowest trial needs for all its repeats); the changelog's link to the
-  record resolves once the record is on `main`. For Phase 5: once PyVBMC
-  1.5.0 is on PyPI, `AGENTS.md` ("PyBADS and PyVBMC") installs it from
-  there.
+  trials at its generating parameters), on the variance estimate under a
+  likelihood threshold, which overstates the variance, and on the cost of
+  a slow simulator: at `vectorized=None`, which decides False for a call
+  of 0.1 s or more, an estimate of 100 repeats with 0.2 s per call takes
+  15.5 to 27 minutes, about the number of samples that the slowest trial
+  needs for all its repeats; the accelerated schedule makes 9 to 12 calls
+  in these cells, so `vectorized=True` would serve a simulator whose time
+  goes to the call rather than to its rows, which no cell measured. The
+  changelog's link to the record resolves once the record is on `main`.
+  `pyibs/testing/test_examples.py` seeds its `IBS` objects with the seed of
+  its data, as the integration tests did. For Phase 5: once PyVBMC 1.5.0 is
+  on PyPI, `AGENTS.md` ("PyBADS and PyVBMC") installs it from there.

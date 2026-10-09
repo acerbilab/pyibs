@@ -6,7 +6,7 @@ configfile: pyproject.toml
 plugins: platformdirs-4.12.4, cov-7.1.0
 collecting ... collected 1 item
 
-pyibs/testing/integration/test_pybads.py::test_pybads_reaches_the_maximum_likelihood PyBADS 1.5.1: x = [0.08435698 0.19866943 0.02979274], exact negative log-likelihood 172.1032; exact minimum 172.0619 at [0.08835244 0.2255073  0.03062305]; 348 evaluations
+pyibs/testing/integration/test_pybads.py::test_pybads_reaches_the_maximum_likelihood PyBADS 1.5.1: x = [0.08528013 0.23299763 0.03194607], exact negative log-likelihood 172.0676; exact minimum 172.0619 at [0.08835244 0.2255073  0.03062305]; 392 evaluations
 PASSED
 
-============================== 1 passed in 42.47s ==============================
+============================== 1 passed in 12.17s ==============================
