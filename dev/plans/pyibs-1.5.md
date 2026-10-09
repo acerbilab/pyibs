@@ -953,8 +953,8 @@ from the README, the documentation and the model-fitting page.
   `ibslike.m`, which compares row by row, so that a model ported from
   MATLAB, where both are column vectors, runs unchanged; responses of C > 1
   columns take outputs of shape (n, C) only. Rejected: the engine's exact
-  match of shapes (a `ValueError` for such a port); 0.1.0's comparison (an (N, 1) response against an (n,) output broadcasts to an
-  (n, n) array).
+  match of shapes (a `ValueError` for such a port); 0.1.0's comparison (an
+  (N, 1) response against an (n,) output broadcasts to an (n, n) array).
 - **D23. A NaN response raises `ValueError` when `IBS` is created**
   (PI, 2026-10-09) — a NaN never matches, so its trial would sample until
   the cap and fail there after `max_iter * num_reps` samples. Rejected:
