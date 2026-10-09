@@ -1024,4 +1024,6 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   and so leaves none for `git blame` to hide (in PyBADS at `ff415ca0`,
   the entry `69be885` is not in `main`'s history either); PyBADS's
   `.github/dependabot.yml` and `.coveragerc` copied, and the convention
-  "Changelog" of its `AGENTS.md` adapted.
+  "Changelog" of its `AGENTS.md` adapted; `merge-tests.yml` also runs the
+  tests on a pull request that changes a test workflow, as a Dependabot
+  update of an action does.

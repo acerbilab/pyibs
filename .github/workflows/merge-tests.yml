@@ -2,7 +2,8 @@
 name: merge-tests
 
 # Every PR into main or a development branch (dev-next and its successors)
-# runs the full matrix when it touches the package.
+# runs the full matrix when it touches the package or a test workflow, so
+# that a Dependabot update of an action they use is tested before it merges.
 on:
   pull_request:
     branches:
@@ -34,7 +35,10 @@ jobs:
           while IFS= read -r file
           do
             echo $file
-            if [[ ($file != pyibs/*) && ($file != pyproject.toml) && ($file != setup.py) ]]; then
+            if [[ ($file != pyibs/*) && ($file != pyproject.toml) && ($file != setup.py)
+                  && ($file != .github/workflows/merge-tests.yml)
+                  && ($file != .github/workflows/tests.yml)
+                  && ($file != .github/workflows/test-matrix.yml) ]]; then
               :
             else
               echo "Change in source files found, running tests."

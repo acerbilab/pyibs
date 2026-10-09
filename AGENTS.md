@@ -115,11 +115,12 @@ That job and the matrix lists name Python 3.10 themselves, so a change of
 `requires-python` changes them too. `merge-tests.yml` runs the full matrix
 (Ubuntu, Windows, macOS × Python 3.10–3.14) on a pull request to `main` or
 to a `dev*` branch, only when its changes against that base touch `pyibs/`,
-`pyproject.toml` or `setup.py`; a pull request that changes anything else,
-the workflows included, runs no tests. `tests.yml` runs the full matrix on
-dispatch, and a smoke run, the matrix reduced to Ubuntu with Python 3.14,
-on each push to a `dev*` branch that touches the package, `pyproject.toml`,
-`setup.py`, `tests.yml` or `test-matrix.yml`.
+`pyproject.toml`, `setup.py` or one of the three test workflows, so that a
+Dependabot update of an action they use is tested before it merges; a pull
+request that changes anything else runs no tests. `tests.yml` runs the full
+matrix on dispatch, and a smoke run, the matrix reduced to Ubuntu with
+Python 3.14, on each push to a `dev*` branch that touches the package,
+`pyproject.toml`, `setup.py`, `tests.yml` or `test-matrix.yml`.
 
 Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
