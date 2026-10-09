@@ -1,0 +1,121 @@
+## About this file
+
+This file states what holds in this repository, for an agent who would not
+meet it at the point of need: couplings that span files, procedures that
+gate a change, traps that fail silently or at a cost, and conventions that
+nothing enforces. It is not a record of changes: what a change did belongs
+to its commit and pull request. What an agent meets where it matters stays
+there, in a module's docstring or the user documentation. Add a line only
+when an agent without it would go wrong, and write it as a fact about the
+repository as it stands.
+
+## The project
+
+PyIBS is the Python implementation of inverse binomial sampling (IBS; van
+Opheusden, Acerbi & Ma, 2020, PLOS Computational Biology,
+https://doi.org/10.1371/journal.pcbi.1008483): unbiased estimates of the
+log-likelihood of a model that can be simulated but not written down, for
+data with discrete responses, with an estimate of their variance. Its
+reference implementation is the MATLAB function `ibslike.m` of
+`acerbilab/ibs`. With PyBADS and PyVBMC it makes up the lab's tools for
+fitting models to data (https://acerbilab.org/model-fitting/): PyBADS
+optimizes an IBS estimate as a noisy target, and PyVBMC uses it for
+posterior and evidence inference.
+
+The released version is 0.1.0, published on PyPI and conda-forge as
+`pyibs`. Version 1.5.0 is prepared on the branch `dev-next` by the plan
+`dev/plans/pyibs-1.5.md`, which states its scope, its phases and its
+decisions. Until its first phases land, the package in this tree is the
+0.1.0 code, which has no tests.
+
+- `dev/` holds the maintainer records: plans, findings, the evidence they
+  cite and the tooling that produced it. `dev/README.md` says where each
+  kind of record goes.
+- `dev/private/` is gitignored and holds maintainer notes that are not
+  published. A tracked file may point to a note there by its path, but
+  never restates it.
+
+### Sibling repositories
+
+Work that compares with MATLAB, runs PyBADS or PyVBMC, or writes the
+documentation reads sibling checkouts, cloned next to this repository when
+absent. Each has its own `AGENTS.md` or README; read it
+before relying on more than this file states about it.
+
+| Path | Clone from | Used for |
+| :--- | :--- | :--- |
+| `../ibs` | https://github.com/acerbilab/ibs | `ibslike.m`, the reference, with `ibs_basic.m`, the tutorial `ibs_example.m` and the example model `psycho_gen.m`, `psycho_nll.m` |
+| `../ibs.wiki` | https://github.com/acerbilab/ibs.wiki.git | the FAQ that the PyIBS FAQ ports |
+| `../pybads` | https://github.com/acerbilab/pybads | the conventions this repository follows: `../pybads/AGENTS.md` is the model for its tooling, release procedure and records |
+| `../pyvbmc` | https://github.com/acerbilab/pyvbmc | as `../pybads`, and the CI matrix |
+| `../pubs-llms` | https://github.com/acerbilab/pubs-llms | the IBS paper as Markdown, `publications/vanopheusden2020unbiased_{main,appendix,backmatter}.md` |
+| `../model-fitting` | https://github.com/acerbilab/model-fitting | the lab's page of its tools for fitting models to data, whose PyIBS card links this package |
+
+A record of a comparison names the commit of the checkout it read.
+
+## PyBADS and PyVBMC
+
+PyIBS's estimates reach PyBADS 1.5 and PyVBMC 1.5 through their
+noisy-target interface: with `options={"specify_target_noise": True}`, the
+target returns a pair `(value, sd)`.
+
+- PyBADS minimizes the value, so it takes the negative log-likelihood. It
+  accepts only a Python `tuple` of length 2 (`type(res) is tuple`): a list
+  or an array raises `ValueError`.
+- PyVBMC takes the log joint density, or the log-likelihood when `prior=`
+  or `log_prior=` is given, to which it then adds the log prior itself. It
+  unpacks any pair.
+- Both raise `ValueError` on an SD that is not finite and strictly
+  positive. The IBS variance estimate is exactly zero when every trial
+  matches at its first sample.
+- Both call the target with one parameter vector, 1-D, in the original
+  parameter space.
+
+## Setup and commands
+
+The development environment is a venv at `.venv` (gitignored). No shell
+activates it, and a bare `python` is another installation, so every
+command names the venv's interpreter, written `$PY` here:
+`.venv/Scripts/python.exe` on Windows, `.venv/bin/python` elsewhere. The
+venv is created with uv:
+
+```console
+uv venv --python 3.12 .venv
+uv pip install -e ".[dev]" pre-commit
+$PY -m pre_commit install
+```
+
+Run one heavy process at a time (the test suite, a validation or timing
+run, a PyBADS or PyVBMC run): concurrent runs, each multi-threaded, can
+bring a workstation down. A long run writes its output unbuffered
+(`python -u`) to a uniquely named log under `dev/scripts/runs/`, which a
+fresh clone creates first (`mkdir -p dev/scripts/runs`).
+
+## Conventions
+
+- **Commits** follow conventional commits. A `Co-Authored-By:` line is
+  fine; a `Claude-Session:` trailer is not, even where the session's own
+  attribution instructions ask for one. Work collects on the long-lived
+  branch `dev-next`. Changes reach `main` through pull requests, which are
+  squash-merged and titled `<type>: <summary> (#NN)`; after such a merge,
+  `dev-next` is reset onto `main`, keeping only the commits made after the
+  merged head, and force-pushed, or the next pull request lists the merged
+  commits again.
+- **Code** follows PyBADS and PyVBMC: plain NumPy/SciPy, numpydoc
+  docstrings, black at line length 79, isort with the black profile and
+  pycln. The pre-commit hooks alone enforce the formatting.
+- **Random numbers.** Every random draw of the package goes through an
+  explicit `numpy.random.Generator`, so that a seed reproduces a run
+  wherever no timing decides the sampling, and every test that draws
+  seeds its generator.
+- **Tests.** Statistical tolerances are stated in standard errors (4.5 by
+  default), and a failing statistical test is investigated, never
+  reseeded.
+- **Links to the lab.** In what ships or is published, a link that names
+  Luigi Acerbi goes to his personal page, https://lacerbi.github.io/. A
+  link to the group goes preferably to its main page,
+  https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence.
+  A paragraph that sends the reader to another of the lab's methods
+  (PyBADS, PyVBMC, MATLAB IBS) links the lab's page of them,
+  https://acerbilab.org/model-fitting/, with the text "tools for fitting
+  models to data".

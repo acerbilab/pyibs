@@ -158,3 +158,8 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Raw output of the tooling under dev/scripts/ (dev/README.md)
+dev/scripts/runs/
+# Maintainer notes that are not published (dev/README.md)
+dev/private/
