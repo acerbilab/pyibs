@@ -56,7 +56,9 @@ timings of PyIBS 1.5 against PyIBS 0.1.0 (Phase 3 of
   threshold only, where the samples have no surplus and no ended repeats.
   Strings such as `'inf'` stand for non-finite numbers.
 - `timing.json`: the timing's full run, with every estimate's wall time,
-  simulator calls and simulated rows; `timing.txt` is its printed output.
+  simulator calls and simulated rows, from which the results compute the
+  simulator's time for a cost per call or per response; `timing.txt` is
+  its printed output.
   Its `median_seconds` is, for an even number of estimates, the upper of
   the two middle values; the results give the median, computed from
   `runs`.

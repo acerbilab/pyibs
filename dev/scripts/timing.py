@@ -7,7 +7,9 @@ simulator: the example model's (the orientation discrimination model at
 ``ibs_example.m``), fast, or with a fixed cost of 0.2 s per call, a sleep
 whatever the number of responses it simulates (the cells named ``slow``):
 a simulator dominated by the cost of a call, not one whose every
-simulated response costs time. Each
+simulated response costs time. Their times are 0.2 s times their calls,
+which a run's counts give for any cost per call or per response, as
+``--smoke`` computes them without sleeping. Each
 version runs at its defaults, with a new ``IBS`` object per estimate, so
 that ``vectorized=None`` decides at every estimate as it does at an
 object's first call; 0.1.0 runs with ``max_iter=10**5``, an integer (its

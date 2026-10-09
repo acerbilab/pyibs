@@ -1362,10 +1362,13 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   Every cell of step 1 passes its gates, under the PI's ruling below; both
   integration files pass; PyIBS 1.5 is faster than 0.1.0 in every timing
   cell, 1.3 to 2.1 times with the fast simulator and 1.2 to 3.8 times with
-  the one dominated by a fixed cost of 0.2 s per call. That simulator
-  measures the cost of calls, not that of a simulator whose every response
-  costs time, for which both versions draw about as many responses (PI,
-  after the review); the record says so.
+  the one dominated by a fixed cost of 0.2 s per call. The record times the
+  sampler's own work, and computes the simulator's time from the calls and
+  responses that each version makes on each schedule, for a cost per call
+  and a cost per response (PI, after the review): the cells that sleep 0.2 s
+  per call, which step 3 asked for, measure only a cost per call, and their
+  times are 0.2 s times their calls to within 0.4%. For a cost per
+  response, both versions simulate about as many responses.
 - The smoke passes and the PI's rulings (2026-10-09). The validation's
   smoke pass, 100 estimates per cell, projected its full run at 1.5 h on
   the container's 4 workers, and found six cells failing the calibration
@@ -1454,9 +1457,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   likelihood threshold, which overstates the variance, and on a simulator
   dominated by a fixed cost per call: there `vectorized=None` decides
   False, and an estimate of 100 repeats with 0.2 s per call takes 15.5 to
-  27 minutes, where `vectorized=True` would make 9 to 12 calls, which no
-  cell measured. For a simulator whose every response costs time, the
-  decision False is the right one. The
+  27 minutes, where `vectorized=True`, for its 9 to 12 calls, takes about
+  2 s. For a simulator whose every response costs time, the decision False
+  is the right one. The
   changelog's link to the record resolves once the record is on `main`.
   `pyibs/testing/test_examples.py` seeds its `IBS` objects with the seed of
   its data, as the integration tests did. For Phase 5: once PyVBMC 1.5.0 is
