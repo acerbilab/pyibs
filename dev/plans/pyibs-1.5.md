@@ -1130,4 +1130,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   `ibslike.m`, D23's case under a threshold and its definition of NaN, the
   per-trial variances, the Phase 1 steps for the review's remaining inputs,
   the changelog entries in each commit, and the open question on the time
-  limit with the threshold, which the PI settled as D24.
+  limit with the threshold, which the PI settled as D24. A checkout that
+  followed the removed advice of `AGENTS.md`,
+  `git config blame.ignoreRevsFile .git-blame-ignore-revs`, needs
+  `git config --unset blame.ignoreRevsFile`: without the file, `git blame`
+  stops with "fatal: could not open object name list".
