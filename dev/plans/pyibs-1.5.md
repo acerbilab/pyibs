@@ -1221,7 +1221,16 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   `num_samples_per_call` before `_Settings` checks them again; `ibs_basic`
   loops forever on responses of a kind that never matches, as
   `ibs_basic.m` does; inside the engine, `max_samples` (per trial and
-  call) sits next to `max_samples_per_trial` (per trial and repeat).
+  call) sits next to `max_samples_per_trial` (per trial and repeat). Two
+  residual risks of the review, for reviewer B: when a simulator's
+  runtime depends on its outcomes, whether the object's first call keeps
+  the timing call's outcomes (decided False) or discards them (decided
+  True, with more than one sample per trial in the first round) depends on
+  those outcomes, which may bias that one call slightly, as it biases
+  every call of `ibslike.m`; and, by MATLAB's indexing rules, with a
+  single trial `ibslike.m`'s `nlogLvar_trials` (line 213) and its loop
+  path's `nlogL_trials` (line 485) may come out with `Nreps` entries,
+  unchecked without MATLAB, where PyIBS returns shape (N,).
 - For Phase 4: 0.1.0's wheel shipped three notebooks in `pyibs/`, which
   the new examples replace, and its README describes 0.1.0; the FAQ's
   answer on a zero SD carries the label of `_FAQ_ZERO_SD`
