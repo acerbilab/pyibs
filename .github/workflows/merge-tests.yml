@@ -1,0 +1,54 @@
+# From github.com/dfm/tinygp
+name: merge-tests
+
+# Every PR into main or a development branch (dev-next and its successors)
+# runs the full matrix when it touches the package.
+on:
+  pull_request:
+    branches:
+      - main
+      - 'dev*'
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      run_job: ${{ steps.check_files.outputs.run_job }}
+    steps:
+      - name: Checkout PyIBS
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          path: pyibs
+
+      - name: Check for modified files
+        id: check_files
+        run: |
+          cd ./pyibs
+          echo "=============== list modified files ==============="
+          git diff --name-only origin/${{ github.base_ref }}...HEAD
+          echo "========== check paths of modified files =========="
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > files.txt
+          echo "run_job=false" >> $GITHUB_OUTPUT
+          changes=false
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ ($file != pyibs/*) && ($file != pyproject.toml) && ($file != setup.py) ]]; then
+              :
+            else
+              echo "Change in source files found, running tests."
+              echo "run_job=true" >> $GITHUB_OUTPUT
+              changes=true
+              break
+            fi
+          done < files.txt
+          if [ "$changes" = false ]; then
+            echo "No changes to source directory found, skipping tests."
+          fi
+
+  tests:
+    needs: check_changes
+    if: needs.check_changes.outputs.run_job == 'true'
+    # Full matrix; see test-matrix.yml.
+    uses: ./.github/workflows/test-matrix.yml

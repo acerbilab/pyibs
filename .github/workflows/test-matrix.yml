@@ -1,0 +1,44 @@
+# The test job, defined once. Called by tests.yml (manual dispatch, pushes
+# to dev* branches) and merge-tests.yml (PRs to main and dev* branches). Not
+# triggered on its own.
+name: test-matrix
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: JSON list of runner labels
+        type: string
+        default: '["ubuntu-latest", "windows-latest", "macos-latest"]'
+      python-version:
+        description: JSON list of Python versions
+        type: string
+        default: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(inputs.os) }}
+        python-version: ${{ fromJSON(inputs.python-version) }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout PyIBS
+        uses: actions/checkout@v7
+        with:
+          # full history so setuptools_scm reads PyIBS's version from its
+          # tags (a shallow clone reports 0.1.dev1)
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install PyIBS
+        run: python -m pip install -e ".[test]"
+
+      - name: Run tests
+        run: python -m pytest -x -vv
