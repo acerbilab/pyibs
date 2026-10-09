@@ -148,10 +148,10 @@ from the original maintainer on 2026-10-09.
 | Likelihood threshold | Vectorized path: checks the lowest repeat still sampled, keeps the partial counts of an ended repeat, compares the unweighted sum. Loop path: checks each repeat, keeps partial counts | Every repeat against a weighted bound; an ended repeat is worth exactly -T | As the engine (D5, deliberate difference) |
 | Cap | `MaxIter` rounds (times `Nreps` in the vectorized path); error | More than `max_samples_per_trial * n` samples of one trial in a draw of n repeats; error | As the engine, with `max_iter` as `max_samples_per_trial`, default `10**5` (D3, D6, deliberate difference) |
 | Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning (D3, deliberate differences) |
-| Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21) |
+| Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21, deliberate difference) |
 | Sample count | The vectorized path adds the number of open trials per call, whatever the samples requested of each | Every simulated row | As the engine (deliberate difference) |
 | Simulator | `fun(params, dmat, varargin{:})`, global random state | Called with the generator of the draw | `sample_from_model(params, design_rows)`, with `rng=` when its signature has a parameter named `rng` (D8, D18) |
-| Matching | Every column must agree | Every column must agree; refuses kinds that NumPy never finds equal | As the engine |
+| Matching | Every column must agree (`all(respMat(T,:) == simdata, 2)`); only the number of returned rows is checked | Every column must agree, and the output has the shape of the requested responses; refuses kinds that NumPy never finds equal | As the engine, except that one-column responses take an output of shape (r,) or (r, 1) for r rows requested, and a NaN response raises when `IBS` is created (D22, D23, deliberate differences) |
 | Self-tests | `runtest1` to `runtest3` | Ports of all three | Ports of all three, through `IBS` |
 
 ## Scope
@@ -353,10 +353,22 @@ examples/
      warning, as in `ibslike.m`.
    - `max_time` (D3): checked after every call; once exceeded, sampling
      stops, each trial's value averages its completed repeats, a trial
-     with none raises `IBSSamplingError`, and the exit flag is 2.
+     with none raises `IBSSamplingError`, and the exit flag is 2. Its
+     combination with the likelihood threshold is an open question (Open
+     Questions), which the PI settles before this step.
+   - The shape check of `_simulate` (D22): when the responses have one
+     column, an output of shape (r,) or (r, 1) for r rows requested is
+     compared with that column; otherwise the output's shape is that of
+     the requested responses. The case of `test_wrong_simulator_output_raises`
+     (`test_sampler.py`) that gives responses of shape (3,) an output of
+     shape (r, 1) moves to a test that it matches, and the docstrings that
+     state the shape rule (`_Settings`, `sample`, `_simulate`) follow.
    - The sampler's tests whose expectations depend on the schedule (exact
      calls, samples per call) are updated, and the Worklog lists each;
-     the statistical tests stay as they are.
+     the statistical tests, the ports of `runtest1` to `runtest3` among
+     them, stay as they are: one that fails after the change of schedule
+     is investigated, never reseeded (the port of `runtest2` checks
+     `ibslike.m`'s fixed tolerances at one seed).
 3. `pyibs/ibs.py` replaces 0.1.0's, with the class `IBS` (D2, D3, D8, D10,
    D16, D21, D22, D23):
    - `IBS(sample_from_model, response_matrix, design_matrix=None,
@@ -370,9 +382,10 @@ examples/
      `max_mem=None` is `ibslike.m`'s formula. The count settings take
      integers and whole-number floats (D16). The constructor validates
      every setting, raising `ValueError` or `TypeError` with a message that
-     names the setting and what it takes; responses holding a NaN raise
-     `ValueError` (D23). When the responses have one column, shape (N,) or
-     (N, 1), the simulator may return shape (n,) or (n, 1) (D22).
+     names the setting and what it takes. Responses holding a NaN, an
+     element not equal to itself, raise `ValueError`, whose message names
+     those trials as the cap's error does and suggests recoding the
+     response or removing the trial; the design is not checked (D23).
    - `random_seed` takes what `options['random_seed']` takes in PyBADS
      (the `rng` attribute in `../pybads/pybads/bads/bads.py`): None
      derives the generator from NumPy's global state, an integer or a
@@ -389,22 +402,29 @@ examples/
      floats; with `"full"`, an `EstimateResult` holding 0.1.0's fields
      (`neg_logl`, `neg_logl_var`, `neg_logl_std`, `exit_flag`, `message`,
      `elapsed_time`, `num_samples_per_trial`, `fun_count`) and the
-     per-trial arrays `neg_logl_trials` and `neg_logl_var_trials`, NaN
-     when the likelihood threshold ended any repeat (D21), all shown by
-     its `__repr__`. `"none"` is accepted as None, as in 0.1.0;
-     any other value raises `ValueError`. As in `ibslike.m`,
-     `return_positive` changes the sign of the total only.
+     per-trial arrays `neg_logl_trials`, the engine's
+     `-trial_value_sums / num_reps`, and `neg_logl_var_trials`,
+     `trial_var_sums / num_reps**2`, both unweighted as in `ibslike.m`
+     (lines 213, 220-221) and NaN when the likelihood threshold ended any
+     repeat (D21); all are shown by its `__repr__`. `"none"` is accepted
+     as None, as in 0.1.0; any other value raises `ValueError`. As in
+     `ibslike.m`, `return_positive` changes the sign of the total only.
+     `trial_weights` refuse booleans and numeric strings, as the settings
+     do.
    - Exit flags 0, 1 and 2, with 0.1.0's messages for them; reaching
      `max_time` also issues a `UserWarning` (D3). The cap raises
-     `IBSSamplingError`, a `RuntimeError` naming the trials over the cap.
+     `IBSSamplingError`, a `RuntimeError` naming the trials over the cap
+     by their 0-based indices and the cap as `max_iter * num_reps`, where
+     the engine's message says `max_samples_per_trial * n`.
    - A zero variance is returned as computed, with the `UserWarning` of
      D10; its link points to the FAQ answer that Phase 4 writes, under the
      published documentation's address.
 4. `pyibs/ibs_basic.py`: read `../ibs/ibs_basic.m`; keep the function's
    signature, make a missing design work (the simulator then receives the
-   trial index, as `IBS` does), compare every column, and pass the
-   generator as `IBS` does. `pyibs/__init__.py` exports the public names
-   and `__version__` (from `importlib.metadata`).
+   trial index, as `IBS` does), compare every column, pass the generator as
+   `IBS` does, and raise on a NaN response as `IBS` does (D23), where
+   `ibs_basic.m` loops forever. `pyibs/__init__.py` exports the public
+   names and `__version__` (from `importlib.metadata`).
 5. The example model: `examples/psycho_model.py`, after
    `../ibs/psycho_gen.m` and `psycho_nll.m`, with the simulator and the
    closed-form log-likelihood. In `pyproject.toml`, `packages` gains
@@ -412,25 +432,33 @@ examples/
    and `[tool.setuptools.package-data]` `"pyibs.examples" = ["*.ipynb"]`,
    as in PyBADS. Remove `pyibs/psycho_generator.py`,
    `pyibs/psycho_neg_logl.py` and the three notebooks from `pyibs/`
-   (D13). Commit steps 2 to 5.
+   (D13). Commit steps 2 to 5, with the changelog entries of their
+   changes (`AGENTS.md`, "Changelog").
 6. Tests:
    - `test_ibs.py`: each output form and its types (`type(res) is tuple`,
      Python floats); `return_positive`; scalar and per-trial weights;
      responses with several columns, text responses and a design of None;
-     one-column responses with simulator outputs of shape (n,) and (n, 1);
-     a NaN response; the exit flags; the cap's error; the per-trial arrays,
-     which are NaN when the threshold ended a repeat and otherwise add up,
-     weighted, to the negative log-likelihood; the warning on a zero
-     variance (trials that always match); `max_time` with a simulator that
-     sleeps, with margins wide enough for slow CI runners; validation
-     errors, and whole-number floats accepted for the counts;
-     reproducibility (two objects with one seed and a simulator that takes
-     the generator give equal estimates; a simulator without a generator
-     parameter works); and agreement in distribution of the `vectorized`
-     settings.
-   - `test_ibs_basic.py`, and `test_examples.py`: the IBS estimate of the
-     example model agrees with its closed form within 4.5 standard errors
-     at three seeded parameter vectors.
+     responses of shape (N,) and (N, 1), each with outputs of shape (r,)
+     and (r, 1), and the outputs that raise (one column for responses of
+     two, two columns for responses of one); NaN responses that raise
+     (float, complex, `NaT`, in one column of several, in an object array)
+     and text responses that do not; trial weights that are booleans or
+     numeric strings; the exit flags; the cap's error and its names; the
+     per-trial arrays, NaN when the threshold ended a repeat and otherwise
+     adding up, weighted, to the negative log-likelihood, and the
+     variances, with the weights squared, to its variance
+     (`np.testing.assert_allclose`, since they agree to rounding), whatever
+     `return_positive`; the warning on a zero variance (trials that always
+     match); `max_time` with a simulator that sleeps, with margins wide
+     enough for slow CI runners; validation errors, and whole-number floats
+     accepted for the counts; reproducibility (two objects with one seed
+     and a simulator that takes the generator give equal estimates; a
+     simulator without a generator parameter works); and agreement in
+     distribution of the `vectorized` settings.
+   - `test_ibs_basic.py`, a NaN response among its cases, and
+     `test_examples.py`: the IBS estimate of the example model agrees with
+     its closed form within 4.5 standard errors at three seeded parameter
+     vectors.
    - `test_ibslike_ports.py` calls the public `IBS`.
 7. `pyibs/README.md`: the catalogue of deliberate differences from
    `ibslike.m` 0.96, after `../pybads/pybads/bads/README.md`, one entry per
@@ -438,13 +466,15 @@ examples/
    with its reason. Every statement about what `ibslike.m` does is checked
    against `../ibs/ibslike.m` and cites its lines; descriptions of
    `ibslike.m` in the engine's docstrings are not copied unchecked.
-8. `CHANGELOG.md`, under `Unreleased`: the entries for the changes of this
-   phase, and the "Upgrading from 0.1.0" list that opens the section,
-   covering the defects listed under Context and the changed behaviour:
-   the cap raises; `max_iter` counts samples; `max_mem` defaults to
-   `ibslike.m`'s formula instead of 1e6; acceleration is deterministic by
-   default; the threshold's semantics; the example modules leave the
-   package; Python 3.10 or newer.
+8. `CHANGELOG.md`, under `Unreleased`: the "Upgrading from 0.1.0" list
+   that opens the section, covering the defects listed under Context and
+   the changed behaviour: the cap raises; `max_iter` counts samples;
+   `max_mem` defaults to `ibslike.m`'s formula instead of 1e6;
+   acceleration is deterministic by default; the threshold's semantics;
+   a NaN response raises when `IBS` is created (0.1.0 sampled it until
+   its iteration limit, exit flag 3); the example modules leave the
+   package; Python 3.10 or newer. Check that every change of the phase
+   has its entry.
 9. `AGENTS.md`: an "Architecture" section (the modules and what each
    owns); under "What spans files", the catalogue as the list of
    deliberate differences, which a change that adds or removes one
@@ -629,7 +659,8 @@ the other two.
    (which do not reach the network). It keeps PyBADS's rule that its
    networking modules are imported inside the function.
    `../pybads/dev/plans/version-check.md` is the design; its old-release
-   reminder and `RELEASE_DATE` are not carried over.
+   reminder and `RELEASE_DATE` are not carried over. Its changelog entry
+   comes with it.
 2. `examples/`: notebooks 1, basic use and calibration, after
    `../ibs/ibs_example.m`; 2, maximum-likelihood estimation with PyBADS;
    3, posterior and evidence with PyVBMC; and
@@ -709,8 +740,11 @@ can fork repositories.
    `git add .nojekyll`, `git commit -m "docs: gh-pages"`,
    `git push origin gh-pages`, `git switch dev-next`. The PI sets GitHub
    Pages to serve it, pushes `dev-next`, and opens the pull request into
-   `main`. CI passes; the PI squash-merges it, and
-   sets the branch protection of `main` to the checks' names.
+   `main`. CI passes; the PI squash-merges it, and sets the branch
+   protection of `main` to checks that report on every pull request: the
+   test jobs report only when `merge-tests.yml` runs them (`AGENTS.md`,
+   "Setup and commands"), so requiring one holds every pull request that
+   skips them.
 5. The PI adds the trusted publisher on PyPI (repository
    `acerbilab/pyibs`, workflow `release.yml`, environment `pypi`) and
    creates that environment on GitHub.
@@ -930,40 +964,64 @@ from the README, the documentation and the model-fitting page.
 - **D20. CI tests the minimum versions** (PI, 2026-10-09) — a job of
   `test-matrix.yml` runs the suite on Python 3.10 with the lowest NumPy,
   SciPy and pytest that `pyproject.toml` allows (D9), which uv resolves
-  from `pyproject.toml` itself, in every run of the workflows. The matrix
+  from `pyproject.toml` itself, whenever `tests.yml` or `merge-tests.yml`
+  runs the tests. The matrix
   installs the newest release for each Python, so without the job the
   oldest versions tested would be those of the newest release for Python
-  3.10 (NumPy 2.2.6 and SciPy 1.15.3 on 2026-10-09). Rejected: the versions
-  pinned in the workflow (a second place to change with D9); a check at the
+  3.10 (NumPy 2.2.6 and SciPy 1.15.3 on 2026-10-09). Rejected: the NumPy,
+  SciPy and pytest versions pinned in the workflow (a second place to
+  change with D9, as Python 3.10 already is); a check at the
   release gate only (code of Phases 1 to 4 could pass the matrix and fail
   at the minimum versions until then).
 - **D21. The per-trial arrays of `"full"` are NaN when the likelihood
-  threshold ended any repeat** (PI, 2026-10-09) — the repeats it leaves are
-  those whose estimate stayed above -T, so their average biases each
-  trial's value upward, and a repeat it ended is worth exactly -T (D5),
-  with no share of it in any trial. With the arrays NaN, finite arrays are
-  unbiased and add up, weighted, to the negative log-likelihood, as in
-  `ibslike.m`. The threshold ends repeats far from the best fit, where
-  per-trial values are rarely wanted, and a user who wants them sets no
-  threshold. Rejected: the average over the repeats not ended (biased, and
-  not adding up to the negative log-likelihood); `ibslike.m`'s partial
-  counts of the ended repeats (at odds with D5).
+  threshold ended any repeat** (PI, 2026-10-09) — a repeat the threshold
+  ended is worth exactly -T as a whole (D5), with no share in any trial.
+  When no repeat ended, the threshold did not act on the draw: the arrays
+  are those that the same draw gives without a threshold, and they add up,
+  weighted, to the negative log-likelihood, as in `ibslike.m` (lines
+  220-228). Under a threshold they are biased even so, since they are
+  finite only on draws whose repeats all stayed above -T, which favours
+  small values of `neg_logl_trials`; a user who wants per-trial values sets
+  no threshold. Rejected: the average over the repeats not ended (biased in
+  the same way, and adding up to nothing that the call returns);
+  `ibslike.m`'s partial counts of the ended repeats (at odds with D5).
 - **D22. Responses of one column, of shape (N,) or (N, 1), accept a
-  simulator output of shape (n,) or (n, 1)** (PI, 2026-10-09) — as in
-  `ibslike.m`, which compares row by row, so that a model ported from
-  MATLAB, where both are column vectors, runs unchanged; responses of C > 1
-  columns take outputs of shape (n, C) only. Rejected: the engine's exact
-  match of shapes (a `ValueError` for such a port); 0.1.0's comparison (an
-  (N, 1) response against an (n,) output broadcasts to an (n, n) array).
-- **D23. A NaN response raises `ValueError` when `IBS` is created**
-  (PI, 2026-10-09) — a NaN never matches, so its trial would sample until
-  the cap and fail there after `max_iter * num_reps` samples. Rejected:
-  leaving it to the cap (the cost of the whole cap, and an error that
-  does not name the cause).
+  simulator output of shape (r,) or (r, 1) for r rows requested** (PI,
+  2026-10-09) — so that a model ported from MATLAB, where both are column
+  vectors, runs unchanged; responses of C > 1 columns take an output of
+  shape (r, C) only. The rule lives in the engine's shape check (Phase 1,
+  step 2), the one place that checks the output's shape. `ibslike.m` checks
+  only the number of rows and compares with
+  `all(respMat(T,:) == simdata, 2)` (lines 303-316, 444-450), which
+  MATLAB's implicit expansion broadcasts, so it accepts more shapes: a
+  deliberate difference. Rejected: the engine's exact match of shapes (a
+  `ValueError` for such a port); MATLAB's broadcasting (an output of one
+  column compared with every column of the responses); 0.1.0's comparison
+  (an (N, 1) response against an (r,) output broadcasts to an (r, r)
+  array).
+- **D23. A NaN response raises `ValueError` when `IBS` is created** (PI,
+  2026-10-09) — a NaN never matches. Without a likelihood threshold its
+  trial samples until the cap and fails there after `max_iter * num_reps`
+  samples; with one, and a positive weight on that trial, every repeat ends
+  below -T and the estimate is -T at every parameter vector, with no error.
+  A NaN is an element not equal to itself, which finds float and complex
+  NaN, `NaT` and a NaN in an object array, and never flags text. The design
+  is not checked: `ibslike.m`'s own examples pass a NaN design (lines 57,
+  511). `ibs_basic` raises in the same way. Rejected: leaving it to the cap
+  or the threshold (the whole cap's cost, or a silent -T, with nothing that
+  names the cause).
 
 ## Open Questions
 
-None. The PI settled the plan's questions on 2026-10-09: D17 to D19, and
+- **The time limit together with the likelihood threshold.** Once
+  `max_time` is exceeded, each trial's value averages its completed repeats
+  (D3); a repeat that the threshold ended is worth -T as a whole, with no
+  share in any trial (D5, D21). When both happen in one call, the plan
+  defines neither the total nor its variance, the exit flag or the
+  per-trial arrays. Before Phase 1, step 2, the executor states the options
+  and their consequences, and the PI decides.
+
+The PI settled the plan's other questions on 2026-10-09: D17 to D19, and
 timings against 0.1.0 only, with no MATLAB installation in the
 comparison (Phase 3, step 3).
 
@@ -1033,13 +1091,25 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   port checks `ibslike.m`'s fixed tolerances at one seed, so a schedule
   that consumes the generator differently (D6) can fail it by chance.
   The PI's rules: D21 for the per-trial arrays, D22 for responses of one
-  column, D23 for a NaN response.
-- After the phase: the job at the minimum versions (D20); the release no
-  longer waits on "Release access", which the lab holds;
-  `.git-blame-ignore-revs` removed, since `e8b99d3` only deletes lines
-  and so leaves none for `git blame` to hide (in PyBADS at `ff415ca0`,
-  the entry `69be885` is not in `main`'s history either); PyBADS's
-  `.github/dependabot.yml` and `.coveragerc` copied, and the convention
-  "Changelog" of its `AGENTS.md` adapted; `merge-tests.yml` also runs the
-  tests on a pull request that changes a test workflow, as a Dependabot
-  update of an action does.
+  column, D23 for a NaN response; Phase 1's steps 2 and 3 take the other
+  three.
+- After the phase: `0a84c10` and `1bdda9a` record the runs above; `5f906d8`
+  adds the job at the minimum versions (D20), whose first run passed (run
+  37910206877: Python 3.10.22, NumPy 2.0.0, SciPy 1.13.0, pytest 6.2.5, 173
+  tests); `cf21331` drops the release's wait on "Release access", which the
+  lab holds, removes `.git-blame-ignore-revs`, since `e8b99d3` only deletes
+  lines and so leaves none for `git blame` to hide (PyBADS's entry,
+  `69be885`, hides nothing either: at `ff415ca0` it is in no branch's
+  history), copies PyBADS's `.github/dependabot.yml` and `.coveragerc`,
+  adapts the convention "Changelog" of its `AGENTS.md` and records D21;
+  `1a8c371` makes `merge-tests.yml` run the tests on a pull request that
+  changes a test workflow, as a Dependabot update of an action does;
+  `8e1ecb5` and `35c4d94` record D22 and D23. A review of these commits
+  (`/doublecheck`, three read-only Opus reviewers) found D21's stated
+  reasons wrong (under a threshold, finite arrays are not unbiased) and
+  gaps in Phase 1's steps; the commit after `35c4d94` takes its findings:
+  D21's reasons, the parity table's rows, D22's comparison with
+  `ibslike.m`, D23's case under a threshold and its definition of NaN, the
+  per-trial variances, the Phase 1 steps for the review's remaining inputs,
+  the changelog entries in each commit, and the open question on the time
+  limit with the threshold.
