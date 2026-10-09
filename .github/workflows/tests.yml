@@ -12,6 +12,8 @@ on:
       - 'dev*'
     paths:
       - 'pyibs/**'
+      # installed as pyibs.examples
+      - 'examples/**'
       - 'pyproject.toml'
       - 'setup.py'
       - '.github/workflows/tests.yml'
