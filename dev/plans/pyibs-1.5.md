@@ -148,7 +148,7 @@ from the original maintainer on 2026-10-09.
 | Likelihood threshold | Vectorized path: checks the lowest repeat still sampled, keeps the partial counts of an ended repeat, compares the unweighted sum. Loop path: checks each repeat, keeps partial counts | Every repeat against a weighted bound; an ended repeat is worth exactly -T | As the engine (D5, deliberate difference) |
 | Cap | `MaxIter` rounds (times `Nreps` in the vectorized path); error | More than `max_samples_per_trial * n` samples of one trial in a draw of n repeats; error | As the engine, with `max_iter` as `max_samples_per_trial`, default `10**5` (D3, D6, deliberate difference) |
 | Time limit | `MaxTime`, exit flag 2. Vectorized path: a trial's value averages its repeats with a positive count, including the partial count of the repeat it was sampling. Loop path: averages its completed repeats, NaN when it has none | None | Each trial's value averages its completed repeats; a trial with none raises; exit flag 2 and a warning (D3, deliberate differences) |
-| Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays (D2, D10) |
+| Outputs | Value; variance, or SD with `ReturnStd`; exit flag; `funcCount`, `NsamplesPerTrial`, per-trial values and variances | Per-repeat values and variances, per-trial sums, calls, samples, seconds | 0.1.0's `additional_output` forms, as Python floats; `"full"` adds the per-trial arrays, NaN when the threshold ended a repeat (D2, D10, D21) |
 | Sample count | The vectorized path adds the number of open trials per call, whatever the samples requested of each | Every simulated row | As the engine (deliberate difference) |
 | Simulator | `fun(params, dmat, varargin{:})`, global random state | Called with the generator of the draw | `sample_from_model(params, design_rows)`, with `rng=` when its signature has a parameter named `rng` (D8, D18) |
 | Matching | Every column must agree | Every column must agree; refuses kinds that NumPy never finds equal | As the engine |
@@ -358,7 +358,7 @@ examples/
      calls, samples per call) are updated, and the Worklog lists each;
      the statistical tests stay as they are.
 3. `pyibs/ibs.py` replaces 0.1.0's, with the class `IBS` (D2, D3, D8, D10,
-   D16):
+   D16, D21):
    - `IBS(sample_from_model, response_matrix, design_matrix=None,
      vectorized=None, acceleration=1.5, num_samples_per_call=0,
      max_iter=10**5, max_time=np.inf, max_samples=10**4,
@@ -387,8 +387,9 @@ examples/
      floats; with `"full"`, an `EstimateResult` holding 0.1.0's fields
      (`neg_logl`, `neg_logl_var`, `neg_logl_std`, `exit_flag`, `message`,
      `elapsed_time`, `num_samples_per_trial`, `fun_count`) and the
-     per-trial arrays `neg_logl_trials` and `neg_logl_var_trials`, all
-     shown by its `__repr__`. `"none"` is accepted as None, as in 0.1.0;
+     per-trial arrays `neg_logl_trials` and `neg_logl_var_trials`, NaN
+     when the likelihood threshold ended any repeat (D21), all shown by
+     its `__repr__`. `"none"` is accepted as None, as in 0.1.0;
      any other value raises `ValueError`. As in `ibslike.m`,
      `return_positive` changes the sign of the total only.
    - Exit flags 0, 1 and 2, with 0.1.0's messages for them; reaching
@@ -414,7 +415,9 @@ examples/
    - `test_ibs.py`: each output form and its types (`type(res) is tuple`,
      Python floats); `return_positive`; scalar and per-trial weights;
      responses with several columns, text responses and a design of None;
-     the exit flags; the cap's error; the warning on a zero variance
+     the exit flags; the cap's error; the per-trial arrays, which are NaN
+     when the threshold ended a repeat and otherwise add up, weighted, to
+     the negative log-likelihood; the warning on a zero variance
      (trials that always match); `max_time` with a simulator that
      sleeps, with margins wide enough for slow CI runners; validation
      errors, and whole-number floats accepted for the counts;
@@ -442,9 +445,11 @@ examples/
 9. `AGENTS.md`: an "Architecture" section (the modules and what each
    owns); under "What spans files", the catalogue as the list of
    deliberate differences, which a change that adds or removes one
-   updates; a section "Tests and their traps" (the `max_time` test's
-   timing margins); and the sentence under "The project" that says the
-   tree holds the 0.1.0 code goes. Commit.
+   updates; in the convention "Changelog", the catalogue beside the
+   records under `dev/` as the place of an entry's reasons; a section
+   "Tests and their traps" (the `max_time` test's timing margins); and the
+   sentence under "The project" that says the tree holds the 0.1.0 code
+   goes. Commit.
 
 **Verification**:
 - [ ] `$PY -m pytest` passes, the ports of `runtest1` to `runtest3`
@@ -691,9 +696,8 @@ can fork repositories.
 2. The release gate: the full suite, the pre-commit hooks, the
    integration tests, the documentation build, and the notebooks rerun.
    Then `/doublecheck` on the whole of `dev-next` against `main`.
-3. From this step on, only with both accesses of "Release access"
-   (Context). `CHANGELOG.md`: `Unreleased` becomes `[1.5.0] - <date>`
-   under a new, empty `Unreleased`. Commit.
+3. `CHANGELOG.md`: `Unreleased` becomes `[1.5.0] - <date>` under a new,
+   empty `Unreleased`. Commit.
 4. The PI creates the branch `gh-pages` on `origin`, which `docs.yml`
    checks out, holding only an empty `.nojekyll` at its root, as PyBADS's
    and PyVBMC's do (`docs.yml` copies `docs/*`, which skips dotfiles, and
@@ -930,6 +934,17 @@ from the README, the documentation and the model-fitting page.
   pinned in the workflow (a second place to change with D9); a check at the
   release gate only (code of Phases 1 to 4 could pass the matrix and fail
   at the minimum versions until then).
+- **D21. The per-trial arrays of `"full"` are NaN when the likelihood
+  threshold ended any repeat** (PI, 2026-10-09) — the repeats it leaves are
+  those whose estimate stayed above -T, so their average biases each
+  trial's value upward, and a repeat it ended is worth exactly -T (D5),
+  with no share of it in any trial. With the arrays NaN, finite arrays are
+  unbiased and add up, weighted, to the negative log-likelihood, as in
+  `ibslike.m`. The threshold ends repeats far from the best fit, where
+  per-trial values are rarely wanted, and a user who wants them sets no
+  threshold. Rejected: the average over the repeats not ended (biased, and
+  not adding up to the negative log-likelihood); `ibslike.m`'s partial
+  counts of the ended repeats (at odds with D5).
 
 ## Open Questions
 
@@ -1002,3 +1017,11 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   a NaN response never matches and samples until the cap; the `runtest2`
   port checks `ibslike.m`'s fixed tolerances at one seed, so a schedule
   that consumes the generator differently (D6) can fail it by chance.
+  The PI's rule for the per-trial arrays is D21.
+- After the phase: the job at the minimum versions (D20); the release no
+  longer waits on "Release access", which the lab holds;
+  `.git-blame-ignore-revs` removed, since `e8b99d3` only deletes lines
+  and so leaves none for `git blame` to hide (in PyBADS at `ff415ca0`,
+  the entry `69be885` is not in `main`'s history either); PyBADS's
+  `.github/dependabot.yml` and `.coveragerc` copied, and the convention
+  "Changelog" of its `AGENTS.md` adapted.

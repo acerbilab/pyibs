@@ -123,10 +123,7 @@ on each push to a `dev*` branch that touches the package, `pyproject.toml`,
 
 Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
-profile, pycln); no CI job checks it, and the whole tree passes them. The
-commit that first formatted the tree is listed in `.git-blame-ignore-revs`;
-`git config blame.ignoreRevsFile .git-blame-ignore-revs` hides it from
-`git blame`.
+profile, pycln); no CI job checks it, and the whole tree passes them.
 
 Run one heavy process at a time (the test suite, a validation or timing
 run, a PyBADS or PyVBMC run): concurrent runs, each multi-threaded, can
@@ -163,6 +160,22 @@ fresh clone creates first (`mkdir -p dev/scripts/runs`).
   `dev-next` is reset onto `main`, keeping only the commits made after the
   merged head, and force-pushed, or the next pull request lists the merged
   commits again.
+- **Changelog.** A change to results, to the interface, or to what a
+  script sees or has to handle gets an entry in `CHANGELOG.md` under
+  `Unreleased`, in the commit that makes it, and so does a speed-up that a
+  user notices, with its measured size and a link to its record under
+  `dev/`; a message's wording, a minor speed-up or a change to the tests
+  gets none. An entry is one or two sentences, written for users, on what
+  a user notices, relative to the last release: a fix to a change that no
+  release has shipped edits that change's entry, and the reasons and the
+  comparison with `ibslike.m` belong in the records under `dev/`, to which
+  an entry can point. The fixes are grouped under a few themes (`####`
+  headings under Fixed), and changes of one kind, such as new checks of
+  the settings' values, share one entry. A change that can stop a script
+  written for the last release, or change its results, also has a line in
+  the "Upgrading from" list that opens the section: the change's only
+  mention when that line says all a user needs, and otherwise a pointer
+  to its entry, kept in step with it; changes of one kind share a line.
 - **Code** follows PyBADS and PyVBMC: plain NumPy/SciPy, numpydoc
   docstrings, black at line length 79, isort with the black profile and
   pycln, which the pre-commit hooks enforce ("Setup and commands").
