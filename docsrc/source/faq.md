@@ -662,56 +662,12 @@ message begins `The target function returned the noise SD 0.0`, and PyVBMC's
 says that the returned estimated SD `must be a finite, positive real-valued
 scalar`.
 
-**How small the true SD is.** With unit trial weights, a call returns a
-variance of 0 with probability at most `exp(-(num_reps * sd) ** 2)`, where
-`sd` is the true SD of its estimate: 0.37 at `sd = 1 / num_reps`, 0.018 at
-`2 / num_reps` and 0.00012 at `3 / num_reps`. (The probability is the product
-of the trials' `p ** num_reps`, the true variance is the sum of the trials'
-`Li₂(1 − p)` divided by `num_reps` ([1], Section 4.3), and
-`Li₂(1 − p) ≤ −log p`.) A variance of 0 is thus unlikely unless the true SD
-is below about `2 / num_reps`, 0.2 or less at 10 repeats or more: far below
-the SD of about 1 that PyBADS and PyVBMC need, so that the estimate there is
-precise enough.
-
 **What to do.**
 
-- *Put a floor on the SD in your target.* In the function that you give to
-  PyBADS or PyVBMC, replace an SD of 0 by a small positive value:
-
-  ```python
-  num_reps = 100
-
-
-  def target(theta):
-      neg_logl, sd = ibs(theta, num_reps=num_reps, additional_output="std")
-      return neg_logl, max(sd, 1 / num_reps)
-  ```
-
-  With unit trial weights, `1 / num_reps` is the smallest SD that a call
-  returns when its variance estimate is not 0, that of a call in which one
-  trial needed a second sample in one repeat (`ψ₁(1) − ψ₁(2) = 1`). The floor
-  thus changes no other SD, and it is of the size that a variance of 0 points
-  to. With trial weights, the smallest positive weight divided by `num_reps`
-  plays that role.
-
-  The floor is your choice, for the optimizer's sake, and not an estimate: it
-  states a precision that the call did not measure, and PyIBS applies none
-  for that reason. At this size it costs little: the optimizer takes such an
-  evaluation as about as precise as the most precise evaluation it can
-  otherwise receive, and where the true SD is far smaller, it only trusts the
-  value less than it could. A much smaller floor, such as `1e-8`, costs
-  more: PyBADS and PyVBMC then take the value as nearly exact, and PyBADS,
-  which weights its final evaluations at the solution by the precision that
-  the target reports, can let that one evaluation decide its result (the
-  PyBADS FAQ, [How is `fval` computed?](https://acerbilab.github.io/pybads/faq.html#faq-how-is-fval-computed)).
-  Once the floor is in place, the warning has done its job, and
-  `warnings.filterwarnings("ignore", message="The IBS variance estimate is 0")`
-  silences it.
 - *More repeats* make a zero less likely, exponentially so in `num_reps`
   (0.37 at 10 repeats and 0.000045 at 100, in the example above), but
   never impossible, and a run of PyBADS or PyVBMC makes a hundred
-  evaluations or more. Since the estimate is precise where zeros occur, more repeats
-  pay for themselves only when the SD elsewhere calls for them (see
+  evaluations or more (see
   [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)).
 - *A lapse rate in the model* bounds every trial's probability below 1: with
   a lapse rate of at least `lapse` among `k` equally likely responses, each

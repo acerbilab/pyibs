@@ -1472,11 +1472,11 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   1.5.1 from PyPI with gpyreg 1.4.0; PyVBMC from
   `feat-release-1.5-preparation` at `89007a4`, as in Phase 3. The Nature
   reference of the Positioning (van Opheusden et al., 2023, Nature 618:
-  1000–1005, doi 10.1038/s41586-023-06124-2) agrees with the reference list
-  of PyBADS's JOSS paper in `../pubs-llms` for its authors and DOI; its
-  volume and pages rest on search results and a RePEc listing, since the
-  container's network policy refused doi.org, Crossref, nature.com and
-  PubMed.
+  1000–1005, issue 7967, doi 10.1038/s41586-023-06124-2) agrees with the
+  reference list of PyBADS's JOSS paper in `../pubs-llms` for its authors
+  and DOI, and with a RePEc listing and search results for its volume,
+  issue and pages; the container's network policy refused the publisher,
+  doi.org and Crossref.
 - Commits: `f7f9434` (step 1), `0f87b73` (step 3, with `LICENSE`, the
   changelog's entries and the network rule of `AGENTS.md`), `1630d03`
   (step 4), `e5c2166` (step 2), `e17d74d` (step 5), `3458698` (step 6),
@@ -1546,13 +1546,12 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   script. Not taken: positioning IBS against non-amortized neural
   simulation-based inference too, beyond the plan's Positioning; a
   `make.bat` that stops on a failed build, which PyBADS's does not either.
-- For the PI: the FAQ's answer on a zero SD advises a floor in the user's
-  target, `max(sd, 1 / num_reps)`, the smallest positive SD that a call
-  returns with unit weights, and bounds the probability of a zero variance
-  by `exp(-(num_reps * sd) ** 2)`: the FAQ's own derivation, checked by two
-  agents, not taken from [1] or the wiki. `ibslike.m`, which PyIBS ports,
-  carries the copyright of Luigi Acerbi and Bas van Opheusden under MATLAB
-  IBS's MIT licence, which `LICENSE` does not name.
+- Decided after the phase (PI, 2026-10-09): `LICENSE` names the lab
+  alone, without the notice of MATLAB IBS's MIT licence on `ibslike.m`;
+  the README keeps the grants of PyBADS's and PyVBMC's READMEs; and the
+  FAQ's answer on a zero SD no longer advises a floor on the SD in the
+  user's target, `max(sd, 1 / num_reps)`, which the FAQ's writer derived:
+  `dev/TODO.md` keeps it, with its derivation, to be studied.
 - For Phase 5: the README, `installation.rst` and `development.rst` install
   `pyvbmc>=1.5`, and the links to PyVBMC's FAQ resolve, once PyVBMC 1.5.0 is
   on PyPI and its documentation published (2026-10-13); the README's badges
