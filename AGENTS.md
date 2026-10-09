@@ -33,6 +33,11 @@ decisions.
 - `dev/private/` is gitignored and holds maintainer notes that are not
   published. A tracked file may point to a note there by its path, but
   never restates it.
+- `docsrc/` is the Sphinx source of the documentation, whose links name
+  its address, https://acerbilab.github.io/pyibs/; `docs/` is its
+  gitignored build output. `examples/` holds the example notebooks and the
+  example model, installed as `pyibs.examples`. `skills/pyibs/SKILL.md`
+  is the skill that points a coding agent to the documentation.
 
 ### Sibling repositories
 
@@ -159,6 +164,41 @@ matrix on dispatch, and a smoke run, the matrix reduced to Ubuntu with
 Python 3.14, on each push to a `dev*` branch that touches the package,
 `pyproject.toml`, `setup.py`, `tests.yml` or `test-matrix.yml`.
 
+The documentation is built with
+`PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github` on Windows
+(`.venv/bin` elsewhere; the target calls `sphinx-build`), which copies the
+notebooks of `examples/` into `docsrc/source/_examples/`, builds the site,
+copies it with `.nojekyll` into `docs/`, and removes the copies. The build
+gives no warning, and a change keeps it so. Nothing generates the API
+pages: a new public class or function needs a hand-written `.rst` under
+`docsrc/source/api/` and an entry in the toctree that owns it
+(`api/classes/classes.rst` or `api/functions/functions.rst`, and
+`documentation.rst` for a headline page). numpydoc reads every line of a
+docstring's Attributes section as an attribute, so a paragraph there
+renders as bogus attributes and goes in Notes instead, and it shows a
+property's own docstring in place of the property's Attributes entry, so
+the two say the same. `index.rst` restates the README's "What is it?",
+"What's new in PyIBS 1.5", "How does it work?" and "When should I use
+PyIBS?", so a change to one is made in the other; the figure of "How does
+it work?", which both show, is drawn by `dev/scripts/ibs_cost_variance.py`.
+
+The notebooks in `examples/` ship in the wheel as `pyibs.examples` and are
+rendered without execution by the documentation's build; no CI job runs
+them, so a change that breaks one goes unnoticed. `make -C
+examples/scripts run`, with the venv's interpreter first on `PATH` (the
+target calls `python`) and nbconvert, ipykernel, matplotlib, PyBADS and
+PyVBMC installed, reruns them in place in about two minutes, nearly all of
+it PyVBMC's; it sets `PYBADS_NO_UPDATE_REMINDER` and
+`PYVBMC_NO_UPDATE_REMINDER`, so that the outputs show neither package's
+reminder of an old release. Their seeds fix their outputs but for the
+elapsed times, the tip that PyBADS draws at random, and PyVBMC's run on a
+machine whose cached performance calibration differs. `examples/scripts/*.py`
+are generated from the notebooks by `make -B -C examples/scripts` (GNU
+Make, with nbconvert, IPython, and black 23.3.0 and isort 5.12.0, the
+versions of the pre-commit hooks), after the notebooks have run, since
+nbconvert cuts the last line of a script from a notebook never run; they
+are not edited by hand.
+
 Formatting is enforced by the pre-commit hooks alone (black at line length
 79 on every Python file and the notebooks' code cells, isort with the black
 profile, pycln); no CI job checks it, and the whole tree passes them.
@@ -212,13 +252,35 @@ gave.
   otherwise. A change that adds, removes or alters one updates its entry,
   and the docstrings that describe `ibslike.m`, in `pyibs/_sampler.py`
   above all, agree with it.
-- **The FAQ label of the zero-variance warning.** The warning that a call
-  issues on a variance estimate of 0 links the label
-  `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`
-  of the published FAQ (`_FAQ_ZERO_SD` in `pyibs/ibs.py`), which the FAQ's
-  answer on a zero SD must carry (`docsrc/source/faq.md`, written in Phase
-  4 of the plan). An installed release keeps its link, so the label does
-  not change once a release has shipped it.
+- **The FAQ.** `docsrc/source/faq.md` quotes settings and their defaults,
+  messages and warnings, the record of the validation, and PyBADS's and
+  PyVBMC's interfaces and messages, and nothing runs its snippets or checks
+  them against the code: a change to one of those is made in the FAQ by
+  hand. Its table of contents is written out by hand, each question carries
+  a label `(faq-<slug>)=`, the slug the question's text lowercased with its
+  punctuation dropped and its spaces as hyphens, `skills/pyibs/SKILL.md`
+  names its sections and questions by their titles, and other files link
+  its labels, so a question added or renamed, or a label changed, is
+  updated there as well:
+  - `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`:
+    the warning that a call issues on a variance estimate of 0
+    (`_FAQ_ZERO_SD` in `pyibs/ibs.py`), `README.md`, `index.rst` and
+    Example 2;
+  - `faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference`:
+    `README.md` and `index.rst`;
+  - `faq-how-do-i-make-a-run-reproducible`: `README.md` and
+    `quickstart.rst`;
+  - `faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists`:
+    `installation.rst`.
+
+  The published FAQ is built from `main`, and an installed release keeps
+  the warning's link, so its label does not change once a release has
+  shipped it.
+- **When IBS fits.** What PyIBS is for, and when amortized
+  simulation-based inference or a closed-form likelihood serves better, is
+  stated, with its citations, in the README's "When should I use PyIBS?",
+  its copy in `index.rst`, the FAQ's "General" section and the skill's
+  "When PyIBS fits", so a change to it is made in all four.
 - **The shared IBS reduction.** `repeat_estimates` in
   `pyibs/_estimates.py` turns matching counts into per-repeat values,
   variance estimates and per-trial sums, for the sampler and for the exact

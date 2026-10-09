@@ -675,7 +675,7 @@ the other two.
    `../pybads/dev/plans/version-check.md` is the design; its old-release
    reminder and `RELEASE_DATE` are not carried over. Its changelog entry
    comes with it.
-2. [~] `examples/`: notebooks 1, basic use and calibration, after
+2. [x] `examples/`: notebooks 1, basic use and calibration, after
    `../ibs/ibs_example.m`; 2, maximum-likelihood estimation with PyBADS;
    3, posterior and evidence with PyVBMC; and
    `examples/scripts/Makefile` after PyBADS's. Rerun the notebooks with
@@ -700,7 +700,7 @@ the other two.
    `api/` (`IBS`, `EstimateResult`, `IBSSamplingError`, `ibs_basic`,
    `check_for_updates`), `examples.rst`, `faq.md`, `development.rst`,
    `about_us.rst`, `_static/` and `css/`.
-5. [~] `docsrc/source/faq.md`: port the FAQ of `../ibs.wiki` (the commit of
+5. [x] `docsrc/source/faq.md`: port the FAQ of `../ibs.wiki` (the commit of
    Phase 0), translated to PyIBS's names, with its section on `ibslike.m`
    rewritten for `IBS`. Add answers on: when to use IBS rather than
    amortized simulation-based inference, per the Positioning above; the
@@ -711,13 +711,13 @@ the other two.
    `random_seed`; and the differences from MATLAB, which link the
    catalogue. A label linked from elsewhere is listed in `AGENTS.md`, as
    PyBADS's are.
-6. [ ] `skills/pyibs/SKILL.md` after `../pybads/skills/pybads/SKILL.md`; what
+6. [x] `skills/pyibs/SKILL.md` after `../pybads/skills/pybads/SKILL.md`; what
    it tells an agent about when PyIBS fits a problem follows the
    Positioning above.
-7. [ ] Build the documentation:
+7. [x] Build the documentation:
    `PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github`
    (`.venv/bin` elsewhere).
-8. [ ] `AGENTS.md`: the documentation build, the FAQ's linked labels, the
+8. [x] `AGENTS.md`: the documentation build, the FAQ's linked labels, the
    examples and their rerun, and the network rule of the update check, as
    in `../pybads/AGENTS.md`. Commit.
 
