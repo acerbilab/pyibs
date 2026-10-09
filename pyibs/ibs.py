@@ -230,11 +230,15 @@ class IBS:
         per simulator call, a number that grows from call to call
         (``acceleration``); False requests one sample of every trial that
         still needs one. None, the default, decides at the object's first
-        call with ``num_reps > 1``, by timing one simulation of all trials:
-        False if it takes ``vectorized_threshold`` seconds or more, True
-        otherwise. The decision is kept for the object's later calls and
-        read as the attribute ``vectorized``. A call with ``num_reps=1``
-        samples as with False, with a warning when True was given.
+        call with ``num_reps > 1``, by timing one simulation of all trials,
+        whose samples are that call's first round: False if it takes
+        ``vectorized_threshold`` seconds or more, True otherwise. The
+        decision is kept for the object's later calls and read as the
+        attribute ``vectorized``. The timing includes any warm-up of the
+        simulator at its first call, such as a just-in-time compilation,
+        which can make the decision False for good: give such a simulator
+        True, or call it once before. A call with ``num_reps=1`` samples as
+        with False, with a warning when True was given.
     acceleration : float, optional
         The factor, finite and >= 1, by which the samples requested per
         trial grow from one call to the next. Default 1.5.
@@ -588,10 +592,6 @@ numpy.random.Generator, optional
             start=t0,
             first=first,
         )
-        fun_count, samples = draw.calls, draw.samples
-        if first is not None and not draw.used_first:
-            fun_count += 1
-            samples += settings.n_trials
         if draw.timed_out:
             exit_flag = 2
             message = (
@@ -636,8 +636,8 @@ numpy.random.Generator, optional
             exit_flag=exit_flag,
             message=_EXIT_MESSAGES[exit_flag],
             elapsed_time=time.perf_counter() - t0,
-            num_samples_per_trial=samples / settings.n_trials,
-            fun_count=fun_count,
+            num_samples_per_trial=draw.samples / settings.n_trials,
+            fun_count=draw.calls,
             neg_logl_trials=neg_logl_trials,
             neg_logl_var_trials=neg_logl_var_trials,
         )

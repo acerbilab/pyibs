@@ -180,11 +180,17 @@ timing call, with the same rule, at the object's first call with
 `num_reps > 1`, and keeps the decision for its later calls, readable as
 `ibs.vectorized`; a call with `num_reps=1` takes the one-sample schedule
 whatever the setting (lines 177-178). As in `ibslike.m`, the timing call
-counts as a simulator call (line 189), and is the first round of the
-sampling when that round requests one sample of every trial (lines
-287-289, 433-434). The decision follows `ibslike.m`'s rule, and the
-object's later calls stay on one schedule however the timing of their
-simulations varies.
+counts as a simulator call (line 189). Its samples are always the first
+round of the sampling: the schedule's first round when that round requests
+one sample of every trial, as in `ibslike.m` (lines 287-289, 433-434), and
+otherwise an extra round before it, after which the samples per call do
+not grow, so that the rounds after it are those of `ibslike.m`'s schedule.
+`ibslike.m` discards them in that case (lines 287-289): whether it uses the
+samples then depends on how long the call took, which, for a simulator
+whose running time depends on what it simulates, depends on the samples
+themselves, and biases the estimate. The decision follows `ibslike.m`'s
+rule, and the object's later calls stay on one schedule however the timing
+of their simulations varies.
 - PyIBS: `IBS.__call__` (`pyibs/ibs.py`); `first_round`, `sample`
   (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:135`, `176-190`, `287-289`, `433-434`.
@@ -232,10 +238,14 @@ too raises after the simulator call that crosses the cap even if that call
 completes the sampling. The cap thus means what `MaxIter`'s description
 says, "per trial and estimate" (line 95), scaled by the repeats as the
 vectorized path scales it. The sample that the timing call of
-`vectorized=None` draws of each trial counts toward the cap when the
-sampling discards it (KD-8), where `ibslike.m`'s timing call is no round.
-The error names the trials over the cap by their 0-based indices and the
-samples each drew.
+`vectorized=None` draws of each trial counts toward the cap, as the first
+round it is (KD-8), where `ibslike.m`'s timing call is a round only when its
+first round requests one sample of every trial. The error names the trials
+over the cap by their 0-based indices and the samples each drew.
+`MaxIter = Inf` disables `ibslike.m`'s cap: its loops then run until the
+sampling ends (lines 260, 269, 427). `max_iter` is a finite integer, since
+a response that the simulator cannot produce would otherwise sample
+forever, with nothing that names the cause.
 - PyIBS: `sample`, `_cap_error`, `IBSSamplingError` (`pyibs/_sampler.py`).
 - MATLAB: `ibslike.m:95`, `180-189`, `260`, `269-276`, `390-393`, `410`,
   `427-430`, `477-480`.

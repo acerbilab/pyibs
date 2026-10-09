@@ -56,26 +56,26 @@ source or the argument otherwise.
 
 ## Ledger
 
-Proposed verdicts and outcomes; the PI rules on each.
+Proposed verdicts and outcomes, and the PI's rulings of 2026-10-09.
 
 | ID | Finding | Reported by | Proposed verdict | Proposed outcome | Ruling |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| F-1 | The first call with `vectorized=None` keeps the timing call's samples only when it decides False | B | Defect | Fix: the timing call is always the first round; KD-8, KD-11, D19 | Pending |
-| F-2 | `ibs_basic` loops forever on responses of a kind that never matches | A, B | Defect | Fix: the kind check of `IBS`; KD-16, KD-18; changelog | Pending |
-| F-3 | With one trial, `ibslike.m`'s per-trial arrays have one entry per repeat | A | Deliberate difference, catalogue entry missing | KD-3; a test of the shapes | Pending |
-| F-4 | `MaxIter = Inf` disables `ibslike.m`'s cap; PyIBS refuses `max_iter=np.inf` | A | Deliberate difference, catalogue entry missing | KD-6, KD-11 | Pending |
-| F-5 | A finite `max_time` biases the calls that complete in time too | B | Documentation error | Docstrings, KD-14; KD-9 and D4 on the cap | Pending |
-| F-6 | `ibslike.m`'s vectorized path returns NaN when the time limit passed before its first round | A | Documentation error | KD-14, parity table, D3 | Pending |
-| F-7 | KD-6: a per-trial `Nreps` vector runs on the vectorized path in some cases | A | Documentation error | KD-6 | Pending |
-| F-8 | D23: `ibslike.m`'s examples call their simulator, not `ibslike`, with a NaN design | A | Documentation error | D23 | Pending |
-| F-9 | Zero-weight trials are sampled; the chance-level threshold is written unweighted | B | Documentation error | Docstrings of `IBS` | Pending |
-| F-10 | A simulator that is slow only at its first call fixes `vectorized=None` at False | B | No issue in the code (D19) | A sentence in the `vectorized` docstring | Pending |
-| F-11 | KD-19 does not state the settings of the ported self-tests | A | Deliberate difference, catalogue entry incomplete | KD-19 | Pending |
-| F-12 | Responses mixing numbers and text become text in a NumPy array | B | Documentation gap | `response_matrix` docstring | Pending |
-| N-1 | `IBS` checks settings before `_Settings` checks them again | A | No issue | None | Pending |
-| N-2 | `max_samples` (per trial and call) beside `max_samples_per_trial` | A | No issue | None | Pending |
-| N-3 | `ibs_basic` compares a scalar output with every column of a response | A, B | No issue | None | Pending |
-| N-4 | Smaller points: the plan's "for a positive level"; a NaN stimulus in `psycho_model` | A | No issue | None | Pending |
+| F-1 | The first call with `vectorized=None` keeps the timing call's samples only when it decides False | B | Defect | Fix: the timing call is always the first round; KD-8, KD-11, D19 | Accepted, outcome 1 |
+| F-2 | `ibs_basic` loops forever on responses of a kind that never matches | A, B | Defect | Fix: the kind check of `IBS`; KD-16, KD-18; changelog | Accepted, the fix |
+| F-3 | With one trial, `ibslike.m`'s per-trial arrays have one entry per repeat | A | Deliberate difference, catalogue entry missing | KD-3; a test of the shapes | Accepted |
+| F-4 | `MaxIter = Inf` disables `ibslike.m`'s cap; PyIBS refuses `max_iter=np.inf` | A | Deliberate difference, catalogue entry missing | KD-6, KD-11 | Accepted, the refusal kept |
+| F-5 | A finite `max_time` biases the calls that complete in time too | B | Documentation error | Docstrings, KD-14; KD-9 and D4 on the cap | Accepted |
+| F-6 | `ibslike.m`'s vectorized path returns NaN when the time limit passed before its first round | A | Documentation error | KD-14, parity table, D3 | Accepted |
+| F-7 | KD-6: a per-trial `Nreps` vector runs on the vectorized path in some cases | A | Documentation error | KD-6 | Accepted |
+| F-8 | D23: `ibslike.m`'s examples call their simulator, not `ibslike`, with a NaN design | A | Documentation error | D23 | Accepted |
+| F-9 | Zero-weight trials are sampled; the chance-level threshold is written unweighted | B | Documentation error | Docstrings of `IBS` | Accepted |
+| F-10 | A simulator that is slow only at its first call fixes `vectorized=None` at False | B | No issue in the code (D19) | A sentence in the `vectorized` docstring | Accepted |
+| F-11 | KD-19 does not state the settings of the ported self-tests | A | Deliberate difference, catalogue entry incomplete | KD-19 | Accepted |
+| F-12 | Responses mixing numbers and text become text in a NumPy array | B | Documentation gap | `response_matrix` docstring | Accepted |
+| N-1 | `IBS` checks settings before `_Settings` checks them again | A | No issue | None | Accepted |
+| N-2 | `max_samples` (per trial and call) beside `max_samples_per_trial` | A | No issue | None | Accepted |
+| N-3 | `ibs_basic` compares a scalar output with every column of a response | A, B | No issue | None | Accepted |
+| N-4 | Smaller points: the plan's "for a positive level"; a NaN stimulus in `psycho_model` | A | No issue | None | Accepted |
 
 ## Findings
 

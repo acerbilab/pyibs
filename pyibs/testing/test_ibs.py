@@ -1280,10 +1280,10 @@ def test_one_repeat_after_a_decision_of_true_does_not_warn(clock):
 
 def test_max_time_counts_the_timing_call(clock):
     # The timing call (0.04 s, fast: True) counts toward max_time = 0.07 s,
-    # from the start of the call: after the first round of the draw, 0.08 s
-    # have passed, and the sampling stops. The timing call's sample is
-    # discarded, as the first round requests two samples; the round
-    # completes a count of 2 and leaves the second repeat open.
+    # from the start of the call: after the next round, 0.08 s have passed,
+    # and the sampling stops. The timing call's sample, a miss, is the first
+    # round; the next round, of two samples, completes a count of 3 and
+    # leaves the second repeat open.
     sim = Timed(ScriptedSimulator([[0, 0, 1] + [0] * 50]), clock, 0.04)
     ibs = IBS(sim, np.ones(1), max_time=0.07)
     with pytest.warns(UserWarning, match="max_time = 0.07 s"):
@@ -1291,7 +1291,7 @@ def test_max_time_counts_the_timing_call(clock):
     assert ibs.vectorized is True
     assert sim.calls == res.fun_count == 2
     assert res.exit_flag == 2
-    assert_allclose([res.neg_logl, res.neg_logl_var], [1.0, 1.0], **EXACT)
+    assert_allclose([res.neg_logl, res.neg_logl_var], [1.5, 1.25], **EXACT)
 
 
 def test_vectorized_true_with_one_repeat_warns_and_samples_one_at_a_time():
@@ -1313,21 +1313,21 @@ def test_vectorized_true_with_one_repeat_warns_and_samples_one_at_a_time():
 
 
 @pytest.mark.parametrize(
-    "seconds, num_samples_per_call, taken",
+    "seconds, num_samples_per_call, extra",
     [
         # Slow: False, whose first round, one sample of every trial, is the
         # timing call.
-        (1.0, 0, True),
+        (1.0, 0, False),
         # Fast: True, whose first round requests num_samples_per_call = 1
         # sample of every trial: the timing call again.
-        (0.0, 1, True),
+        (0.0, 1, False),
         # Fast: True, whose first round requests num_reps = 4 samples of
-        # every trial: the timing call comes on top.
-        (0.0, 0, False),
+        # every trial: the timing call is an extra round before it.
+        (0.0, 0, True),
     ],
 )
 def test_vectorized_none_counts_the_timing_call(
-    clock, seconds, num_samples_per_call, taken
+    clock, seconds, num_samples_per_call, extra
 ):
     sim = Timed(bernoulli, clock, seconds)
     ibs = IBS(
@@ -1341,7 +1341,7 @@ def test_vectorized_none_counts_the_timing_call(
     # once.
     assert res.fun_count == sim.calls
     assert res.num_samples_per_trial == sim.rows / P.size
-    if taken:
+    if not extra:
         # The draw is that of the decided setting given explicitly.
         explicit = bernoulli_ibs(
             vectorized=ibs.vectorized,
@@ -1351,14 +1351,16 @@ def test_vectorized_none_counts_the_timing_call(
             if name != "elapsed_time":
                 assert np.array_equal(res[name], explicit[name])
     else:
+        # The level does not grow after the extra round: the next round
+        # requests num_reps = 4 samples of every trial, all still open.
         assert np.array_equal(sim.requests[1], np.repeat(np.arange(P.size), 4))
 
 
-def test_cap_counts_a_discarded_timing_call(clock):
+def test_cap_counts_the_timing_call(clock):
     # vectorized=None decides True, and the rounds request two samples of
-    # the trial, so the draw discards the timing call's sample. Its 20
-    # samples complete both repeats, but with the timing call's the trial
-    # drew 21, more than max_iter * num_reps = 20.
+    # the trial, so the timing call is an extra first round. With its
+    # sample, the trial drew 21 samples, more than max_iter * num_reps =
+    # 20, although the last call completed both repeats.
     sim = Timed(ScriptedSimulator([[0] * 19 + [1] * 100]), clock, 0.0)
     ibs = IBS(sim, np.ones(1), acceleration=1, max_iter=10)
     with pytest.raises(IBSSamplingError, match="trial 0 drew 21 samples"):
@@ -1382,8 +1384,8 @@ def test_vectorized_settings_agree_in_distribution(
     clock, vectorized, seconds, seed
 ):
     # Each estimate comes from a new object, so that vectorized=None times
-    # every estimate's first call: decided True, the timing call's samples
-    # are discarded; decided False, they are its first round.
+    # every estimate's first call, whose first round is the timing call
+    # whatever the decision.
     def simulator(params, design_rows, rng):
         clock.now += seconds
         return rng.random(len(design_rows)) < P_DIST[design_rows]
@@ -1413,3 +1415,31 @@ def test_vectorized_settings_agree_in_distribution(
     # The variance estimates are calibrated on average.
     se_v_hat = var_estimates.std(ddof=1) / math.sqrt(N_ESTIMATES)
     assert abs(var_estimates.mean() - target_var) < 4.5 * se_v_hat
+
+
+def test_first_call_is_unbiased_when_the_timing_tracks_the_outcomes(clock):
+    # One trial, matched with probability 0.5, whose simulation of one row,
+    # the timing call of vectorized=None, lasts 0.2 s when it matches and
+    # 0 s when it misses: the decision is False exactly when the timing call
+    # matched. Each estimate is the first call of a new object. A sampler
+    # that used the timing call's sample only when it decides False would
+    # give 0.75 log 2 on average, about 14 standard errors from log 2.
+    def simulator(params, design_rows, rng):
+        out = rng.random(len(design_rows)) < 0.5
+        if len(design_rows) == 1:
+            clock.now += 0.2 * np.count_nonzero(out)
+        return out
+
+    p = np.array([0.5])
+    n_estimates, n_reps = 2000, 2
+    rng = np.random.default_rng([SEED, 5])
+    estimates = np.array(
+        [
+            IBS(simulator, np.ones(1, bool), random_seed=rng)(
+                THETA, num_reps=n_reps
+            )
+            for _ in range(n_estimates)
+        ]
+    )
+    se = math.sqrt(exact_var(p) / n_reps / n_estimates)
+    assert abs(estimates.mean() + exact_loglik(p)) < 4.5 * se

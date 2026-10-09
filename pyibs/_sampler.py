@@ -255,10 +255,9 @@ class _Settings:
         counterpart of ``ibslike.m``'s ``MaxIter`` (10**5 per trial and
         estimate, also the default here). A draw of n repeats raises
         :class:`IBSSamplingError` once a trial has drawn more than
-        ``max_samples_per_trial * n`` samples in it, surplus included, and
-        so is the sample of a ``first`` round (:func:`sample`) that it
-        discards. The check follows every simulator call, whether or not
-        that call completed the draw. None disables the cap: an observed
+        ``max_samples_per_trial * n`` samples in it, surplus included. The
+        check follows every simulator call, whether or not that call
+        completed the draw. None disables the cap: an observed
         response that the simulator cannot produce then makes a draw run
         forever.
     max_time : float, optional
@@ -442,16 +441,13 @@ class _Draw:
     timed_out : bool
         Whether the time limit stopped the draw.
     calls : int
-        Calls of the simulator whose output the draw took, the call given
-        as ``first`` included when the draw took it.
+        Calls of the simulator in the draw, the call given as ``first``
+        included.
     samples : int
         Simulated response rows of those calls, surplus included.
     seconds : float
         Wall time spent inside the simulator in those calls. It is not
         reproducible from a seed.
-    used_first : bool
-        Whether the draw took the call given as ``first`` as its first
-        round.
     """
 
     K: np.ndarray
@@ -468,7 +464,6 @@ class _Draw:
     calls: int
     samples: int
     seconds: float
-    used_first: bool
 
     @property
     def n(self):
@@ -496,8 +491,7 @@ def first_round(settings, theta, rng):
     """Simulate one sample of every trial, in trial order, and time it.
 
     This is the call that ``ibslike.m`` times to choose its sampling path.
-    :func:`sample` takes it as its first round when that round requests
-    one sample of every trial.
+    :func:`sample` takes it as its first round, whatever its outcomes.
 
     Parameters
     ----------
@@ -882,9 +876,13 @@ def sample(
         counts; None, the default, counts it from the start of the draw.
     first : _FirstRound or None, optional
         A simulator call already made for one sample of every trial, from
-        :func:`first_round`. The draw takes it as its first round when that
-        round requests one sample of every trial, and otherwise discards its
-        outcomes; its sample of each trial counts toward the cap either way.
+        :func:`first_round`, which the draw takes as its first round. When
+        the schedule's first round requests one sample of every trial, it
+        is that round; otherwise it is an extra round before it, after
+        which the level does not grow. Whether the draw uses its samples
+        thus never depends on their outcomes, which keeps the repeats
+        independent even when the call's duration, which can decide
+        ``vectorized``, depends on them.
 
     Returns
     -------
@@ -923,8 +921,9 @@ def sample(
     n_open)``, as ``ibslike.m`` does, with MATLAB's ``round``, which
     rounds halves away from zero. The level starts at ``initial_samples``
     (n by default) and is multiplied by ``acceleration`` after every round
-    (or, with ``acceleration_threshold``, after every fast round), and
-    bounded by ``max_samples``, which changes no m. This default schedule
+    (or, with ``acceleration_threshold``, after every fast round) but an
+    extra first round given as ``first``, and bounded by ``max_samples``,
+    which changes no m. This default schedule
     depends only on the outcomes, so a seed reproduces a run. With
     ``vectorized=False``, every round requests one sample of each open
     trial, as ``ibslike.m``'s loop path does for one repeat at a time:
@@ -942,9 +941,9 @@ def sample(
 
     **Cost.** The draw's ``calls`` counts the simulator calls, its
     ``samples`` the simulated rows, surplus included, and its ``seconds``
-    the time spent inside the simulator; ``first``, when the draw takes
-    it, counts as one of its calls. The samples drawn for the repeats that
-    the likelihood threshold ended count in ``samples``.
+    the time spent inside the simulator; ``first`` counts as one of its
+    calls. The samples drawn for the repeats that the likelihood threshold
+    ended count in ``samples``.
 
     **Checks.** After every simulator call, a draw raises ``ValueError``
     if the simulator returned an array of a shape that the responses do
@@ -1040,7 +1039,7 @@ def sample(
     )
     level = float(min(initial, settings.max_samples))
     calls, samples, seconds = 0, 0, 0.0
-    used_first = timed_out = False
+    timed_out = False
     while True:
         trials = counts.open_trials()
         if trials.size == 0:
@@ -1053,13 +1052,16 @@ def sample(
             if vectorized
             else 1
         )
-        if calls == 0 and first is not None and m == 1:
+        # The call given as first is the first round, whatever its outcomes,
+        # so that using its samples never depends on them. When the
+        # schedule's first round requests more than one sample per trial,
+        # it is an extra round, after which the level does not grow.
+        grow = True
+        if calls == 0 and first is not None:
+            grow = m == 1
+            m = 1
             hits, elapsed = first.hits, first.elapsed
-            used_first = True
         else:
-            if calls == 0 and first is not None:
-                # The discarded first round's samples count toward the cap.
-                trial_samples += 1
             hits, elapsed = _simulate(settings, theta, rng, trials, m)
         counts.absorb(trials, hits)
         if threshold is not None:
@@ -1074,7 +1076,7 @@ def sample(
                 raise _cap_error(
                     settings, n, limit, over, trial_samples[over], counts
                 )
-        if (
+        if grow and (
             settings.acceleration_threshold is None
             or elapsed < settings.acceleration_threshold
         ):
@@ -1130,7 +1132,6 @@ def sample(
         calls=calls,
         samples=samples,
         seconds=seconds,
-        used_first=used_first,
     )
 
 

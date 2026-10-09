@@ -519,11 +519,11 @@ listed in the catalogue with its reason or fixed.
    threshold of Appendix C.1, the cost counts, and edge cases (one trial,
    `num_reps=1`, trials that always match, a zero variance, text, bytes
    and object responses, a design of None).
-3. [~] Consolidate both reports into the ledger
+3. [x] Consolidate both reports into the ledger
    `dev/results/<YYYY-MM-DD>-port-review.md`: each finding with its
    verdict (deliberate difference, defect, or no issue) and its fix,
    catalogue entry or `dev/TODO.md` item. The PI rules on the verdicts.
-4. [ ] Fix the defects, each with a test that fails before the fix, and
+4. [~] Fix the defects, each with a test that fails before the fix, and
    update the catalogue and the changelog. Index the ledger in
    `dev/README.md`. Commit.
 
@@ -964,7 +964,13 @@ from the README, the documentation and the model-fitting page.
   call with `num_reps > 1`, and kept** (PI, 2026-10-09) — by timing one
   simulation of all trials, as `ibslike.m` does, so the decision follows
   MATLAB's rule while later calls stay on one schedule; `True` or `False`
-  given explicitly makes a run fully reproducible. A call with
+  given explicitly makes a run fully reproducible. The timing call's
+  samples are always the call's first round, an extra one when the
+  schedule's first round requests more than one sample per trial (PI,
+  2026-10-09, after the port review's F-1): `ibslike.m` uses them only when
+  its first round requests one sample per trial, which depends on how long
+  the call took, and so biases the call when the simulator's running time
+  depends on its outcomes. A call with
   `num_reps = 1` samples one sample per trial and call whatever the
   setting, as in `ibslike.m`, and so decides nothing. Rejected:
   `ibslike.m`'s decision at every call (results depend on the timing

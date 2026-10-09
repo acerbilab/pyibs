@@ -535,28 +535,33 @@ def test_first_round_is_taken_on_one_sample_per_trial(captured_counts):
     )
     (K,) = captured_counts
     assert np.array_equal(K, STREAM_K)
-    assert b.used_first
     assert [r.size for r in sim.requests] == [3, 3, 2, 2, 2, 2, 2, 1]
     assert b.calls == 8
     assert b.samples == K.sum()
 
 
-def test_first_round_is_ignored_on_more_samples_per_trial():
+def test_first_round_precedes_more_samples_per_trial(captured_counts):
+    # The schedule's first round requests n = 2 samples of each trial, so
+    # the call of first_round is an extra round before it, after which the
+    # level does not grow: the next round requests 2 samples of each trial,
+    # not round(2 * 1.5) = 3. Every sample matches.
     sim = ScriptedSimulator([[1] * 20] * 3)
     settings = _Settings(sim, np.ones(3))
     rng = np.random.default_rng(SEED)
     first = _sampler.first_round(settings, np.zeros(1), rng)
     b = _sampler.sample(settings, np.zeros(1), 2, rng, first=first)
-    assert not b.used_first
+    (K,) = captured_counts
+    assert np.array_equal(K, np.ones((2, 3)))
     assert [r.size for r in sim.requests] == [3, 6]
-    assert b.calls == 1
-    assert b.samples == 6
+    assert b.calls == 2
+    assert b.samples == 9
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
 def test_first_round_reproduces_the_draw_without_it(vectorized):
     # A first round drawn from the draw's generator gives the draw that the
-    # same generator gives without it, whenever the draw takes it.
+    # same generator gives without it, when the schedule's first round
+    # requests one sample of every trial (initial_samples=1).
     settings = _Settings(
         bernoulli, np.ones(P.size), trial_weights=W, initial_samples=1
     )
@@ -572,7 +577,6 @@ def test_first_round_reproduces_the_draw_without_it(vectorized):
     taken = _sampler.sample(
         settings, np.zeros(1), 5, rng, vectorized=vectorized, first=first
     )
-    assert taken.used_first
     assert np.array_equal(taken.K, plain.K)
     assert np.array_equal(taken.values, plain.values)
     assert cost(taken) == cost(plain)
