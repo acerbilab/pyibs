@@ -358,7 +358,7 @@ examples/
      calls, samples per call) are updated, and the Worklog lists each;
      the statistical tests stay as they are.
 3. `pyibs/ibs.py` replaces 0.1.0's, with the class `IBS` (D2, D3, D8, D10,
-   D16, D21):
+   D16, D21, D22, D23):
    - `IBS(sample_from_model, response_matrix, design_matrix=None,
      vectorized=None, acceleration=1.5, num_samples_per_call=0,
      max_iter=10**5, max_time=np.inf, max_samples=10**4,
@@ -369,8 +369,10 @@ examples/
      of repeats; `max_iter` is the engine's `max_samples_per_trial` (D6);
      `max_mem=None` is `ibslike.m`'s formula. The count settings take
      integers and whole-number floats (D16). The constructor validates
-     every setting, raising `ValueError` or `TypeError` with a message
-     that names the setting and what it takes.
+     every setting, raising `ValueError` or `TypeError` with a message that
+     names the setting and what it takes; responses holding a NaN raise
+     `ValueError` (D23). When the responses have one column, shape (N,) or
+     (N, 1), the simulator may return shape (n,) or (n, 1) (D22).
    - `random_seed` takes what `options['random_seed']` takes in PyBADS
      (the `rng` attribute in `../pybads/pybads/bads/bads.py`): None
      derives the generator from NumPy's global state, an integer or a
@@ -415,10 +417,11 @@ examples/
    - `test_ibs.py`: each output form and its types (`type(res) is tuple`,
      Python floats); `return_positive`; scalar and per-trial weights;
      responses with several columns, text responses and a design of None;
-     the exit flags; the cap's error; the per-trial arrays, which are NaN
-     when the threshold ended a repeat and otherwise add up, weighted, to
-     the negative log-likelihood; the warning on a zero variance
-     (trials that always match); `max_time` with a simulator that
+     one-column responses with simulator outputs of shape (n,) and (n, 1);
+     a NaN response; the exit flags; the cap's error; the per-trial arrays,
+     which are NaN when the threshold ended a repeat and otherwise add up,
+     weighted, to the negative log-likelihood; the warning on a zero
+     variance (trials that always match); `max_time` with a simulator that
      sleeps, with margins wide enough for slow CI runners; validation
      errors, and whole-number floats accepted for the counts;
      reproducibility (two objects with one seed and a simulator that takes
@@ -945,6 +948,18 @@ from the README, the documentation and the model-fitting page.
   threshold. Rejected: the average over the repeats not ended (biased, and
   not adding up to the negative log-likelihood); `ibslike.m`'s partial
   counts of the ended repeats (at odds with D5).
+- **D22. Responses of one column, of shape (N,) or (N, 1), accept a
+  simulator output of shape (n,) or (n, 1)** (PI, 2026-10-09) — as in
+  `ibslike.m`, which compares row by row, so that a model ported from
+  MATLAB, where both are column vectors, runs unchanged; responses of C > 1
+  columns take outputs of shape (n, C) only. Rejected: the engine's exact
+  match of shapes (a `ValueError` for such a port); 0.1.0's comparison (an (N, 1) response against an (n,) output broadcasts to an
+  (n, n) array).
+- **D23. A NaN response raises `ValueError` when `IBS` is created**
+  (PI, 2026-10-09) — a NaN never matches, so its trial would sample until
+  the cap and fail there after `max_iter * num_reps` samples. Rejected:
+  leaving it to the cap (the cost of the whole cap, and an error that
+  does not name the cause).
 
 ## Open Questions
 
@@ -1017,7 +1032,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   a NaN response never matches and samples until the cap; the `runtest2`
   port checks `ibslike.m`'s fixed tolerances at one seed, so a schedule
   that consumes the generator differently (D6) can fail it by chance.
-  The PI's rule for the per-trial arrays is D21.
+  The PI's rules: D21 for the per-trial arrays, D22 for responses of one
+  column, D23 for a NaN response.
 - After the phase: the job at the minimum versions (D20); the release no
   longer waits on "Release access", which the lab holds;
   `.git-blame-ignore-revs` removed, since `e8b99d3` only deletes lines
