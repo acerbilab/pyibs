@@ -1169,6 +1169,13 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   pre-commit hooks pass; the review below found every row of the parity
   table implemented as its last column says, and every deliberate
   difference in the catalogue (KD-1 to KD-19).
+  After the push, with `ac577c4` at the head of `dev-next`, the smoke run
+  of `tests.yml` passed
+  ([run 37927106106](https://github.com/acerbilab/pyibs/actions/runs/37927106106)),
+  and so did the full matrix, dispatched, in all 16 jobs, Ubuntu, Windows
+  and macOS × Python 3.10 to 3.14 and the minimum versions, where 453
+  tests passed in 4.9 s
+  ([run 37927122127](https://github.com/acerbilab/pyibs/actions/runs/37927122127)).
 - Deviations: `vectorized=None` is decided at the object's first call with
   `num_reps > 1`, where step 2 and D19 say "at its first call": a call with
   `num_reps=1` samples one sample per trial and call whatever the setting,
