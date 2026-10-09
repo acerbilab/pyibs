@@ -27,6 +27,7 @@ include-package-data = true
 packages = [
     "pyibs",
     "pyibs.examples",
+    "pyibs.examples.scripts",
     "pyibs.testing",
     "pyibs.testing.integration",
 ]
