@@ -1,7 +1,8 @@
 # Plan: PyIBS 1.5
 
 Created: 2026-10-09
-Status: APPROVED (2026-10-09); the open questions are settled as D17 to D19
+Status: APPROVED (2026-10-09); its first open questions are settled as D17
+to D19, and step 2 of Phase 5 raised new ones (Open Questions)
 
 ## Summary
 
@@ -734,10 +735,10 @@ the other two.
 
 ### Phase 5: release
 
-**Status**: in progress: step 1 done (`d8b3363`). Next, from a fresh
-session, step 2 as written, its review on the whole of `dev-next` against
-`main`; then step 3, with the expected release date, which the PI gives
-(PI, 2026-10-10)
+**Status**: in progress: steps 1 and 2 done (Worklog). Next, step 3, with
+the expected release date, which the PI gives, and the PI's answers to the
+questions that step 2 raised (Open Questions); the gate runs again on the
+pull request's head, with PyVBMC 1.5.0 from PyPI (Timing)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -1110,9 +1111,30 @@ from the README, the documentation and the model-fitting page.
 
 ## Open Questions
 
-None. The PI settled the plan's questions on 2026-10-09: D17 to D19, D24,
+The PI settled the plan's first questions on 2026-10-09: D17 to D19, D24,
 and timings against 0.1.0 only, with no MATLAB installation in the
-comparison (Phase 3, step 3).
+comparison (Phase 3, step 3). Phase 5's step 2 leaves these for the PI:
+
+1. The expected release date, which step 3 takes.
+2. The Python of the conda-forge package. Its recipe takes conda-forge's
+   `python_min`, 3.11 in October 2026, as PyBADS's does, while pip serves
+   Python 3.10; the FAQ, the README and the installation page say so, and
+   step 7 lists the recipe's lines. The alternative is a recipe that sets
+   `python_min` to 3.10, against conda-forge's guidance for noarch recipes.
+3. `tests.yml`'s full run on `main` on the 13th and 28th of each month, as
+   in PyBADS, which also gives the README's `tests` badge its status.
+4. The Binder and Colab buttons, removed from the notebook pages: there the
+   notebooks failed at their first import. The alternative is a Binder
+   environment that installs PyIBS, PyBADS 1.5.1, PyVBMC 1.5 and
+   matplotlib, possible once PyVBMC 1.5.0 is on PyPI.
+5. The review's optional findings, not taken: an integration test of
+   PyVBMC that compares the ELBO with the exact log evidence, as Example 3
+   does; tests of a zero returned as 0.0 rather than -0.0, of the warnings'
+   `stacklevel`, and of a zero-weight trial under the time limit; KD-6
+   citing line 287 of `ibslike.m` beside 284 for a row vector `Nreps`,
+   reasoned from the code and not run; the validation record stating the
+   SDs (1.1, 1.2, 1.4) and the differences (49, 55) that the FAQ cites from
+   it; one copy of the test helpers that several test modules repeat.
 
 ## Worklog
 
@@ -1672,3 +1694,59 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   notebooks are rerun before the release. For Phase 6: the labels of
   PyBADS's and PyVBMC's FAQs that PyIBS links join those repositories'
   lists of linked labels.
+
+### Phase 5 — 2026-10-10
+
+- References: `../pybads` at `b64b4230`, `../ibs` at `2229c00`,
+  `../ibs.wiki` at `15d62f2`, `../pubs-llms` at `a25f58b`, `../pyvbmc` at
+  `89007a4` (`feat-release-1.5-preparation`); PyBADS 1.5.1 from PyPI with
+  gpyreg 1.4.0, and PyVBMC from `89007a4`, its 1.5.0 not yet on PyPI;
+  Python 3.12.3, NumPy 2.5.3 and SciPy 1.18.1, on Linux. The pinning of
+  conda-forge and the recipes of `conda-forge/pyibs-feedstock` and
+  `conda-forge/pybads-feedstock` were read at their `main` on 2026-10-10.
+- Commits: `d8b3363` (step 1); after step 2's review, `1c8a95f` (CI),
+  `aef3b33`, `a076a0f` (the changelog, the FAQ and the pages), `f9f892d`
+  (tests), `376cce6` (Example 3) and `1f7e8dd` (`AGENTS.md` and this
+  plan); this entry.
+- Verification: the gate at `5979f05`: `$PY -m pytest -x -vv`, 562 passed
+  and 2 deselected; the pre-commit hooks on the whole tree; both
+  integration tests (PyBADS in 72 s, 392 evaluations; PyVBMC in 205 s, 115
+  evaluations); the documentation from clean, with no warning;
+  `make -C examples/scripts run` in 198 s without error, reproducing the
+  outputs but for an elapsed time and PyBADS's random tip, Example 3
+  identically, and the scripts regenerating identically; the sdist and the
+  wheel. The reviewers ran the suite from the wheel, outside the checkout,
+  at the minimum versions (Python 3.10, NumPy 2.0.0, SciPy 1.13.0, pytest
+  6.2.5) and at the newest (Python 3.14, NumPy 2.5.3, SciPy 1.18.1). After
+  the fixes, 567 passed, the hooks and actionlint pass, the documentation
+  builds with no warning, and Example 3 reruns without error.
+- Review (`/doublecheck`, eight read-only Opus reviewers: the code and the
+  catalogue; the tests; packaging, CI and the release; the FAQ; the README,
+  the pages and the skill; the changelog and the upgrade from 0.1.0; the
+  notebooks; `AGENTS.md` and the records; then two on the fixes). It found
+  no defect in the sampler, the interface or the catalogue. Fixed:
+  conda-forge builds noarch recipes for Python 3.11 or newer, which step
+  7's "Python 3.10 or newer" and Phase 4's note on the README's promise
+  did not allow for, and the feedstock's source URL names
+  `PyIBS-{{ version }}.tar.gz` where 1.5.0's sdist is `pyibs-1.5.0.tar.gz`
+  (step 7, the FAQ, the README, the installation page); step 5's rule for
+  tags `v*`; `docs.yml`'s permission to push; `tests.yml`'s run on `main`
+  twice a month, which Phase 0 dropped with PyBADS's run against gpyreg's
+  `main`; the sentences of `AGENTS.md` that the release would make false,
+  and its rule for the changelog's renamed section; the Binder and Colab
+  buttons; in the changelog's "Upgrading from 0.1.0", the copies of the
+  data that `IBS` keeps, the example model's functions that the published
+  0.1.0 exported, and `IBS`'s checks of the simulator's output, with four
+  smaller corrections; two FAQ statements that overclaimed or promised
+  what their link lacked, and smaller FAQ points; Example 3's grid check,
+  which used 0.37% of its 0.5% tolerance, and its references; five tests
+  of behaviours that a mutated implementation passed, and the example
+  model's test, whose 10 repeats allowed an error of 15 to 20 nats;
+  `pyibs.version`. Not taken: Open Questions, item 5.
+- Decided at the review with the PI's leave to use judgment, and open to
+  the PI's confirmation (Open Questions): the conda-forge package's Python,
+  the run of the tests twice a month, and the removal of the launch
+  buttons.
+- Deviations: Examples 1 and 2 keep their committed outputs; the rerun of
+  all three notebooks with PyVBMC 1.5.0 from PyPI comes on the pull
+  request's head (Timing).
