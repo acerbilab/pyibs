@@ -732,8 +732,10 @@ the other two.
 
 ### Phase 5: release
 
-**Status**: in progress: step 1 done; step 2 is next, from a fresh
-session (PI, 2026-10-10)
+**Status**: in progress: step 1 done (`d8b3363`). Next, from a fresh
+session, step 2 as written, its review on the whole of `dev-next` against
+`main`; then step 3, with the expected release date, which the PI gives
+(PI, 2026-10-10)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -1643,7 +1645,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   of `dev/TODO.md`; the notebooks' outputs are those of a rerun in the
   session's container, which reproduces those of `d7f6b72`, where the pull
   request's came from another machine, on which PyBADS and PyVBMC took
-  other paths from the same seeds, as `AGENTS.md` now says they can.
+  other paths from the same seeds, as `AGENTS.md` now says they can. The
+  pull request landed on `dev-next` by fast-forward to `54446ec`, which
+  keeps the commits that this entry names.
 - For Phase 5: the README, `installation.rst` and `development.rst` install
   `pyvbmc>=1.5`, and the links to PyVBMC's FAQ resolve, once PyVBMC 1.5.0 is
   on PyPI and its documentation published (2026-10-13); the README's badges
