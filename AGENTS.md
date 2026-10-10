@@ -192,9 +192,11 @@ it PyVBMC's; nbconvert called directly would save each flush of a cell's
 output as an output of its own, and the cells' execution times in their
 metadata. The target sets `PYBADS_NO_UPDATE_REMINDER` and
 `PYVBMC_NO_UPDATE_REMINDER`, so that the outputs show neither package's
-reminder of an old release. Their seeds fix their outputs but for the
-elapsed times, the tip that PyBADS draws at random, and PyVBMC's run on a
-machine whose cached performance calibration differs. The notebooks'
+reminder of an old release. On one machine, their seeds fix their
+outputs but for the elapsed times and the tip that PyBADS draws at random.
+On another platform, or with other numerical libraries, PyBADS's and
+PyVBMC's runs can take another path from the same seeds, and PyVBMC's also
+where its cached performance calibration differs. The notebooks'
 markdown describes their outputs, so a rerun whose outputs change is read
 against it. `examples/scripts/*.py` are generated from the notebooks by
 `make -B -C examples/scripts` (GNU Make, with nbconvert, IPython, and
@@ -260,28 +262,19 @@ gave.
   messages and warnings, the record of the validation, and PyBADS's and
   PyVBMC's interfaces and messages, and nothing runs its snippets or checks
   them against the code: a change to one of those is made in the FAQ by
-  hand. Its table of contents is written out by hand, each question carries
-  a label `(faq-<slug>)=`, the slug the question's text lowercased, its
-  punctuation dropped but for hyphens and underscores, and its spaces as
-  hyphens; `skills/pyibs/SKILL.md` names its sections and questions by
-  their titles, and other files link
-  its labels, so a question added or renamed, or a label changed, is
-  updated there as well:
-  - `faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it`:
-    the warning that a call issues on a variance estimate of 0
-    (`_FAQ_ZERO_SD` in `pyibs/ibs.py`), `README.md`, `index.rst` and
-    Example 2;
-  - `faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference`:
-    `README.md` and `index.rst`;
-  - `faq-how-do-i-make-a-run-reproducible`: `README.md` and
-    `quickstart.rst`;
-  - `faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists`:
-    `installation.rst`.
-
-  An installed release keeps the warning's link, and the README of each
-  release is its page on PyPI, so these labels do not change once a
-  release has shipped them. The FAQ and the notebooks also link labels of
-  the FAQs of PyBADS (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
+  hand. Its table of contents is written out by hand, and
+  `skills/pyibs/SKILL.md` names its sections and questions by their
+  titles, so a question added or renamed is updated in both. Each question
+  carries a label `(faq-<slug>)=`, made from the question's text when the
+  question is added: lowercased, its punctuation dropped but for hyphens,
+  and its spaces and underscores as hyphens, so that the label is also the
+  anchor that Sphinx writes. A label does not change once a release has
+  shipped it, even when its question is reworded: the warning on a
+  variance estimate of 0 (`_FAQ_ZERO_SD` in `pyibs/ibs.py`) links one from
+  every installed copy, the README of each release is its page on PyPI,
+  and the notebooks ship in the wheel. Before a question is moved or
+  removed, `git grep` for its label finds the files that link it. The FAQ
+  and the notebooks also link labels of the FAQs of PyBADS (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
   (`acerbilab.org/pyvbmc/faq.html#…`), which nothing here checks: grep for
   those addresses to check them against the two repositories' `faq.md`.
 - **When IBS fits.** What PyIBS is for, and when amortized

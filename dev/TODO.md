@@ -1,6 +1,6 @@
 # PyIBS: open work
 
-Updated 2026-10-09. Other records name the items by their titles, so a
+Updated 2026-10-10. Other records name the items by their titles, so a
 title stays as it is while its item is open.
 
 ## To investigate
@@ -41,3 +41,16 @@ title stays as it is while its item is open.
     precision-weighted final estimate rest on that one evaluation. The
     derivation has been checked numerically, but no fit has used the
     floor.
+- [ ] **Trial weights large enough to overflow the variance estimate.**
+  `trial_weights` takes any finite weight of at least 0, and the variance
+  estimate sums `var * w**2` over the trials (`repeat_estimates`,
+  `pyibs/_estimates.py`), which overflows once the weighted terms or their
+  sum exceed the largest float, about `1.8e308`. On 20 Bernoulli
+  trials with 10 repeats, `trial_weights=1e154` gives `neg_logl_var=inf`,
+  and `1e160` gives NaN, from `0 * inf` in a trial whose variance term is 0,
+  each with exit flag 0 and only NumPy's `RuntimeWarning`s; with
+  `neg_logl_threshold=10` and `1e308`, the call returns 10 with a variance
+  of NaN, an SD that PyBADS and PyVBMC refuse.
+  - Open: a bound on the weights in their check (`trial_weights`,
+    `pyibs/_estimates.py`), or a sentence in the docstring of
+    `IBS.__call__`; no weighting in practical use comes near such values.
