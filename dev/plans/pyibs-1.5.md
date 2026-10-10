@@ -822,7 +822,9 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 ### Phase 6: other repositories
 
-**Status**: pending
+**Status**: pending; step 2's Colab cell for PyVBMC's notebooks and the
+removal of its Binder button (D26) are under way in a session of
+PyVBMC's own (2026-10-10)
 **Executor**: Opus (orchestrator), in each repository under its own
 `AGENTS.md`, on the PI's instruction.
 **Needs**: `../model-fitting`, `../pybads`, `../pyvbmc`.
@@ -860,9 +862,11 @@ from the README, the documentation and the model-fitting page.
    Positioning, which they follow; the PI approves both before anything is
    recorded.
 3. Production never runs alongside a heavy process of another phase.
-   Once published, the film is linked from `README.md` ("What is it?" and
-   "How does it work?"), `docsrc/source/index.rst` and the model-fitting
-   page. Commit the links.
+   Once published, the film is presented as PyBADS's is since its pull
+   request #125: `README.md` and `docsrc/source/index.rst` open with a
+   line that invites the reader to watch it and the film's frame with a
+   play button, linked to the video, and "How does it work?" opens with
+   the same line; the model-fitting page links it too. Commit the links.
 
 **Verification**:
 - [ ] The PI approves the master, and the links resolve.
@@ -1768,6 +1772,10 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   states the bound on the variance in their place, and AGENTS.md's rule on
   links to the lab, read literally, had put one sentence in nearly every
   answer and in each notebook.
-- Deviations: Examples 1 and 2 keep their committed outputs; the rerun of
-  all three notebooks with PyVBMC 1.5.0 from PyPI comes on the pull
+- PyBADS's README links its FAQ from Documentation and from
+  Troubleshooting and contact since its pull request #126, and PyIBS's
+  does likewise (`f03554f`); PyBADS's other changes of the day were D26,
+  had been made here already, or wait for the film (Phase 7).
+- Deviations: the notebooks last ran with PyVBMC from its release branch
+  (`af6df49`); their rerun with PyVBMC 1.5.0 from PyPI comes on the pull
   request's head (Timing).
