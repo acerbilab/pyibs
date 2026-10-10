@@ -1,3 +1,9 @@
+import sys
+
+if "google.colab" in sys.modules:  # Colab lacks PyIBS and PyVBMC: install them
+    get_ipython().run_line_magic("pip", 'install "pyibs>=1.5" "pyvbmc>=1.5"')
+
+
 import math
 
 import numpy as np

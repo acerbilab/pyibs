@@ -6,7 +6,8 @@ These notebooks form a short tutorial: basic use and checks of the
 uncertainty estimates, maximum-likelihood fitting with PyBADS, and posterior
 and model-evidence estimation with PyVBMC.
 
-Read them with their saved outputs on the pages below, download the
+Read them with their saved outputs on the pages below, run them in Colab
+or Binder from the launch button at the top of each page, download the
 :mainbranch:`Jupyter notebooks <examples/>`, or use the
 :mainbranch:`Python scripts <examples/scripts>`. Both are installed with
 PyIBS, the scripts in the notebooks' folder under ``scripts``;

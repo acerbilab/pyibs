@@ -214,7 +214,13 @@ and `index.rst` show, is drawn by `dev/scripts/ibs_cost_variance.py`.
 
 The notebooks in `examples/` ship in the wheel as `pyibs.examples` and are
 rendered without execution by the documentation's build; no CI job runs
-them, so a change that breaks one goes unnoticed. `make -C
+them, so a change that breaks one goes unnoticed. The launch buttons of the
+rendered notebooks (`docsrc/source/conf.py`) need two things: each
+notebook opens with a cell that installs the packages it imports when it
+runs in Colab (`"google.colab" in sys.modules`), and Binder builds from
+`binder/requirements.txt`. A new notebook takes the same cell, and the
+versions that both name follow the README's install line for the
+notebooks. `make -C
 examples/scripts run`, with the venv's interpreter first on `PATH` (the
 target calls `python`) and nbconvert, ipykernel, matplotlib, PyBADS and
 PyVBMC installed, reruns them in place in about two minutes, nearly all of
@@ -420,6 +426,6 @@ gave.
   https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence.
   The lab's page of its tools, https://acerbilab.org/model-fitting/, is
   linked where a document introduces PyIBS among them (the README's opening
-  and closing, `index.rst`, the FAQ's introduction, the documentation's
-  footer), in words that vary; elsewhere PyBADS and PyVBMC are linked to
+  and closing, `index.rst`, the FAQ's introduction, the first notebook, the
+  documentation's footer), in words that vary; elsewhere PyBADS and PyVBMC are linked to
   their own documentation.

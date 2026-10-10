@@ -77,6 +77,11 @@ html_theme_options = {
     "repository_url": "https://github.com/acerbilab/pyibs",
     "repository_branch": "main",
     "path_to_docs": "docsrc/source",
+    "launch_buttons": {
+        "binderhub_url": "https://mybinder.org",
+        "notebook_interface": "jupyterlab",
+        "colab_url": "https://colab.research.google.com/",
+    },
     "use_edit_page_button": True,
     "use_issues_button": True,
     "use_repository_button": True,
@@ -113,7 +118,7 @@ suppress_warnings = [
 
 
 def notebook_source_links(app, pagename, templatename, context, doctree):
-    """Point the notebook pages' repository links to examples/."""
+    """Point notebook launch and edit buttons to their repository sources."""
     if not pagename.startswith("_examples/"):
         return
     source = pagename + context["page_source_suffix"]
