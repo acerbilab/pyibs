@@ -732,7 +732,8 @@ the other two.
 
 ### Phase 5: release
 
-**Status**: pending
+**Status**: in progress: step 1 done; step 2 is next, from a fresh
+session (PI, 2026-10-10)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that

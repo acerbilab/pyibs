@@ -166,6 +166,34 @@ Python 3.14, on each push to a `dev*` branch that touches `pyibs/`,
 `examples/`, `pyproject.toml`, `setup.py`, `tests.yml` or
 `test-matrix.yml`.
 
+`build.yml` builds the sdist and the wheel on every push to `main`, and for
+`release.yml`. `docs.yml` rebuilds the documentation on every push to
+`main` and commits it to the branch `gh-pages`, which GitHub Pages serves.
+`gh-pages` keeps its own empty `.nojekyll` at its root, which the workflow
+never copies (`docs/*` skips dotfiles), and without which GitHub Pages
+drops `_static/` and serves the site unstyled.
+
+A release is a tag `vX.Y.Z` on `main` and a GitHub release published from
+it. Before the pull request that carries it to `main`, the changelog's
+`Unreleased` section becomes `[X.Y.Z] - <date>` under a new, empty
+`Unreleased`, and the example notebooks, whose outputs ship with the
+release and which nothing else runs, are rerun with PyBADS and PyVBMC at
+their releases from PyPI, and their outputs committed (`make -C
+examples/scripts run`, below). The GitHub release takes the changelog's
+section as its notes, without its heading and with each paragraph and list
+item joined onto one line: a release's notes render every newline as a
+line break, and the changelog wraps its lines at 79 characters.
+`release.yml` builds the package with `build.yml` and uploads it to PyPI by
+trusted publishing, through the `pypi` environment, which admits only `v*`
+tags. No token is stored. A fresh environment outside the checkout then
+installs `pyibs[test]==X.Y.Z` from PyPI and runs `pytest --pyargs pyibs`.
+After the upload, the version bot of `conda-forge/pyibs-feedstock` opens an
+update pull request. The recipe keeps its own copy of the requirements
+(Python, NumPy and SciPy, and pytest for its test, `pytest --pyargs
+pyibs`), which the bot is not relied on to update: a release that changes
+them changes the recipe by hand, in a pull request opened before the bot's
+or pushed to it before it merges.
+
 The documentation is built with
 `PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github` on Windows
 (`.venv/bin` elsewhere; the target calls `sphinx-build`), which copies the
