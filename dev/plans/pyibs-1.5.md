@@ -822,9 +822,7 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 ### Phase 6: other repositories
 
-**Status**: pending; step 2's Colab cell for PyVBMC's notebooks and the
-removal of its Binder button (D26) are under way in a session of
-PyVBMC's own (2026-10-10)
+**Status**: pending
 **Executor**: Opus (orchestrator), in each repository under its own
 `AGENTS.md`, on the PI's instruction.
 **Needs**: `../model-fitting`, `../pybads`, `../pyvbmc`.
@@ -836,11 +834,9 @@ PyVBMC's own (2026-10-10)
 2. `../pybads` and `../pyvbmc`, in a pull request of each: where
    `README.md`, `docsrc/source/index.rst`, `docsrc/source/faq.md` and
    `skills/*/SKILL.md` link PyIBS on GitHub, or MATLAB IBS where they
-   address Python users, link the PyIBS documentation; PyVBMC's example
-   notebooks open in Colab as D26 has PyIBS's and PyBADS's do, each
-   installing what it imports, and its documentation drops its Binder
-   button; and `AGENTS.md` names the labels of
-   the FAQ that PyIBS links (PyBADS's in its list of linked labels).
+   address Python users, link the PyIBS documentation; and `AGENTS.md`
+   names the labels of the FAQ that PyIBS links (PyBADS's in its list of
+   linked labels).
 
 **Verification**:
 - [ ] Each change is merged in its repository, and its links resolve.
@@ -1121,15 +1117,17 @@ from the README, the documentation and the model-fitting page.
   and `"pybads>=1.5.1"` or `"pyvbmc>=1.5"`) when it runs in Colab
   (`"google.colab" in sys.modules`) and does nothing elsewhere, and
   `docsrc/source/conf.py` gives the notebook pages Colab's launch button.
-  PyBADS's notebooks took the same cell in its pull request #122; PyVBMC's
-  follow in Phase 6. Rejected: no launch button (a tutorial that runs
-  without any setup is the easiest start); a Binder button beside Colab's,
-  in any of the three packages (PI, 2026-10-10: PyBADS's Binder build kept
-  failing after several fixes, and Colab serves); a cell that installs
-  everywhere (`make -C examples/scripts run` would install into the venv,
-  and the outputs that ship would hold pip's log); a button without what
-  it needs, as the notebook pages had them until step 2 of Phase 5 (the
-  notebooks failed at their first import).
+  PyBADS's notebooks took the same cell in its pull request #122, and
+  PyVBMC's on its branch `feat-release-1.5-preparation` (`14f3fb9c`),
+  which also dropped its Binder button (`ef90e6c4`). Rejected: no launch
+  button (a tutorial that runs without any setup is the easiest start); a
+  Binder button beside Colab's, in any of the three packages (PI,
+  2026-10-10: PyBADS's Binder build kept failing after several fixes, and
+  Colab serves); a cell that installs everywhere (`make -C
+  examples/scripts run` would install into the venv, and the outputs that
+  ship would hold pip's log); a button without what it needs, as the
+  notebook pages had them until step 2 of Phase 5 (the notebooks failed at
+  their first import).
 
 ## Open Questions
 
