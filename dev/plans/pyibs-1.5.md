@@ -754,9 +754,10 @@ PyPI; step 3 takes the expected release date, corrected if the release
 moves, and from then on a change for 1.5.0 goes into the section
 `[1.5.0]`, as `AGENTS.md` ("Changelog") says. PyVBMC 1.5.0 is on
 PyPI, and its documentation published, before step 4: the README and the
-installation pages install `pyvbmc>=1.5` and link that documentation, and
+installation pages install `pyvbmc>=1.5` and link that documentation,
 `AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
-release branch.
+release branch, and the notebooks take their Colab cell and button (D26)
+before the gate's rerun.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
@@ -833,9 +834,10 @@ release branch.
 2. `../pybads` and `../pyvbmc`, in a pull request of each: where
    `README.md`, `docsrc/source/index.rst`, `docsrc/source/faq.md` and
    `skills/*/SKILL.md` link PyIBS on GitHub, or MATLAB IBS where they
-   address Python users, link the PyIBS documentation; and `AGENTS.md`
-   names the labels of the FAQ that PyIBS links (PyBADS's in its list of
-   linked labels).
+   address Python users, link the PyIBS documentation; the example
+   notebooks take D26's Colab cell, for the package's own name and
+   versions; and `AGENTS.md` names the labels of the FAQ that PyIBS links
+   (PyBADS's in its list of linked labels).
 
 **Verification**:
 - [ ] Each change is merged in its repository, and its links resolve.
@@ -1108,6 +1110,19 @@ from the README, the documentation and the model-fitting page.
   in 0.1.0 and `ibslike.m` (a string or another non-boolean then sets the
   sign silently); the integers 0 and 1 as well (a second spelling of a
   boolean option, which `vectorized` does not take either).
+- **D26. The example notebooks open in Colab** (PI, 2026-10-10) — Colab's
+  runtime has none of PyIBS, PyBADS and PyVBMC, so each notebook opens with
+  a cell that installs `"pyibs>=1.5" "pybads>=1.5.1" "pyvbmc>=1.5"` when it
+  runs in Colab (`"google.colab" in sys.modules`) and does nothing
+  elsewhere, and `docsrc/source/conf.py` gives the notebook pages their
+  Colab button back. They are added once PyVBMC 1.5.0 is on PyPI, before
+  the notebooks' last rerun (Phase 5, Timing); PyBADS's and PyVBMC's
+  notebooks take the same cell (Phase 6). Rejected: no Colab button (a
+  tutorial that runs without any setup is the easiest start); a cell that
+  installs everywhere (`make -C examples/scripts run` would install into
+  the venv, and the outputs that ship would hold pip's log); Colab's button
+  without the cell, as the notebook pages had it until step 2 of Phase 5
+  (the notebooks failed at their first import).
 
 ## Open Questions
 
@@ -1123,10 +1138,10 @@ comparison (Phase 3, step 3). Phase 5's step 2 leaves these for the PI:
    `python_min` to 3.10, against conda-forge's guidance for noarch recipes.
 3. `tests.yml`'s full run on `main` on the 13th and 28th of each month, as
    in PyBADS, which also gives the README's `tests` badge its status.
-4. The Binder and Colab buttons, removed from the notebook pages: there the
-   notebooks failed at their first import. The alternative is a Binder
-   environment that installs PyIBS, PyBADS 1.5.1, PyVBMC 1.5 and
-   matplotlib, possible once PyVBMC 1.5.0 is on PyPI.
+4. The Binder button, removed from the notebook pages, where the notebooks
+   failed at their first import; Colab's returns with D26. The alternative
+   is a Binder environment that installs PyIBS, PyBADS 1.5.1, PyVBMC 1.5
+   and matplotlib, possible once PyVBMC 1.5.0 is on PyPI.
 5. The review's optional findings, not taken: an integration test of
    PyVBMC that compares the ELBO with the exact log evidence, as Example 3
    does; tests of a zero returned as 0.0 rather than -0.0, of the warnings'
@@ -1746,7 +1761,8 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 - Decided at the review with the PI's leave to use judgment, and open to
   the PI's confirmation (Open Questions): the conda-forge package's Python,
   the run of the tests twice a month, and the removal of the launch
-  buttons.
+  buttons. Decided after the review (PI, 2026-10-10): D26, the notebooks
+  open in Colab once they install what they need there.
 - Deviations: Examples 1 and 2 keep their committed outputs; the rerun of
   all three notebooks with PyVBMC 1.5.0 from PyPI comes on the pull
   request's head (Timing).
