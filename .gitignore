@@ -169,3 +169,10 @@ cython_debug/
 dev/scripts/runs/
 # Maintainer notes that are not published (dev/README.md)
 dev/private/
+# The film's media (voice takes, scores, animatics, masters) and the review
+# page made from its sources (dev/film/STORYBOARD.md)
+dev/film/media/
+dev/film/storyboard/animatic/
+dev/film/storyboard/frames/
+dev/film/storyboard/motion/
+dev/film/storyboard/storyboard.html

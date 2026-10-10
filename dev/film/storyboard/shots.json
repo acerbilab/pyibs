@@ -1,0 +1,198 @@
+[
+ {
+  "id": "1.1",
+  "line": "You have a model and some data. The model assigns a probability to each observation. For example, in a behavioral experiment, each observation is the response a person gave on one trial.",
+  "caption": null,
+  "note": "On “some data”, response tokens come in down a column, eight observations, under the label DATA. On “The model assigns a probability”, a grey bar grows beside each, one after another, to its probability under the model, and the first is labelled likelihood. On “in a behavioral experiment”, a stimulus tile comes in at the head of each row; on “each observation is the response”, DATA becomes RESPONSE. On “a person gave”, the first row is outlined and labelled one trial.",
+  "dur": 12.563
+ },
+ {
+  "id": "1.2",
+  "line": "The log-likelihood is the sum of the logs of these probabilities. It measures how well the model explains the data.",
+  "caption": null,
+  "note": "The outline of the trial goes and the column dims. On “the sum”, the log of each bar’s probability appears at the end of its row, one after another. On “of these probabilities”, a rule is drawn under the column and the log-likelihood counts up to its value, labelled log-likelihood. The column is eight of the data set’s 300 trials, and says so under its last row; the number is the toy model’s, at the top of its curve.",
+  "dur": 7.386
+ },
+ {
+  "id": "1.3",
+  "line": "The log-likelihood changes with the model’s parameters. A common way to fit a model is to choose the parameters where the log-likelihood is highest.",
+  "caption": null,
+  "note": "The logs go and the column dims further. An empty panel appears beside it, with a knob for one parameter under it, set at the top. On “changes with the model’s parameters”, the knob sweeps to one end and across to the other: the bars and the number at the foot move with it, and a grey curve traces the number against the parameter. On “choose the parameters”, the knob turns back to the top of the curve, where a ring lands, labelled maximum likelihood.",
+  "dur": 8.835
+ },
+ {
+  "id": "1.4",
+  "line": "The log-likelihood is also used to compare models and to compute the Bayesian posterior over the parameters.",
+  "caption": null,
+  "note": "The curve holds with its ring, labelled maximum likelihood, and the knob goes. On “compare models”, a dashed curve draws in beside it, the log-likelihood of another model (the toy with a larger lapse rate), keyed model comparison at the top of the panel. On “the Bayesian posterior”, a purple posterior grows over the parameter axis, labelled Bayesian posterior.",
+  "dur": 7.258
+ },
+ {
+  "id": "2.1",
+  "line": "For many models, however, there is no formula for these probabilities.",
+  "caption": null,
+  "note": "The column of scene 1 returns with its bars full. On “there is no formula”, the bars empty one after another to hollow outlines, each with a question mark, and the number at the foot becomes a question mark.",
+  "dur": 4.367
+ },
+ {
+  "id": "2.2",
+  "line": "Take a model of how people play four-in-a-row, which is used to study how people plan ahead and how this changes as they learn. Each trial is a position from a real game. The response is the move the person played in it.",
+  "caption": null,
+  "note": "The hollow column fades, and a large empty board takes its place. On “four-in-a-row”, its pieces come in: a real position from a human game. On “Each trial is a position”, a column of small boards comes in at the left, one per trial, the first of them the large one, and the large board is named the stimulus. On “The response is the move”, a ring marks the move the person played, on every board, and the move is named the response. Provenance, bottom left.",
+  "dur": 13.403
+ },
+ {
+  "id": "2.3",
+  "line": "Given a position, the model searches a few moves ahead. Its evaluation of the moves is partly random. The probability of each move depends on every search tree the model could build, so it cannot be computed.",
+  "caption": null,
+  "note": "The board on the left. On “searches a few moves ahead”, a small search tree unfolds beside it, level by level, labelled heuristic search. On “Its evaluation of the moves”, a value appears beside each candidate move, the best one brightest; on “partly random” the values flicker and the best move changes with them, until the next sentence. On “every search tree”, more trees multiply behind the board, faint, more than can be counted, and the probability of a move becomes a question mark.",
+  "dur": 13.477
+ },
+ {
+  "id": "2.4",
+  "line": "But you can give the model the same position as many times as you like. Each time it simulates a move. Over many simulations, the fraction that match the person’s move approaches its probability.",
+  "caption": null,
+  "note": "The board, with the person’s move ringed, labelled simulator. On “Each time it simulates a move”, the model simulates a move on this position: a ghost piece appears where its move falls, labelled a simulated move, and drops into the row under the board as a cross for a miss or a check for a match, leaving a small dot on its square, green on the person’s square. The first three go slowly: a miss, a miss and a match. On “Over many simulations”, the rest follow faster and faster, forty in all, the model’s own on this position from the run’s data: eighteen match.",
+  "dur": 12.302
+ },
+ {
+  "id": "3.1",
+  "line": "The obvious approach is to simulate each trial a fixed number of times and take the log of the fraction that match.",
+  "caption": null,
+  "note": "The likely position, small, on the left, labelled fixed sampling. On “to simulate each trial”, a row of twenty cells fills one cell at a time with crosses and checks: twenty simulations of the model on this position, from the run’s data, thirteen of which match. As the row completes, the count of checks over twenty comes in, in amber, and its log on “take the log”.",
+  "dur": 7.007
+ },
+ {
+  "id": "3.2",
+  "line": "If the person made an unlikely move, none of the simulations may match. Then the estimate is the log of zero, which is minus infinity.",
+  "caption": null,
+  "note": "The surprising position, its ring flaring on “an unlikely move”. On “none of the simulations”, twenty crosses fill the row one at a time: the first twenty simulations of this position in the recorded run, none of which match. The amber readout reads 0 of 20 as the row completes, then log 0 on “the log of zero”, and minus infinity when the voice says it.",
+  "dur": 8.866
+ },
+ {
+  "id": "3.3",
+  "line": "A simple fix adds one to both counts, but with twenty simulations a probability of one in a hundred gets almost the same estimate as one in a million.",
+  "caption": null,
+  "note": "The twenty crosses stay, with the readout of line 3.2 until “adds one”, when the fix replaces it: one match and one simulation added, one in twenty-one, and its log, in amber. On “one in a hundred”, a table begins with that probability, its true log in grey, and the average fixed-sampling estimate with twenty simulations in amber, computed from the paper’s estimator. On “one in a million”, its second row: the two amber numbers are almost the same. The picture holds while line 3.4 begins.",
+  "dur": 10.587
+ },
+ {
+  "id": "3.4",
+  "line": "With a fixed number of simulations, no fix makes the estimate unbiased. This one is too high on average, most of all for the responses the model explains worst.",
+  "caption": null,
+  "note": "Three columns, one per probability, the probability shrinking from left to right. The grey line of the true log probability appears in each. During the first sentence, repeated fixed-sampling estimates of one trial drop in as amber dots. On “too high on average”, the mean of each column settles above its grey line. On “most of all”, a bracket marks the gap in each column in turn, the widest at the smallest probability, labelled bias. Illustration computed from the paper’s formulas, twenty simulations per trial.",
+  "dur": 10.529
+ },
+ {
+  "id": "3.5",
+  "line": "This bias does not average out over the trials. It adds up. It is larger at some parameter values than at others, so it moves the best fit.",
+  "caption": null,
+  "note": "The column of trials returns, beside the grey curve of scene 1. On “does not average out”, each row gets a small amber push, one row after another, the largest on the unlikely response. On “adds up”, the pushes add into one long arrow at the foot of the column. On “It is larger”, an amber curve rises off the grey one, and on “at some parameter values” the gap between them is marked at three values, widest on the left. On “than at others”, dashed lines drop from the two tops and an arrow on the axis runs from the true best fit to the best fit under fixed sampling, as the voice says that the bias moves the best fit. The panel shows the window around the two tops. Illustration: the one-parameter model of scene 1, kept off screen, 300 trials.",
+  "dur": 9.081
+ },
+ {
+  "id": "3.6",
+  "line": "More simulations reduce the bias, but how many are enough depends on the probabilities you want to estimate. With fixed sampling, a hundred simulations per trial still left one parameter of the four-in-a-row model biased.",
+  "caption": "More simulations reduce the bias, but how many are enough depends on the probabilities you want to estimate. With fixed sampling, a hundred simulations per trial still left one parameter of the four-in-a-row model biased.*",
+  "note": "At the rare response, the cloud for twenty simulations, with its bracket. On “reduce the bias”, the clouds for fifty and then a hundred simulations drop in beside it, each with its mean and bracket: the gap narrows, slowly. On “With fixed sampling”, the four-in-a-row board comes back small on the right, labelled four-in-a-row model; on “a hundred simulations per trial”, the number of simulations; on “still left one parameter”, fitted parameter still biased. Footnote: the paper’s Figure 9A.",
+  "dur": 14.293
+ },
+ {
+  "id": "4.1",
+  "line": "Inverse binomial sampling turns the obvious approach around. It simulates each trial until the first match and counts how many simulations it took.",
+  "caption": null,
+  "note": "The likely position, and beside it, faint, the row of twenty from line 3.1 under its label, fixed sampling. On “turns the obvious approach around”, that row empties from the right and the label becomes inverse binomial sampling. On “It simulates each trial”, the model simulates moves on the position one at a time, the recorded run’s own: a miss, a miss, then the person’s move. Each shows as a ghost piece on the board and drops into the row as a cross or a check, with the count above it, in green. The row stops at the match, and the count stands under it: three simulations to the first match.",
+  "dur": 9.423
+ },
+ {
+  "id": "4.2",
+  "line": "Likely responses need few simulations. Unlikely ones need many more. The average count is one over the probability.",
+  "caption": null,
+  "note": "Two trials, one above the other. The likely move: its cells come in, a check after three. On “Unlikely ones”, the surprising move: a long row of crosses comes in, ending in a check. Both counts are the recorded run’s, 3 and 32. On “The average count”, one over each move’s probability appears beside its count, about 1.7 and about 33, with the label geometric distribution.",
+  "dur": 7.892
+ },
+ {
+  "id": "4.3",
+  "line": "The estimate starts at zero. Each miss before the match subtracts one more term, first one, then a half, then a third.",
+  "caption": null,
+  "note": "The surprising move’s row of thirty-two. On “starts at zero”, a zero under its first cell and the running estimate, in green. On “Each miss before the match”, one term appears under each cross, left to right, −1, −1/2, −1/3, …, −1/31, and the running estimate counts down with them to the sum. Labels: digamma, and the formula. All of it stands before the voice names the first three terms.",
+  "dur": 7.599
+ },
+ {
+  "id": "4.4",
+  "line": "This estimate is unbiased. On average it equals the true log probability, however small the probability is.",
+  "caption": "This estimate is unbiased. On average it equals the true log probability, however small the probability is.*",
+  "note": "The amber clouds of line 3.4 return with their grey lines and means. Green dots of repeated IBS estimates fall in beside them, column by column. On “On average”, the green mean of each column, the exact expectation, lands on its grey line, at every probability, while the amber mean sits above. On “however small”, the column of the smallest probability lights. Footnote: de Groot (1959) and [1] Appendix A.1.",
+  "dur": 7.36
+ },
+ {
+  "id": "4.5",
+  "line": "Summing over the trials gives an unbiased estimate of the log-likelihood.",
+  "caption": null,
+  "note": "The column of trials, each row’s cells coming in down the column, each row stopped at its first match with its count. On “an unbiased estimate”, a rule under the column and the green sum counting to its value: one IBS estimate of the toy model’s log-likelihood, near the true value beside it in grey, not on it.",
+  "dur": 4.937
+ },
+ {
+  "id": "5.1",
+  "line": "The count also gives an error bar for the estimate. Summed over the trials, the error bars are calibrated. The true log-likelihood falls inside them as often as it should.",
+  "caption": null,
+  "note": "At the top, the surprising position’s stopped row and its estimate; on “an error bar”, the estimate’s error bar, labelled trigamma, with its formula. On “Summed over the trials”, twenty summed estimates of a whole data set drop in one under another, each with its error bar of one SD. On “The true log-likelihood”, a grey line marks the true value; the bars that contain it stay bright, the others dim, and a count says how many contain it, against about two in three for bars of one SD. Illustration on the toy model of scene 1: one IBS repeat per estimate, computed in the page.",
+  "dur": 10.981
+ },
+ {
+  "id": "5.2",
+  "line": "To reduce the noise, you can repeat the estimate and average.",
+  "caption": null,
+  "note": "The column of trials with its counts, and at the right one estimate with its error bar, labelled one repeat. On “you can repeat”, the whole column runs again with new counts, and the error bar of the average narrows, labelled average of 2 repeats; then once more, average of 3. A faint outline keeps the width of the first bar.",
+  "dur": 3.777
+ },
+ {
+  "id": "5.3",
+  "line": "PyIBS simulates all the trials together, one round at a time, until each has matched.",
+  "caption": null,
+  "note": "The recorded run: a hundred rows, one per real position, and one square per simulation. Round by round, a column of squares fills for every trial that has not yet matched; a match is green and its row dims. A counter gives the round and the trials still open. By the end of the line, forty rounds have run and twelve trials are still open.",
+  "dur": 5.846
+ },
+ {
+  "id": "5.4",
+  "line": "Then it returns the estimate and its error bar.",
+  "caption": null,
+  "note": "The last trials run on alone, the longest to round 293, then the last match. As it lands, the readout: the run’s estimate of the log-likelihood and its error bar, with the number of simulations and rounds.",
+  "dur": 3.296
+ },
+ {
+  "id": "6.1",
+  "line": "The four-in-a-row model is only one example. PyIBS works with any model that can simulate each observation on its own, as long as the observations are discrete.",
+  "caption": null,
+  "note": "The board of the four-in-a-row model, labelled four-in-a-row model. On “PyIBS works”, the wordmark. On “any model”, the board’s label becomes a simulator; on “simulate each observation”, ghost pieces fall where the model’s simulated moves land, one after another. On “as long as the observations are discrete”, three response tokens come in one by one, labelled discrete observations.",
+  "dur": 10.453
+ },
+ {
+  "id": "6.2",
+  "line": "You can then use PyBADS to find the maximum-likelihood fit or PyVBMC to approximate the Bayesian posterior.",
+  "caption": null,
+  "note": "Two panels with the curve of scene 1, faint. On “PyBADS”, green IBS estimates with their error bars appear one by one where the optimizer tries the parameter, the earlier ones dimming as they gather toward the top, and a ring lands there, labelled maximum likelihood. On “PyVBMC”, estimates appear spread over the range, and a purple posterior grows over the parameter axis, labelled Bayesian posterior, as the voice says it. Illustration on the toy model of scene 1: each estimate is the average of ten IBS repeats, computed in the page; the points tried are chosen for the picture.",
+  "dur": 8.035
+ },
+ {
+  "id": "6.3",
+  "line": "Both are designed to work with noisy estimates like those of IBS. No fitting method can correct a biased estimate like that of fixed sampling.",
+  "caption": null,
+  "note": "One large panel with the grey curve of line 3.5. During the first sentence, green IBS estimates appear one by one with their error bars, scattered around the grey curve, and on “noisy” the label noise. On “No fitting method”, amber fixed-sampling estimates appear one by one, all above the grey curve, and the amber curve draws through them from the left. On “biased”, a bracket between the two curves is labelled bias. Illustration on the toy model: each estimate is the average of ten repeats of its estimator, computed in the page.",
+  "dur": 8.807
+ },
+ {
+  "id": "6.4",
+  "line": "With a biased estimate, a study can reach a false conclusion and be confident in it. With IBS, the estimate is only noisy. Its error bar shows how far to trust it.",
+  "caption": null,
+  "note": "The panel of line 6.3. The estimates fade and the bracket goes. On “a false conclusion”, the amber top flares and its dashed line drops to the axis, labelled fit with fixed sampling. On “With IBS”, the true top’s dashed line drops, and a green ring lands near it with its own line, labelled fit with IBS. On “the estimate is only noisy”, the IBS estimate at that fit appears, and on “Its error bar” its error bar opens. Then the end card.",
+  "dur": 10.839
+ },
+ {
+  "id": "7.1",
+  "line": "",
+  "caption": null,
+  "note": "The end card: PyIBS 1.5, the install line, the lab’s page of its tools, the paper, the credits.",
+  "dur": 8
+ }
+]

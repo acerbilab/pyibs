@@ -28,6 +28,11 @@ cite, and the tooling that produced it. They are not user documentation.
   plan or a result, not committed raw. `scripts/octave/` holds the files
   that let MATLAB `ibslike.m` run under GNU Octave (`AGENTS.md`, "Sibling
   repositories").
+- `film/` holds the sources of the film about PyIBS: its storyboard and
+  script (`STORYBOARD.md`, which says what each file does), the page that
+  draws it, the recorded run it shows and the scripts that voice, score
+  and record it. Its media and its review page are gitignored and made
+  again from the sources.
 - `private/` is gitignored: maintainer notes that are not published. A
   tracked record may point to one by its path, but never restates it.
 

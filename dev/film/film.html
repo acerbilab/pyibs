@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyIBS Film</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=STIX+Two+Text:ital@1&display=swap">
+<style>
+  /* One letterboxed 16:9 stage that fills the window. A single dark look, flat 2D. */
+  :root {
+    color-scheme: dark;
+    --bg: #000;
+    --ink: #e4ece7;
+    --dim: #8b9a94;
+    --faint: #4c5a56;
+    --green: #5cf2a6;
+    --amber: #ffad55;
+    --purple: #b78bff;
+    --grey: #a9bbcc;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    --cond: "IBM Plex Sans Condensed", "Arial Narrow", Arial, sans-serif;
+    --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --serif: "STIX Two Text", "Times New Roman", Times, serif;
+  }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); overflow: hidden; }
+  #stage { position: absolute; left: 50%; top: 50%; width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; transform: translate(-50%, -50%); background: #000; overflow: hidden; container-type: inline-size; }
+  #cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .bar { position: absolute; left: 0; right: 0; height: 11%; background: #000; z-index: 2; }
+  .bar.top { top: 0; } .bar.bottom { bottom: 0; }
+  #hud { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  #mark { position: absolute; left: 3cqw; top: 0; height: 11%; display: flex; align-items: center; gap: 1cqw; font-family: var(--cond); letter-spacing: 0.16em; }
+  #mark b { font-weight: 600; font-size: 1.35cqw; color: var(--green); }
+  #mark span { font-family: var(--sans); font-size: 0.95cqw; color: var(--dim); letter-spacing: 0.06em; }
+  #labels { position: absolute; inset: 0; overflow: hidden; clip-path: inset(11% 0 11% 0); }
+  .lab { position: absolute; left: 0; top: 0; white-space: nowrap; transform: translate(0, -50%); }
+  .lab.c { transform: translate(-50%, -50%); }
+  .lab.r { transform: translate(-100%, -50%); }
+  .lab.term { font-family: var(--serif); font-style: italic; font-size: 1.75cqw; color: var(--ink); }
+  .lab.plain { font-family: var(--sans); font-size: 1.25cqw; color: var(--ink); letter-spacing: 0.02em; }
+  .lab.big { font-family: var(--sans); font-size: 1.7cqw; color: var(--ink); }
+  .lab.num { font-family: var(--mono); font-size: 1.5cqw; color: var(--ink); }
+  .lab.numb { font-family: var(--mono); font-size: 2.1cqw; color: var(--ink); }
+  .lab.small { font-family: var(--mono); font-size: 0.95cqw; letter-spacing: 0.14em; color: var(--dim); }
+  .lab.cond { font-family: var(--cond); font-weight: 600; font-size: 2.2cqw; letter-spacing: 0.12em; color: var(--ink); }
+  .lab.g { color: var(--green); } .lab.a { color: var(--amber); } .lab.p { color: var(--purple); } .lab.k { color: var(--grey); } .lab.d { color: var(--dim); } .lab.f { color: var(--faint); }
+  #cap { position: absolute; left: 7cqw; right: 7cqw; bottom: 0; height: 11%; display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--sans); font-size: 1.9cqw; line-height: 1.25; color: var(--ink); text-wrap: balance; }
+  #foot { position: absolute; right: 3cqw; bottom: calc(11% + 1.3cqw); max-width: 40cqw; margin: 0; text-align: right; font-family: var(--sans); font-size: 1.02cqw; line-height: 1.45; color: var(--dim); }
+  #prov { position: absolute; left: 3cqw; bottom: calc(11% + 1.3cqw); max-width: 40cqw; margin: 0; font-family: var(--sans); font-size: 1.02cqw; line-height: 1.45; color: var(--dim); }
+  #endcard { position: absolute; inset: 11% 0; z-index: 4; display: none; place-content: center; text-align: center; gap: 1.1cqw; background: rgba(0, 0, 0, 0.72); }
+  #endcard .t { font-family: var(--cond); font-weight: 600; font-size: 4.6cqw; letter-spacing: 0.1em; color: var(--green); }
+  #endcard .t span { color: var(--ink); }
+  #endcard .s { font-family: var(--sans); font-size: 1.6cqw; color: var(--ink); }
+  #endcard .c { font-family: var(--mono); font-size: 1.5cqw; color: var(--green); letter-spacing: 0.04em; }
+  #endcard .u { font-family: var(--mono); font-size: 1.5cqw; color: var(--ink); }
+  #endcard .r { list-style: none; margin: 0.6cqw 0 0; padding: 0; font-family: var(--serif); font-size: 1.1cqw; color: var(--dim); line-height: 1.6; }
+  #endcard .r i { color: var(--ink); }
+  #endcard .k { margin-top: 0.8cqw; font-family: var(--sans); font-size: 0.82cqw; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); line-height: 2; }
+  #err { position: absolute; left: 1em; bottom: 1em; z-index: 9; font: 12px var(--mono); color: var(--amber); white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv"></canvas>
+  <div class="bar top"></div>
+  <div class="bar bottom"></div>
+  <div id="hud">
+    <div id="mark"><b>PYIBS</b><span>Inverse Binomial Sampling</span></div>
+    <div id="labels"></div>
+    <div id="cap"></div>
+    <p id="prov"></p>
+    <p id="foot"></p>
+  </div>
+  <div id="endcard">
+    <div class="t">PyIBS <span>1.5</span></div>
+    <div class="s">Inverse Binomial Sampling</div>
+    <div class="c">pip install --upgrade pyibs</div>
+    <div class="u">acerbilab.org/model-fitting</div>
+    <ol class="r">
+      <li>van Opheusden, Acerbi &amp; Ma (2020). <i>Unbiased and efficient log-likelihood estimation with inverse binomial sampling.</i> PLOS Computational Biology.</li>
+    </ol>
+    <div class="k">Machine and Human Intelligence Group &middot; University of Helsinki<br>Research Council of Finland &middot; ELLIS Institute Finland<br>Directed by Luigi Acerbi &middot; Made with Claude Code &middot; Voice: Kokoro</div>
+  </div>
+</div>
+<div id="err"></div>
+<script src="run/run_data.js"></script>
+<script src="film_timeline.js"></script>
+<script src="film_words.js"></script>
+<script>
+(async function () {
+"use strict";
+const $ = (id) => document.getElementById(id);
+const fail = (m) => { $("err").textContent += m + "\n"; document.title = "ERROR " + m; };
+window.addEventListener("error", (e) => fail(e.message + " @" + e.lineno));
+window.addEventListener("unhandledrejection", (e) => fail(String((e.reason && e.reason.message) || e.reason)));
+const q = new URLSearchParams(location.search);
+const CAPTIONS = q.get("captions") !== "0";
+const TIMED = q.get("timed") === "1";          // captions change by sentence, as in a recording, instead of the whole line
+const stage = $("stage"), cv = $("cv");
+const W = 1280, H = 720;                       // the logical frame; everything is drawn in these units
+const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const lerp = (a, b, m) => a + (b - a) * m;
+const ease = (x) => { x = clamp01(x); return x * x * (3 - 2 * x); };
+const ramp = (t, a, b) => ease((t - a) / (b - a));
+const lin = (t, a, b) => clamp01((t - a) / (b - a));
+const C = { ink: "#e4ece7", dim: "#8b9a94", faint: "#4c5a56", green: "#5cf2a6", amber: "#ffad55", purple: "#b78bff", grey: "#a9bbcc", black: "#000" };
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`; };
+
+// ================================================================ random numbers, seeded, so that every still repeats
+function mulberry32(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const geometric = (rnd, p) => Math.max(1, Math.ceil(Math.log(1 - rnd()) / Math.log(1 - p)));
+const binomial = (rnd, M, p) => { let m = 0; for (let i = 0; i < M; i++) if (rnd() < p) m++; return m; };
+function normal(rnd) { const u = 1 - rnd(), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function erf(x) { const s = x < 0 ? -1 : 1; x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; }
+const Phi = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+
+// ================================================================ the estimators of the paper, Section 2.4
+const fixedEst = (m, M) => Math.log((m + 1) / (M + 1));                                  // Equation 11
+const ibsEst = (K) => { let s = 0; for (let k = 1; k < K; k++) s -= 1 / k; return s; };   // Equation 14
+const ibsVar = (K) => { let s = 0; for (let k = 1; k < K; k++) s += 1 / (k * k); return s; }; // Equation 16, the variance estimate
+const FM = 20;   // the fixed-sampling count the film uses
+// The expected fixed-sampling estimate at probability p with M samples: the binomial sum, exact.
+function fixedMean(p, M) { let pmf = Math.pow(1 - p, M), s = 0; for (let m = 0; m <= M; m++) { s += pmf * fixedEst(m, M); pmf *= ((M - m) / (m + 1)) * (p / (1 - p)); } return s; }
+
+// ================================================================ the recorded run (run/run_data.js, written by run/film_data.py)
+// Real positions from human-versus-human games, each with the move the person played. POS[0] carries the likely move of
+// scenes 2 to 4 (run trial 49), POS[1] the surprising one (trial 86), and COLPOS are three more trials of the run.
+// A board is 4 rows by 9 columns; bit i of a bitboard is row floor(i / 9), column i mod 9.
+const RD = window.RUN_DATA;
+if (!RD) throw new Error("run/run_data.js did not load");
+const POS = [RD.A, RD.B];
+const COLPOS = RD.column;
+const bit = (v, i) => Math.floor(v / Math.pow(2, i)) % 2 === 1;
+
+// ================================================================ illustrations computed in the page
+// The clouds of repeated estimates of one trial (lines 3.4, 3.6, 4.4): fixed sampling with M samples, IBS, at probability p.
+// The means drawn are the exact expectations: the binomial sum for fixed sampling, and log p for IBS ([1] Appendix A.1).
+function cloud(p, M, n, seed) {
+  const rnd = mulberry32(seed), fx = [], ib = [];
+  for (let i = 0; i < n; i++) { fx.push(fixedEst(binomial(rnd, M, p), M)); ib.push(ibsEst(geometric(rnd, p))); }
+  const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+  return { p, M, fixed: fx, ibs: ib, fixedMean: fixedMean(p, M), ibsMean: Math.log(p), truth: Math.log(p) };
+}
+// The toy model behind the curves of lines 1.3, 1.4, 3.5 and 6.2 to 6.4, kept off screen: one parameter, 300 trials
+// with a lapse rate. The panels show the parameter on a log scale from SIG0 to SIG1 and the log-likelihood from LL0
+// to LL1, the window around the tops of the true curve and of the expected fixed-sampling estimate.
+const TOY = (() => {
+  const rnd = mulberry32(7), N = 300, lapse = 0.03, sTrue = 1, S = [], R = [];
+  for (let i = 0; i < N; i++) { const s = (rnd() * 2 - 1) * 2.5; S.push(s); const pr = lapse / 2 + (1 - lapse) * Phi(s / sTrue); R.push(rnd() < pr ? 1 : -1); }
+  return { probs: (sig, lp = lapse) => S.map((s, i) => lp / 2 + (1 - lp) * Phi(R[i] * s / sig)) };
+})();
+const SIG0 = 0.55, SIG1 = 1.5, LL0 = -125, LL1 = -101;
+const toyTrue = (sig) => TOY.probs(sig).reduce((s, p) => s + Math.log(p), 0);
+const toyFixedMean = (sig) => TOY.probs(sig).reduce((s, p) => s + fixedMean(p, FM), 0);
+const toyOther = (sig) => TOY.probs(sig, 0.12).reduce((s, p) => s + Math.log(p), 0);  // another model: a lapse rate of 0.12
+const CURVES = (() => {
+  const xs = [], tru = [], fix = [], other = [];
+  for (let j = 0; j <= 60; j++) { const sig = SIG0 * Math.pow(SIG1 / SIG0, j / 60); xs.push(sig); tru.push(toyTrue(sig)); fix.push(toyFixedMean(sig)); other.push(toyOther(sig)); }
+  return { xs, tru, fix, other };
+})();
+// One estimate of the toy's log-likelihood at sig, the average of REPS repeats: IBS, with its variance estimate (one
+// IBS repeat has an SD of about 8.6 here, against a bias of fixed sampling of about 7.6 at the top, so the
+// illustrations average ten), or fixed sampling with FM samples per trial.
+const REPS = 10;
+function toyIBS(sig, rnd) { let L = 0, V = 0; for (let r = 0; r < REPS; r++) for (const p of TOY.probs(sig)) { const K = geometric(rnd, p); L += ibsEst(K); V += ibsVar(K); } return { sig, L: L / REPS, sd: Math.sqrt(V) / REPS }; }
+function toyFixed(sig, rnd) { let L = 0; for (let r = 0; r < REPS; r++) for (const p of TOY.probs(sig)) L += fixedEst(binomial(rnd, FM, p), FM); return { sig, L: L / REPS }; }
+// The top of the least-squares quadratic in the log parameter through some estimates: a stand-in for the surrogate
+// that an optimizer fits to noisy estimates.
+function quadTop(es) {
+  const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
+  for (const e of es) { const u = Math.log(e.sig), v = [1, u, u * u]; for (let i = 0; i < 3; i++) { b[i] += v[i] * e.L; for (let j = 0; j < 3; j++) A[i][j] += v[i] * v[j]; } }
+  for (let i = 0; i < 3; i++) for (let k = i + 1; k < 3; k++) { const f = A[k][i] / A[i][i]; for (let j = i; j < 3; j++) A[k][j] -= f * A[i][j]; b[k] -= f * b[i]; }
+  const c = [0, 0, 0];
+  for (let i = 2; i >= 0; i--) { let v = b[i]; for (let j = i + 1; j < 3; j++) v -= A[i][j] * c[j]; c[i] = v / A[i][i]; }
+  return Math.exp(-c[1] / (2 * c[2]));
+}
+// The estimates of lines 6.2 to 6.4: across the window by both methods; where an optimizer would try, gathering
+// toward the top (PyBADS); spread over the range (PyVBMC); and one IBS estimate at the fit.
+const EST = (() => {
+  const rnd = mulberry32(101), at = (sigs, f) => sigs.map((sig) => f(sig, rnd));
+  const spread = Array.from({ length: 11 }, (_, j) => 0.6 * Math.pow(1.4 / 0.6, j / 10));
+  const ibs = at(spread, toyIBS), fixed = at(spread, toyFixed);
+  const bads = at([1.35, 0.62, 1.12, 0.74, 0.9, 1.03, 0.85, 0.97, 0.92, 0.95], toyIBS);
+  const vbmc = at([0.62, 1.38, 0.8, 1.16, 0.7, 0.95, 1.06, 0.88, 1.27, 0.76], toyIBS);
+  const fit = quadTop(ibs);
+  return { ibs, fixed, bads, vbmc, fit, badsFit: quadTop(bads), atFit: toyIBS(fit, rnd) };
+})();
+// The run of scene 5: every trial's count, the size of each round, and the estimate and its SD.
+const RUN = { K: RD.K, rounds: RD.rounds, L: RD.loglik, sd: RD.sd, maxK: Math.max(...RD.K), sims: RD.simulations };
+
+// ================================================================ drawing
+let ctx, SX = 1;
+// GA multiplies the opacity of every mark: faded(a, fn) draws fn's marks at a times their own opacity.
+let GA = 1;
+const faded = (a, fn) => { if (a <= 0) return; const g = GA; GA *= a; try { return fn(); } finally { GA = g; } };
+function setup() {
+  const r = stage.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  ctx = cv.getContext("2d"); SX = cv.width / W; ctx.setTransform(SX, 0, 0, SX, 0, 0);
+}
+const font = (px, fam = "sans", wt = 400, it = false) => `${it ? "italic " : ""}${wt} ${px}px ${{ sans: '"IBM Plex Sans", Arial, sans-serif', mono: '"IBM Plex Mono", Consolas, monospace', cond: '"IBM Plex Sans Condensed", Arial, sans-serif', serif: '"STIX Two Text", Times, serif' }[fam]}`;
+function text(s, x, y, px, col, opt = {}) { s = String(s).replace(/(^|[\s(=±])-(?=\d)/g, "$1−"); ctx.save(); ctx.font = font(px, opt.fam || "sans", opt.wt || 400, opt.it); ctx.fillStyle = col; ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "middle"; ctx.globalAlpha = (opt.a ?? 1) * GA; ctx.fillText(s, x, y); ctx.restore(); }
+function line(x1, y1, x2, y2, col, w = 1.5, a = 1, dash) { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.globalAlpha = a * GA; if (dash) ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore(); }
+function rect(x, y, w, h, col, a = 1, stroke) { ctx.save(); ctx.globalAlpha = a * GA; if (stroke) { ctx.strokeStyle = col; ctx.lineWidth = stroke; ctx.strokeRect(x, y, w, h); } else { ctx.fillStyle = col; ctx.fillRect(x, y, w, h); } ctx.restore(); }
+function disc(x, y, r, col, a = 1, stroke) { ctx.save(); ctx.globalAlpha = a * GA; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); if (stroke) { ctx.strokeStyle = col; ctx.lineWidth = stroke; ctx.stroke(); } else { ctx.fillStyle = col; ctx.fill(); } ctx.restore(); }
+function glow(x, y, r, col, a) { ctx.save(); ctx.globalAlpha = GA; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r); ctx.restore(); }
+
+// A simulation cell: a grey cross for a miss, a green check for a match. s is the cell's side.
+function cell(x, y, s, hit, a = 1) {
+  rect(x, y, s, s, hit ? C.green : C.faint, a * (hit ? 0.18 : 0.35));
+  const m = s * 0.26;
+  if (hit) { ctx.save(); ctx.globalAlpha = a * GA; ctx.strokeStyle = C.green; ctx.lineWidth = Math.max(1.5, s * 0.1); ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x + m, y + s * 0.52); ctx.lineTo(x + s * 0.44, y + s - m); ctx.lineTo(x + s - m, y + m); ctx.stroke(); ctx.restore(); glow(x + s / 2, y + s / 2, s * 0.9, C.green, 0.25 * a); }
+  else { line(x + m, y + m, x + s - m, y + s - m, C.dim, Math.max(1, s * 0.08), 0.8 * a); line(x + s - m, y + m, x + m, y + s - m, C.dim, Math.max(1, s * 0.08), 0.8 * a); }
+}
+// A row of cells from (x, y): hits[i] true for a match; n cells shown; gap g.
+function cellRow(x, y, s, hits, n = hits.length, a = 1, g = 0.3) { for (let i = 0; i < n; i++) cell(x + i * s * (1 + g), y, s, hits[i], a); }
+// A stopped IBS row: k - 1 misses then a match.
+const ibsHits = (k) => Array.from({ length: k }, (_, i) => i === k - 1);
+
+// The 4-by-9 board at (x, y) with square side s; pos a POS entry. opt.a: its opacity. opt.pieces: the fraction of its
+// pieces drawn, which come in one by one in a fixed order. The ring on the person's move (none with opt.ring false), at
+// the opacity opt.ringA, holds a faint piece of the mover's colour so that it does not read as a black piece; opt.flare
+// is a glow on that square, in opt.flareCol. opt.dots: small dots where earlier simulated moves fell; opt.model: the
+// square of the current simulated move, drawn as a ghost piece.
+function board(x, y, s, pos, opt = {}) {
+  const a = opt.a ?? 1, at = (i) => [x + ((i % 9) + 0.5) * s, y + (Math.floor(i / 9) + 0.5) * s];
+  rect(x, y, 9 * s, 4 * s, C.faint, 0.35 * a);
+  for (let r = 0; r <= 4; r++) line(x, y + r * s, x + 9 * s, y + r * s, C.dim, 1, 0.5 * a);
+  for (let c = 0; c <= 9; c++) line(x + c * s, y, x + c * s, y + 4 * s, C.dim, 1, 0.5 * a);
+  const occ = []; for (let i = 0; i < 36; i++) if (bit(pos.black, i) || bit(pos.white, i)) occ.push((i * 23 + 7) % 36 * 64 + i);
+  occ.sort((u, v) => u - v).forEach((u, k) => {
+    const i = u % 64, pa = a * clamp01((opt.pieces ?? 1) * occ.length - k), [cx, cy] = at(i);
+    if (pa <= 0) return;
+    if (bit(pos.black, i)) disc(cx, cy, s * 0.36, "#1a1f1e", pa), disc(cx, cy, s * 0.36, C.ink, pa, 1.4);
+    else disc(cx, cy, s * 0.36, C.ink, pa);
+  });
+  if (opt.flare) { const [cx, cy] = at(pos.move); glow(cx, cy, s * 1.1, opt.flareCol || C.ink, 0.5 * opt.flare * a); }
+  if (opt.dots) for (const d of opt.dots) { const [cx, cy] = at(d.i); disc(cx + d.dx * s, cy + d.dy * s, s * 0.07, d.col, 0.9 * a); }
+  if (opt.model !== undefined) { const [cx, cy] = at(opt.model); disc(cx, cy, s * 0.36, C.ink, 0.22 * a); ctx.save(); ctx.setLineDash([4, 3]); disc(cx, cy, s * 0.36, C.ink, a, 1.6); ctx.restore(); }
+  const ra = a * (opt.ringA ?? 1);
+  if (opt.ring !== false && ra > 0) { const [cx, cy] = at(pos.move), white = String(pos.color || "").toLowerCase() === "white"; disc(cx, cy, s * 0.36, white ? C.ink : "#1a1f1e", ra * (white ? 0.3 : 0.7)); disc(cx, cy, s * 0.46, C.ink, ra, 2.8); }
+}
+// Generic trials: a stimulus tile (a dot pattern), a response token (one of three shapes). seed fixes them.
+function trials(n, seed) { const rnd = mulberry32(seed); return Array.from({ length: n }, () => ({ pat: Array.from({ length: 9 }, () => rnd() < 0.45), resp: Math.floor(rnd() * 3), p: 0.3 + 0.65 * rnd() })); }
+const TRIALS = trials(8, 3); TRIALS[5].p = 0.06;      // one unlikely response among them
+function stimTile(x, y, s, pat, a = 1) { rect(x, y, s, s, C.faint, 0.4 * a); for (let i = 0; i < 9; i++) if (pat[i]) disc(x + ((i % 3) + 0.5) * s / 3, y + (Math.floor(i / 3) + 0.5) * s / 3, s * 0.09, C.grey, a); }
+function token(x, y, s, kind, col, a = 1) {
+  ctx.save(); ctx.globalAlpha = a * GA; ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.8; ctx.beginPath();
+  if (kind === 0) ctx.arc(x, y, s * 0.36, 0, 2 * Math.PI);
+  else if (kind === 1) { ctx.moveTo(x, y - s * 0.4); ctx.lineTo(x + s * 0.38, y + s * 0.3); ctx.lineTo(x - s * 0.38, y + s * 0.3); ctx.closePath(); }
+  else ctx.rect(x - s * 0.32, y - s * 0.32, s * 0.64, s * 0.64);
+  ctx.stroke(); ctx.restore();
+}
+// The column of trials of scene 1 at (x, y), rows of height rh. Each option is a number, or a function of the row:
+// a, the row's opacity; stim and tok, the opacity of its stimulus tile and of its response token; bars, how far its
+// bar has grown toward its probability; pf, a factor on that probability; drain, 0 to 1, the bar emptying to a hollow
+// outline with a question mark; logs, the opacity of the log of the probability, at the right of the column; push,
+// the amber push of the bias (line 3.5); counts, a stopped IBS row per trial, with cells, the opacity of its cells.
+function trialColumn(x, y, rh, opt = {}) {
+  const s = rh * 0.62, bx = x + 150, bw = 260, v = (o, i, d) => (o === undefined ? d : typeof o === "function" ? o(i) : Array.isArray(o) ? o[i] : o);
+  TRIALS.forEach((tr, i) => {
+    const cy = y + i * rh, a = v(opt.a, i, 1), p = Math.min(0.97, Math.max(0.02, tr.p * v(opt.pf, i, 1)));
+    const sa = a * v(opt.stim, i, 1), ta = a * v(opt.tok, i, 1), b = v(opt.bars, i, 0), dr = v(opt.drain, i, 0), la = v(opt.logs, i, 0);
+    if (sa > 0) stimTile(x, cy - s / 2, s, tr.pat, sa);
+    if (ta > 0) token(x + 80, cy, s, tr.resp, C.ink, ta);
+    if (b > 0 && dr < 1) rect(bx, cy - s * 0.3, bw * p * b, s * 0.6, C.grey, 0.75 * a * (1 - dr));
+    if (b > 0 && dr > 0) { rect(bx, cy - s * 0.3, bw * p, s * 0.6, C.grey, 0.55 * a * dr, 1.2); text("?", bx + bw * p / 2, cy, 15, C.dim, { align: "center", fam: "mono", a: a * dr }); }
+    if (la > 0) text(Math.log(p).toFixed(2), bx + bw + 60, cy, 15, C.ink, { fam: "mono", align: "right", a: la });
+    const pu = v(opt.push, i, 0);
+    if (pu > 0.02) { const d = pu * (tr.p < 0.1 ? 3.2 : 0.6) * 10; line(bx + bw * tr.p + 8, cy, bx + bw * tr.p + 8 + d, cy, C.amber, 2, a); line(bx + bw * tr.p + 8 + d - 5, cy - 4, bx + bw * tr.p + 8 + d, cy, C.amber, 2, a); line(bx + bw * tr.p + 8 + d - 5, cy + 4, bx + bw * tr.p + 8 + d, cy, C.amber, 2, a); }
+    if (opt.counts) { const k = opt.counts[i], ca = a * v(opt.cells, i, 1); if (ca > 0) { cellRow(bx, cy - s * 0.3, s * 0.6, ibsHits(k), k, ca, 0.25); text(String(k), bx + k * s * 0.75 + 12, cy, 15, C.green, { fam: "mono", a: ca }); } }
+  });
+}
+// A cloud of repeated estimates of one trial as it builds: x the column's centre, y0..y1 the panel's vertical range
+// for the values v0..v1. Each mark comes in at its time in o and is not drawn without one: tr, the true value's line;
+// fx and ix, [from, to], the times over which the amber (fixed sampling) and green (IBS) dots fall in one by one; fm
+// and im, the lines of their means; gap, a bracket from the true value to the amber mean. o.seed fixes the jitter.
+function cloudT(cl, x, y0, y1, v0, v1, t, o) {
+  const yOf = (v) => lerp(y1, y0, (v - v0) / (v1 - v0)), rnd = mulberry32(o.seed), jitter = () => (rnd() - 0.5) * 2;
+  const dots = (vals, dx, col, span) => vals.forEach((v, i) => {
+    const jx = jitter() * 11, jy = jitter() * 2.5;
+    if (!span) return;
+    const ti = lerp(span[0], span[1], i / vals.length), g = ramp(t, ti, ti + 0.25);
+    if (g > 0) disc(x + dx + jx, yOf(v) + jy - 24 * (1 - g), 2.2, col, 0.45 * g);
+  });
+  dots(cl.fixed, -18, C.amber, o.fx); dots(cl.ibs, 18, C.green, o.ix);
+  const at = (k, d = 0.4) => (o[k] === undefined ? 0 : ramp(t, o[k], o[k] + d));
+  const ta = at("tr"); if (ta) line(x - 40, yOf(cl.truth), x + 40, yOf(cl.truth), C.grey, 2.2, ta);
+  const ma = at("fm"); if (ma) line(x - 34, yOf(cl.fixedMean), x - 2, yOf(cl.fixedMean), C.amber, 2.6, ma);
+  const ia = at("im"); if (ia) line(x + 2, yOf(cl.ibsMean), x + 34, yOf(cl.ibsMean), C.green, 2.6, ia);
+  const gg = at("gap", 0.5); if (gg) { const xb = x + 48, ya = yOf(cl.truth), yb = lerp(ya, yOf(cl.fixedMean), gg); line(xb, ya, xb, yb, C.amber, 2); line(xb - 5, ya, xb + 5, ya, C.amber, 2); line(xb - 5, yb, xb + 5, yb, C.amber, 2); }
+  return { xb: x + 48, yMid: (yOf(cl.truth) + yOf(cl.fixedMean)) / 2, yTrue: yOf(cl.truth) };
+}
+// The y axis of the clouds: ticks every 2 from v1 down to v0, at x 250.
+function cloudAxis(v0, v1, y0, y1) { for (let v = v1; v >= v0; v -= 2) { const y = lerp(y1, y0, (v - v0) / (v1 - v0)); line(230, y, 250, y, C.faint, 1); text(String(v), 220, y, 14, C.dim, { fam: "mono", align: "right" }); } line(250, y0, 250, y1, C.faint, 1); }
+// A row of cells that come in one at a time, each dropping into place: cell i of the row at (x, y) lands at times[i].
+function cellsIn(x, y, s, hits, t, times, g = 0.3) {
+  hits.forEach((h, i) => { const ti = times[i]; if (ti === undefined) return; const m = ramp(t, ti, ti + 0.15); if (m > 0) cell(x + i * s * (1 + g), y - 8 * (1 - m), s, h, m); });
+}
+// n times spread evenly from a to b; the opacity of a mark that comes in at t0, over d seconds; a text's width.
+const spread = (n, a, b) => Array.from({ length: n }, (_, i) => (n > 1 ? lerp(a, b, i / (n - 1)) : a));
+const appear = (t, t0, d = 0.4) => ramp(t, t0, t0 + d);
+function textW(str, px, fam = "sans") { ctx.save(); ctx.font = font(px, fam); const w = ctx.measureText(str).width; ctx.restore(); return w; }
+// The footnote at the bottom right, at an opacity.
+function footnote(str, a = 1) { $("foot").textContent = str; $("foot").style.opacity = String(a); }
+
+// The recorded run as a raster (lines 5.3 and 5.4): one row per trial, one square per simulation, one column per
+// round, up to round r. A trial's misses are grey, its match green; a trial that has matched dims.
+function runRaster(r) {
+  const x0 = 90, y0 = 112, w = 1100, h = 430, n = RUN.K.length, cw = w / RUN.maxK, rh = h / n;
+  RUN.K.forEach((k, i) => {
+    const y = y0 + i * rh, done = k <= r, misses = Math.min(k - 1, Math.floor(r));
+    if (misses > 0) rect(x0, y, misses * cw, rh * 0.72, C.dim, done ? 0.3 : 0.85);
+    if (done) rect(x0 + (k - 1) * cw, y, Math.max(cw, 3), rh * 0.72, C.green, 1);
+  });
+  return RUN.K.filter((k) => k > r).length;
+}
+
+// ================================================================ the HUD: labels, caption, footnote, provenance
+function setLabels(ls) {
+  const box = $("labels"); box.innerHTML = "";
+  for (const l of ls || []) { const e = document.createElement("div"); e.className = "lab " + (l.cls || "plain"); e.textContent = l.text; e.style.left = (l.x / W * 100) + "cqw"; e.style.top = (l.y / H * 100) + "%"; if (l.a !== undefined) e.style.opacity = l.a; box.appendChild(e); }
+}
+const PROV = "Positions from human-versus-human games of van Opheusden et al. (2023, Nature); model code: Bas van Opheusden and the Wei Ji Ma lab.";
+
+// ================================================================ times within a line
+// The time at which the character i of the line being drawn is spoken. On the voice's timeline (VOICED, the seconds of
+// the line's take) it is read from the take's word times (film_words.js, written by scripts/words.py): a character
+// between two timed words is placed in proportion between them. A take without word times is read in proportion along
+// its length, and without a voice the line is read at RATE characters a second, after LEAD seconds. setLine() sets
+// the line; cue("phrase") is then the time at which that phrase starts, and an error when the line does not contain it.
+const LEAD = 0.4, RATE = 13.3, WORDS = window.IBS_WORDS || {};
+let LINE = "", VOICED = null, ANCH = null;
+function setLine(S, voiced = null) { LINE = S.line; VOICED = voiced; ANCH = voiced && WORDS[S.id] && WORDS[S.id].length ? WORDS[S.id] : null; }
+function spokenAt(i) {
+  if (!VOICED) return LEAD + i / RATE;
+  if (!ANCH) return (i / Math.max(1, LINE.length)) * VOICED;
+  if (i <= ANCH[0][0]) return ANCH[0][1];
+  for (let j = 1; j < ANCH.length; j++) if (i <= ANCH[j][0]) { const [c0, s0] = ANCH[j - 1], [c1, s1] = ANCH[j]; return s0 + ((i - c0) / (c1 - c0)) * (s1 - s0); }
+  const [c0, s0] = ANCH[ANCH.length - 1];
+  return s0 + ((i - c0) / Math.max(1, LINE.length - c0)) * Math.max(0, VOICED - s0);
+}
+const cue = (phrase) => { const i = LINE.indexOf(phrase); if (i < 0) throw new Error(`cue: "${phrase}" is not in the line`); return spokenAt(i); };
+// The time at which the voice finishes the line.
+const lineEnd = () => VOICED || spokenAt(LINE.length);
+// The caption at t: the whole line, or with TIMED the sentence being spoken, from just before it starts.
+function captionAt(c, t) {
+  if (!TIMED || !c) return c;
+  const parts = c.match(/[^.!?]+[.!?]+\*?(\s+|$)/g) || [c];
+  let at = 0, k = 0;
+  parts.forEach((part, j) => { if (t >= spokenAt(at) - 0.15) k = j; at += part.length; });
+  return parts[k].trim();
+}
+
+// ================================================================ the shots, one per line of narration
+// Each draws its still at t (seconds into the line) and returns its labels. dur is the line's draft length.
+const CL = { a: cloud(0.2, FM, 160, 21), b: cloud(0.05, FM, 160, 22), c: cloud(0.01, FM, 160, 23), c50: cloud(0.01, 50, 160, 24), c100: cloud(0.01, 100, 160, 25) };
+const KA = RD.A.K, KB = RD.B.K;   // the counts of the two positions in the recorded run
+
+// Line 5.1: twenty IBS estimates of the toy's log-likelihood at its top, one repeat each (seeded), with their SDs.
+const FOREST_N = 20;
+// The column of trials stands for a data set of 300 (the toy model's); it says so under its last row.
+function moreTrials(x, a = 1) { text("⋮", x + 17, 548, 18, C.dim, { fam: "mono", align: "center", a }); text("8 OF 300 TRIALS", x + 60, 552, 12, C.dim, { fam: "mono", a }); }
+const fmt = (v) => v.toFixed(1).replace("-", "−");
+// The toy's log-likelihood at its top, and one IBS estimate of it there (one repeat, seeded), for lines 1.2 to 1.4 and 4.5.
+const TOP = (() => { const i = CURVES.tru.indexOf(Math.max(...CURVES.tru)), sig = CURVES.xs[i], r = mulberry32(303); let L = 0; for (const p of TOY.probs(sig)) L += ibsEst(geometric(r, p)); return { sig, L: CURVES.tru[i], ibs: L }; })();
+const FOREST = (() => { const r = mulberry32(404), out = []; for (let j = 0; j < FOREST_N; j++) { let L = 0, V = 0; for (const p of TOY.probs(TOP.sig)) { const K = geometric(r, p); L += ibsEst(K); V += ibsVar(K); } out.push({ L, sd: Math.sqrt(V) }); } return out; })();
+// A panel of the toy's curves at (x, y), w by h: the log-likelihood against the parameter, in the window SIG0..SIG1 by
+// LL0..LL1. opt: grey (opacity of the true curve), ring (false: no ring on its top), fixed (opacity of the amber curve
+// of the expected fixed-sampling estimate), morph (0 to 1: the amber curve rises from the grey one to its own place),
+// reveal (0 to 1: how much of the amber curve is drawn, from the left), drops (dashed lines from the tops down to the
+// axis: true, or { grey, amber } as fractions of their length), arrow (on the axis, from the true top toward the
+// fixed-sampling top: true, or the fraction drawn), marker (a point on the true curve, as a fraction of the axis),
+// trace ([from, to]: the part of the grey curve drawn, as fractions of the axis), ringA (the opacity of its ring),
+// other (the opacity of a dashed curve of another model's log-likelihood) and otherReveal (how much of it is drawn).
+function curvePanel(x, y, w, h, opt = {}) {
+  const { xs, tru, fix } = CURVES, n = xs.length;
+  const X = (sig) => x + w * Math.log(sig / SIG0) / Math.log(SIG1 / SIG0), Y = (v) => y + h - ((v - LL0) / (LL1 - LL0)) * h;
+  line(x, y + h, x + w, y + h, C.faint, 1); line(x, y, x, y + h, C.faint, 1);
+  const path = (arr, col, wd, a, from = 0, upto = 1, dash) => { const i0 = Math.round(from * (n - 1)), last = Math.round(upto * (n - 1)); if (last - i0 < 1) return; ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.globalAlpha = a * GA; if (dash) ctx.setLineDash(dash); ctx.beginPath(); for (let i = i0; i <= last; i++) (i > i0 ? ctx.lineTo(X(xs[i]), Y(arr[i])) : ctx.moveTo(X(xs[i]), Y(arr[i]))); ctx.stroke(); ctx.restore(); };
+  const top = (arr) => arr.indexOf(Math.max(...arr));
+  const ga = opt.grey ?? 1, fa = opt.fixed ?? 0, m = opt.morph ?? 1, amb = tru.map((v, i) => lerp(v, fix[i], m));
+  const iT = top(tru), iF = top(amb), sT = xs[iT], sF = xs[iF];
+  if (opt.other) path(CURVES.other, C.grey, 1.6, 0.75 * opt.other, 0, opt.otherReveal ?? 1, [7, 5]);
+  const tr = opt.trace || [0, 1];
+  path(tru, C.grey, 2.2, ga, tr[0], tr[1]);
+  if (opt.ring !== false) disc(X(sT), Y(tru[iT]), 6, C.ink, ga * (opt.ringA ?? 1), 2);
+  if (fa) { const up = opt.reveal ?? 1; path(amb, C.amber, 2.2, fa, 0, up); if (up >= 1) disc(X(sF), Y(amb[iF]), 6, C.amber, fa, 2); }
+  const dr = opt.drops === true ? { grey: 1, amber: 1 } : (opt.drops || {});
+  if (dr.grey) line(X(sT), Y(tru[iT]) + 8, X(sT), lerp(Y(tru[iT]) + 8, y + h, dr.grey), C.grey, 1, 0.6 * ga, [4, 4]);
+  if (fa && dr.amber) line(X(sF), Y(amb[iF]) + 8, X(sF), lerp(Y(amb[iF]) + 8, y + h, dr.amber), C.amber, 1, 0.6 * fa, [4, 4]);
+  const ar = opt.arrow === true ? 1 : (opt.arrow || 0);
+  if (ar > 0.02) { const ya = y + h - 14, xa = X(sT) - 4, xb = lerp(xa, X(sF) + 4, ar); line(xa, ya, xb, ya, C.amber, 2); line(xb + 7, ya - 5, xb, ya, C.amber, 2); line(xb + 7, ya + 5, xb, ya, C.amber, 2); }
+  if (opt.marker !== undefined) { const sig = SIG0 * Math.pow(SIG1 / SIG0, opt.marker), v = toyTrue(sig); disc(X(sig), Y(v), 7, C.ink); line(X(sig), Y(v), X(sig), y + h, C.ink, 1, 0.5); }
+  return { X, Y, sT, sF, vT: tru[iT], vF: amb[iF] };
+}
+// An estimate in a curve panel P: a dot, and its error bar when it has one, drawn to the fraction g of its length.
+function estPoint(P, e, col, a = 1, g = 1) {
+  if (a <= 0) return;
+  const x = P.X(e.sig), y = P.Y(e.L);
+  if (e.sd && g > 0) { const d = (P.Y(e.L - e.sd) - y) * g; line(x, y - d, x, y + d, col, 1.6, 0.8 * a); line(x - 4, y - d, x + 4, y - d, col, 1.6, 0.8 * a); line(x - 4, y + d, x + 4, y + d, col, 1.6, 0.8 * a); }
+  disc(x, y, 4, col, a);
+}
+// The posterior over the parameter in a curve panel P whose axis is at y + h: proportional to the likelihood (a flat
+// prior on the log parameter), scaled to 45% of the panel's height times g, which grows it.
+function posterior(P, y, h, a = 1, g = 1) {
+  if (a <= 0 || g <= 0) return;
+  const { xs, tru } = CURVES, m = Math.max(...tru);
+  ctx.save(); ctx.globalAlpha = a * GA; ctx.fillStyle = rgba(C.purple, 0.3); ctx.strokeStyle = C.purple; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P.X(xs[0]), y + h);
+  xs.forEach((sig, i) => ctx.lineTo(P.X(sig), y + h - 0.45 * h * g * Math.exp(tru[i] - m))); ctx.lineTo(P.X(xs[xs.length - 1]), y + h); ctx.fill(); ctx.stroke(); ctx.restore();
+}
+
+// Line 1.3's knob at t, as a fraction of the axis: at the top, swept down to the left edge, across to the right, and
+// back to the top.
+function knob13(t) {
+  const tC = cue("changes with"), tA = cue("A common way"), tH = cue("choose the parameters"), fT = Math.log(TOP.sig / SIG0) / Math.log(SIG1 / SIG0), t1 = tC + 0.9;
+  return t < tC ? fT : t < t1 ? lerp(fT, 0, ease(lin(t, tC, t1))) : t < tH - 0.2 ? ease(lin(t, t1, tA)) : lerp(1, fT, ease(lin(t, tH - 0.2, tH + 0.6)));
+}
+// Line 2.4's simulations: when simulation i comes onto the board as a ghost (ti), slowly for the first three and then
+// faster, and when it lands in the row below (land).
+function sims24() {
+  const n = RD.A.sims40.length, tE = cue("Each time"), tM = cue("Over many"), slow = Math.min(0.75, (tM - tE) / 3);
+  const ti = (i) => (i < 3 ? tE + i * slow : tM + 2.6 * Math.sqrt((i - 3) / (n - 4)));
+  return { ti, land: (i) => ti(i) + (i < 3 ? 0.55 : 0.12) };
+}
+// Line 4.1's simulations of the likely position, to its first match: when each comes onto the board, and when it lands.
+function sims41() {
+  const A = RD.A, tS = cue("It simulates"), tM = cue("until the first match");
+  const ts = A.row.map((_, j) => (j < A.row.length - 1 ? tS + 0.7 * j : Math.max(tM, tS + 0.7 * j)));
+  return { ts, land: ts.map((x) => x + 0.45) };
+}
+
+const SHOTS = [
+  // ---------------------------------------------------------------- 1. The log-likelihood
+  { id: "1.1", line: "You have a model and some data. The model assigns a probability to each observation. For example, in a behavioral experiment, each observation is the response a person gave on one trial.",
+    note: "On “some data”, response tokens come in down a column, eight observations, under the label DATA. On “The model assigns a probability”, a grey bar grows beside each, one after another, to its probability under the model, and the first is labelled likelihood. On “in a behavioral experiment”, a stimulus tile comes in at the head of each row; on “each observation is the response”, DATA becomes RESPONSE. On “a person gave”, the first row is outlined and labelled one trial.", dur: 7,
+    draw(t) {
+      const tD = cue("some data"), tB = cue("The model assigns"), tS = cue("in a behavioral"), tR = cue("each observation is"), tT = cue("a person gave");
+      const row = (t0, step) => (i) => appear(t, t0 + i * step, 0.3);
+      trialColumn(170, 128, 56, { tok: row(tD, 0.1), bars: row(tB + 0.3, 0.12), stim: row(tS, 0.08) });
+      moreTrials(170, appear(t, tS + 0.6));
+      const box = appear(t, tT); if (box) rect(158, 102, 444, 52, C.ink, 0.6 * box, 1.2);
+      return [{ cls: "small", x: 230, y: 95, text: "DATA", a: appear(t, tD) * (1 - appear(t, tR, 0.3)) }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: appear(t, tR + 0.2, 0.3) }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: appear(t, tS) }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: appear(t, tB) }, { cls: "term", x: 622, y: 128, text: "likelihood", a: appear(t, tB + 1.2) }, { cls: "small r", x: 148, y: 128, text: "ONE TRIAL", a: box }];
+    } },
+  { id: "1.2", line: "The log-likelihood is the sum of the logs of these probabilities. It measures how well the model explains the data.",
+    note: "The outline of the trial goes and the column dims. On “the sum”, the log of each bar’s probability appears at the end of its row, one after another. On “of these probabilities”, a rule is drawn under the column and the log-likelihood counts up to its value, labelled log-likelihood. The column is eight of the data set’s 300 trials, and says so under its last row; the number is the toy model’s, at the top of its curve.", dur: 8,
+    draw(t) {
+      const tS = cue("the sum"), tP = cue("of these probabilities"), dim = lerp(1, 0.55, appear(t, 0, 0.6)), box = 1 - appear(t, 0, 0.4);
+      if (box > 0) rect(158, 102, 444, 52, C.ink, 0.6 * box, 1.2);
+      trialColumn(170, 128, 56, { a: dim, bars: 1, logs: (i) => appear(t, tS + 0.1 * i, 0.3) });
+      moreTrials(170, dim);
+      const g = appear(t, tP, 0.3);
+      if (g) { line(320, 575, lerp(320, 640, g), 575, C.dim, 1.2); text(fmt(TOP.L * ease(lin(t, tP + 0.1, tP + 0.8))), 640, 605, 30, C.ink, { fam: "mono", align: "right", a: g }); }
+      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood", a: appear(t, tP + 0.3) }, { cls: "small r", x: 207, y: 95, text: "STIMULUS" }, { cls: "small", x: 230, y: 95, text: "RESPONSE" }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL" }, { cls: "small r", x: 640, y: 95, text: "LOG", a: appear(t, tS) }, { cls: "small r", x: 148, y: 128, text: "ONE TRIAL", a: box }];
+    } },
+  { id: "1.3", line: "The log-likelihood changes with the model’s parameters. A common way to fit a model is to choose the parameters where the log-likelihood is highest.",
+    note: "The logs go and the column dims further. An empty panel appears beside it, with a knob for one parameter under it, set at the top. On “changes with the model’s parameters”, the knob sweeps to one end and across to the other: the bars and the number at the foot move with it, and a grey curve traces the number against the parameter. On “choose the parameters”, the knob turns back to the top of the curve, where a ring lands, labelled maximum likelihood.", dur: 10,
+    draw(t) {
+      const tC = cue("changes with"), tA = cue("A common way"), tH = cue("choose the parameters"), fT = Math.log(TOP.sig / SIG0) / Math.log(SIG1 / SIG0);
+      const t1 = tC + 0.9, f = knob13(t);
+      const trace = t < t1 ? [f, fT] : [0, t < tA ? Math.max(fT, f) : 1], top = appear(t, tH + 0.5), ax = appear(t, 0, 0.6), dim = lerp(0.55, 0.35, ax);
+      const wob = (i) => 1 + 0.3 * Math.sin(3 * (f - fT)) * (i % 2 ? 1 : -1) - 0.4 * (f - fT) ** 2;
+      trialColumn(170, 128, 56, { a: dim, bars: 1, pf: wob, logs: 1 - appear(t, 0, 0.4) });
+      moreTrials(170, dim);
+      line(320, 575, 640, 575, C.dim, 1.2);
+      text(fmt(toyTrue(SIG0 * Math.pow(SIG1 / SIG0, f))), 640, 605, 30, C.ink, { fam: "mono", align: "right" });
+      let cp;
+      faded(ax, () => { cp = curvePanel(760, 180, 360, 280, { trace, ringA: top, marker: f }); line(760, 500, 1120, 500, C.faint, 1); disc(lerp(760, 1120, f), 500, 9, C.ink); });
+      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood" }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: dim }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: dim }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: dim }, { cls: "small r", x: 640, y: 95, text: "LOG", a: 1 - appear(t, 0, 0.4) }, { cls: "small", x: 760, y: 530, text: "A PARAMETER", a: ax }, { cls: "small", x: 735, y: 160, text: "LOG-LIKELIHOOD", a: ax }, { cls: "term", x: cp.X(cp.sT) + 14, y: cp.Y(cp.vT) - 24, text: "maximum likelihood", a: top }];
+    } },
+  { id: "1.4", line: "The log-likelihood is also used to compare models and to compute the Bayesian posterior over the parameters.",
+    note: "The curve holds with its ring, labelled maximum likelihood, and the knob goes. On “compare models”, a dashed curve draws in beside it, the log-likelihood of another model (the toy with a larger lapse rate), keyed model comparison at the top of the panel. On “the Bayesian posterior”, a purple posterior grows over the parameter axis, labelled Bayesian posterior.", dur: 8,
+    draw(t) {
+      const tM = cue("compare models"), tB = cue("the Bayesian posterior"), kn = 1 - appear(t, 0, 0.5), fT = Math.log(TOP.sig / SIG0) / Math.log(SIG1 / SIG0), dim = lerp(0.35, 0.25, appear(t, 0, 0.5));
+      trialColumn(170, 128, 56, { a: dim, bars: 1 }); moreTrials(170, dim);
+      line(320, 575, 640, 575, C.dim, 1.2); text(fmt(TOP.L), 640, 605, 30, C.ink, { fam: "mono", align: "right" });
+      const cp = curvePanel(760, 180, 360, 280, { other: appear(t, tM, 0.3), otherReveal: lin(t, tM, tM + 0.8) });
+      posterior(cp, 180, 280, appear(t, tB - 0.2, 0.3), 0.7 * appear(t, tB - 0.2, 1.0));
+      const oa = appear(t, tM + 0.5); if (oa) line(775, 205, 805, 205, C.grey, 1.6, 0.75 * oa, [7, 5]);
+      if (kn > 0) { line(760, 500, 1120, 500, C.faint, 1, kn); disc(lerp(760, 1120, fT), 500, 9, C.ink, kn); }
+      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood" }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: dim }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: dim }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: dim }, { cls: "small", x: 735, y: 160, text: "LOG-LIKELIHOOD" }, { cls: "small", x: 760, y: 530, text: "A PARAMETER" }, { cls: "term", x: cp.X(cp.sT) + 14, y: cp.Y(cp.vT) - 24, text: "maximum likelihood" }, { cls: "plain", x: 815, y: 205, text: "model comparison", a: appear(t, tM + 0.5) }, { cls: "term p c", x: cp.X(TOP.sig), y: 490, text: "Bayesian posterior", a: appear(t, tB + 0.2) }];
+    } },
+  // ---------------------------------------------------------------- 2. Models you can only simulate
+  { id: "2.1", line: "For many models, however, there is no formula for these probabilities.",
+    note: "The column of scene 1 returns with its bars full. On “there is no formula”, the bars empty one after another to hollow outlines, each with a question mark, and the number at the foot becomes a question mark.", dur: 5,
+    draw(t) {
+      const tN = cue("there is no formula"), q = appear(t, tN + 0.3, 0.5);
+      trialColumn(170, 128, 56, { bars: 1, drain: (i) => appear(t, tN + 0.06 * i, 0.5) }); moreTrials(170);
+      line(320, 575, 640, 575, C.dim, 1.2);
+      text(fmt(TOP.L), 640, 605, 30, C.ink, { fam: "mono", align: "right", a: 1 - q }); text("?", 640, 605, 30, C.dim, { fam: "mono", align: "right", a: q });
+      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood" }];
+    } },
+  { id: "2.2", line: "Take a model of how people play four-in-a-row, which is used to study how people plan ahead and how this changes as they learn. Each trial is a position from a real game. The response is the move the person played in it.",
+    note: "The hollow column fades, and a large empty board takes its place. On “four-in-a-row”, its pieces come in: a real position from a human game. On “Each trial is a position”, a column of small boards comes in at the left, one per trial, the first of them the large one, and the large board is named the stimulus. On “The response is the move”, a ring marks the move the person played, on every board, and the move is named the response. Provenance, bottom left.", dur: 13,
+    draw(t) {
+      const tG = cue("four-in-a-row"), tT = cue("Each trial is"), tR = cue("The response is"), out = 1 - appear(t, 0, 0.6), rg = appear(t, tR, 0.4);
+      faded(out, () => { trialColumn(170, 128, 56, { bars: 1, drain: 1 }); moreTrials(170); });
+      const bg = appear(t, Math.min(0.6, tG - 0.6), 0.5);
+      if (bg) board(420, 190, 60, POS[0], { a: bg, pieces: lin(t, tG - 0.2, tG + 0.8), ringA: rg });
+      [POS[0], ...COLPOS].forEach((p, i) => { const a = appear(t, tT + 0.25 * i, 0.3); if (a) board(110, 140 + i * 84, 13, p, { a: a * (i === 0 ? 0.3 : 1), ringA: rg }); });
+      if (bg) $("prov").textContent = PROV;
+      return [{ cls: "small", x: 110, y: 115, text: "TRIALS", a: appear(t, tT) }, { cls: "plain c", x: 420 + (POS[0].move % 9 + 0.5) * 60, y: 165, text: "the person’s move", a: rg }, { cls: "small", x: 420, y: 465, text: "STIMULUS: THE POSITION", a: appear(t, tT + 0.4) }, { cls: "small", x: 420, y: 492, text: "RESPONSE: THE MOVE THE PERSON PLAYED", a: appear(t, tR + 0.2) }];
+    } },
+  { id: "2.3", line: "Given a position, the model searches a few moves ahead. Its evaluation of the moves is partly random. The probability of each move depends on every search tree the model could build, so it cannot be computed.",
+    note: "The board on the left. On “searches a few moves ahead”, a small search tree unfolds beside it, level by level, labelled heuristic search. On “Its evaluation of the moves”, a value appears beside each candidate move, the best one brightest; on “partly random” the values flicker and the best move changes with them, until the next sentence. On “every search tree”, more trees multiply behind the board, faint, more than can be counted, and the probability of a move becomes a question mark.", dur: 13,
+    draw(t) {
+      const tS = cue("searches a few"), tE = cue("Its evaluation"), tR = cue("partly random"), tP = cue("The probability"), tT = cue("every search tree");
+      const rnd = mulberry32(9);
+      const keep = [[70, 140, 490, 370], [130, 380, 430, 470], [660, 110, 1020, 380], [680, 400, 1120, 490]];
+      const clear = (x, y) => keep.every(([a, b, c, d]) => x + 30 < a || x - 30 > c || y + 75 < b || y > d);
+      for (let n = 0; n < 40; n++) {
+        let x0, y0;
+        do { x0 = 80 + rnd() * 1120; y0 = 100 + rnd() * 400; } while (!clear(x0, y0));
+        const a = (0.08 + 0.1 * rnd()) * appear(t, tT + 0.035 * n, 0.3);
+        disc(x0, y0, 3, C.ink, a);
+        for (let j = -1; j <= 1; j++) { line(x0, y0, x0 + j * 22, y0 + 34, C.dim, 1, a); disc(x0 + j * 22, y0 + 34, 2.5, C.ink, a); if (rnd() < 0.6) line(x0 + j * 22, y0 + 34, x0 + j * 22 + (rnd() - 0.5) * 20, y0 + 68, C.dim, 1, a); }
+      }
+      board(100, 200, 40, POS[0], { ring: true });
+      const r2 = mulberry32(5), tx = 860, ty = 150, va = appear(t, tE, 0.3);
+      const ep = t < tR ? 0 : 1 + Math.floor((Math.min(t, tP) - tR) / 0.3), vr = mulberry32(500 + ep);
+      const vals = [0.35, 0.6, 0.5, 0.15].map((b) => b + 0.22 * normal(vr)), best = vals.indexOf(Math.max(...vals));
+      disc(tx, ty, 6, C.ink, appear(t, tS, 0.3));
+      [[-120, 70], [-40, 70], [40, 70], [120, 70]].forEach(([dx, dy], j) => {
+        const ka = appear(t, tS + 0.25 + 0.12 * j, 0.3), hi = va > 0 && j === best;
+        line(tx, ty, tx + dx, ty + dy, C.dim, 1.2, 0.8 * ka); disc(tx + dx, ty + dy, 5, C.ink, ka * (hi ? 1 : 0.6));
+        if (hi) glow(tx + dx, ty + dy, 18, C.ink, 0.4 * va);
+        for (let g = -1; g <= 1; g++) {
+          if (r2() < 0.7) {
+            const ga = appear(t, tS + 0.8 + 0.06 * (3 * j + g + 1), 0.3);
+            line(tx + dx, ty + dy, tx + dx + g * 30, ty + dy + 70, C.dim, 1, 0.5 * ga); disc(tx + dx + g * 30, ty + dy + 70, 4, C.ink, 0.45 * ga);
+            if (j === 1 && g === 0) { const gg = appear(t, tS + 1.6, 0.3); line(tx + dx, ty + dy + 70, tx + dx + 10, ty + dy + 140, C.dim, 1, 0.5 * gg); disc(tx + dx + 10, ty + dy + 140, 4, C.ink, 0.45 * gg); }
+          }
+        }
+        if (va) text((vals[j] >= 0 ? "+" : "") + vals[j].toFixed(2), tx + dx + (dx < 0 ? -12 : 12), ty + dy - 14, 13, hi ? C.ink : C.dim, { fam: "mono", align: dx < 0 ? "right" : "left", a: va });
+      });
+      $("prov").textContent = PROV;
+      return [{ cls: "numb c", x: 280, y: 430, text: "p(move) = ∫ … ?", a: appear(t, tT + 1.0) }, { cls: "small", x: 700, y: 430, text: "CANDIDATE MOVES, VALUED WITH SOME RANDOMNESS", a: appear(t, tR) }, { cls: "term", x: 700, y: 465, text: "heuristic search", a: appear(t, tS + 0.4) }];
+    } },
+  { id: "2.4", line: "But you can give the model the same position as many times as you like. Each time it simulates a move. Over many simulations, the fraction that match the person’s move approaches its probability.",
+    note: "The board, with the person’s move ringed, labelled simulator. On “Each time it simulates a move”, the model simulates a move on this position: a ghost piece appears where its move falls, labelled a simulated move, and drops into the row under the board as a cross for a miss or a check for a match, leaving a small dot on its square, green on the person’s square. The first three go slowly: a miss, a miss and a match. On “Over many simulations”, the rest follow faster and faster, forty in all, the model’s own on this position from the run’s data: eighteen match.", dur: 12,
+    draw(t) {
+      const A = RD.A, tE = cue("Each time"), tM = cue("Over many"), { ti, land } = sims24();
+      const rnd = mulberry32(13), dots = [], hits = [], drops = [];
+      let ghost;
+      A.sims40.forEach((sq, i) => { const dx = (rnd() - 0.5) * 0.5, dy = (rnd() - 0.5) * 0.5; hits.push(sq === A.move); drops.push(land(i)); if (t >= land(i)) dots.push({ i: sq, dx, dy, col: sq === A.move ? C.green : C.dim }); else if (t >= ti(i)) ghost = sq; });
+      board(180, 150, 62, POS[0], { ring: true, dots, model: ghost, flare: ghost === A.move ? 1 : 0, flareCol: C.green });
+      cellsIn(180, 450, 20, hits, t, drops, 0.25);
+      $("prov").textContent = PROV;
+      const la = appear(t, tE, 0.3) * (1 - appear(t, tM - 0.2, 0.3));
+      return [{ cls: "plain c", x: 180 + (A.move % 9 + 0.5) * 62, y: 128, text: "the person’s move" }, { cls: "plain", x: 758, y: 150 + (Math.floor(A.sims40[0] / 9) + 0.5) * 62, text: "a simulated move", a: la }, { cls: "small", x: 180, y: 435, text: "SIMULATED MOVES: A CROSS MISSES THE PERSON’S SQUARE, A CHECK MATCHES IT", a: appear(t, tE + 0.5) }, { cls: "term", x: 780, y: 120, text: "simulator", a: appear(t, 0.2) }];
+    } },
+  // ---------------------------------------------------------------- 3. The obvious estimate
+  { id: "3.1", line: "The obvious approach is to simulate each trial a fixed number of times and take the log of the fraction that match.",
+    note: "The likely position, small, on the left, labelled fixed sampling. On “to simulate each trial”, a row of twenty cells fills one cell at a time with crosses and checks: twenty simulations of the model on this position, from the run’s data, thirteen of which match. As the row completes, the count of checks over twenty comes in, in amber, and its log on “take the log”.", dur: 7,
+    draw(t) {
+      const tS = cue("to simulate each trial"), tL = cue("take the log"), hits = RD.A.fixed20.map((sq) => sq === RD.A.move), n = hits.filter(Boolean).length;
+      board(120, 240, 34, POS[0], { ring: true });
+      cellsIn(480, 280, 30, hits, t, spread(FM, tS, tS + 1.6), 0.28);
+      text(`${n} of 20`, 480, 370, 26, C.amber, { fam: "mono", a: appear(t, tS + 1.8) });
+      text(`log(${n}/20) = ${Math.log(n / 20).toFixed(2)}`, 480, 415, 26, C.amber, { fam: "mono", a: appear(t, Math.max(tL, tS + 2.2)) });
+      return [{ cls: "term", x: 480, y: 240, text: "fixed sampling", a: appear(t, 0.2) }];
+    } },
+  { id: "3.2", line: "If the person made an unlikely move, none of the simulations may match. Then the estimate is the log of zero, which is minus infinity.",
+    note: "The surprising position, its ring flaring on “an unlikely move”. On “none of the simulations”, twenty crosses fill the row one at a time: the first twenty simulations of this position in the recorded run, none of which match. The amber readout reads 0 of 20 as the row completes, then log 0 on “the log of zero”, and minus infinity when the voice says it.", dur: 7,
+    draw(t) {
+      const tU = cue("an unlikely move"), tN = cue("none of the"), tZ = cue("the log of zero"), tI = cue("minus infinity"), lz = "log 0 ";
+      board(120, 240, 34, POS[1], { ring: true, flare: appear(t, tU, 0.3) * (1 - appear(t, tU + 0.8, 0.6)) });
+      cellsIn(480, 280, 30, RD.B.fixed20.map((sq) => sq === RD.B.move), t, spread(FM, tN, tN + 1.4), 0.28);
+      text("0 of 20", 480, 370, 26, C.amber, { fam: "mono", a: appear(t, tN + 1.6) });
+      text(lz, 480, 415, 26, C.amber, { fam: "mono", a: appear(t, tZ) }); text("= −∞", 480 + textW(lz, 26, "mono"), 415, 26, C.amber, { fam: "mono", a: appear(t, tI) });
+      return [{ cls: "term", x: 480, y: 240, text: "fixed sampling" }];
+    } },
+  { id: "3.3", line: "A simple fix adds one to both counts, but with twenty simulations a probability of one in a hundred gets almost the same estimate as one in a million.",
+    note: "The twenty crosses stay, with the readout of line 3.2 until “adds one”, when the fix replaces it: one match and one simulation added, one in twenty-one, and its log, in amber. On “one in a hundred”, a table begins with that probability, its true log in grey, and the average fixed-sampling estimate with twenty simulations in amber, computed from the paper’s estimator. On “one in a million”, its second row: the two amber numbers are almost the same. The picture holds while line 3.4 begins.", dur: 9, hold: 1.0,
+    draw(t) {
+      const tA = cue("adds one"), tH = cue("one in a hundred"), tM = cue("one in a million"), old = 1 - appear(t, tA, 0.3), ha = appear(t, tH - 0.2);
+      board(120, 240, 34, POS[1], { ring: true });
+      cellRow(480, 280, 30, RD.B.fixed20.map((sq) => sq === RD.B.move), FM, 1, 0.28);
+      if (old > 0) { text("0 of 20", 480, 370, 26, C.amber, { fam: "mono", a: old }); text("log 0 = −∞", 480, 415, 26, C.amber, { fam: "mono", a: old }); }
+      text("(0 + 1) / (20 + 1) = 1/21", 480, 370, 24, C.amber, { fam: "mono", a: appear(t, tA + 0.3) });
+      text("log(1/21) = " + Math.log(1 / 21).toFixed(2).replace("-", "−"), 480, 412, 24, C.amber, { fam: "mono", a: appear(t, tA + 0.9) });
+      [[0.01, "1 in 100", tH], [1e-6, "1 in 1,000,000", tM]].forEach(([p, str, t0], i) => {
+        const y = 530 + i * 38, a = appear(t, t0);
+        text(str, 480, y, 20, C.ink, { fam: "mono", a }); text(fmt(Math.log(p)), 840, y, 20, C.grey, { fam: "mono", align: "right", a }); text(fmt(fixedMean(p, FM)), 1120, y, 20, C.amber, { fam: "mono", align: "right", a: appear(t, t0 + (i ? 0 : 0.3)) });
+      });
+      return [{ cls: "term", x: 480, y: 240, text: "fixed sampling" }, { cls: "small", x: 480, y: 488, text: "TRUE PROBABILITY", a: ha }, { cls: "small r", x: 840, y: 488, text: "TRUE LOG", a: ha }, { cls: "small r", x: 1120, y: 488, text: "ESTIMATE, ON AVERAGE", a: ha }];
+    } },
+  { id: "3.4", line: "With a fixed number of simulations, no fix makes the estimate unbiased. This one is too high on average, most of all for the responses the model explains worst.",
+    note: "Three columns, one per probability, the probability shrinking from left to right. The grey line of the true log probability appears in each. During the first sentence, repeated fixed-sampling estimates of one trial drop in as amber dots. On “too high on average”, the mean of each column settles above its grey line. On “most of all”, a bracket marks the gap in each column in turn, the widest at the smallest probability, labelled bias. Illustration computed from the paper’s formulas, twenty simulations per trial.", dur: 13,
+    draw(t) {
+      const v0 = -6, v1 = 0, y0 = 120, y1 = 560, tO = cue("This one"), tH = cue("too high"), tW = cue("most of all");
+      cloudAxis(v0, v1, y0, y1);
+      const ends = [CL.a, CL.b, CL.c].map((cl, i) => cloudT(cl, 340 + i * 260, y0, y1, v0, v1, t, { seed: 50 + i, tr: 1.0 + 0.15 * i, fx: [1.3 + 0.15 * i, tO - 0.4], fm: tH + 0.15 * i, gap: tW + 0.3 * i }));
+      return [{ cls: "small", x: 300, y: 600, text: "P = 0.2", a: appear(t, 1.0) }, { cls: "small", x: 560, y: 600, text: "P = 0.05", a: appear(t, 1.15) }, { cls: "small", x: 820, y: 600, text: "P = 0.01", a: appear(t, 1.3) }, { cls: "small", x: 120, y: 100, text: "LOG PROBABILITY" }, { cls: "plain k", x: 980, y: 335, text: "true value", a: appear(t, 1.0) }, { cls: "plain a", x: 980, y: 300, text: "fixed sampling, mean", a: appear(t, tH) }, { cls: "term a", x: ends[2].xb + 12, y: ends[2].yMid, text: "bias", a: appear(t, tW + 0.9) }];
+    } },
+  { id: "3.5", line: "This bias does not average out over the trials. It adds up. It is larger at some parameter values than at others, so it moves the best fit.",
+    note: "The column of trials returns, beside the grey curve of scene 1. On “does not average out”, each row gets a small amber push, one row after another, the largest on the unlikely response. On “adds up”, the pushes add into one long arrow at the foot of the column. On “It is larger”, an amber curve rises off the grey one, and on “at some parameter values” the gap between them is marked at three values, widest on the left. On “than at others”, dashed lines drop from the two tops and an arrow on the axis runs from the true best fit to the best fit under fixed sampling, as the voice says that the bias moves the best fit. The panel shows the window around the two tops. Illustration: the one-parameter model of scene 1, kept off screen, 300 trials.", dur: 11.5,
+    draw(t) {
+      const tA = cue("does not average out"), tU = cue("It adds up"), tL = cue("It is larger"), tS = cue("at some parameter values"), tO = cue("than at others");
+      trialColumn(100, 128, 56, { bars: 1, a: 0.7, push: (i) => ramp(t, tA + i * 0.22, tA + 0.5 + i * 0.22) });
+      const sum = TRIALS.reduce((s, tr) => s + (tr.p < 0.1 ? 3.2 : 0.6) * 10, 0), g = ramp(t, tU, tU + 0.8);
+      if (g > 0.02) { const x0 = 250, y = 590, x1 = x0 + sum * g; line(x0, y, x1, y, C.amber, 2.4); line(x1 - 6, y - 5, x1, y, C.amber, 2.4); line(x1 - 6, y + 5, x1, y, C.amber, 2.4); }
+      const m = ramp(t, tL, tL + 1.0), d = ramp(t, tO, tO + 0.4);
+      const cp = curvePanel(760, 180, 360, 280, { fixed: m > 0 ? 1 : 0, morph: m, drops: { grey: d, amber: d }, arrow: ramp(t, tO + 0.2, tO + 0.8) });
+      const ga = ramp(t, tS, tS + 0.5); if (ga) [0.62, 0.95, 1.35].forEach((sig) => { const yT = cp.Y(toyTrue(sig)), yF = cp.Y(toyFixedMean(sig)); line(cp.X(sig), yT - 3, cp.X(sig), yF + 3, C.amber, 1.4, 0.7 * ga, [3, 3]); });
+      return [{ cls: "small", x: 760, y: 490, text: "A PARAMETER" }, { cls: "small", x: 735, y: 160, text: "LOG-LIKELIHOOD" }, { cls: "small", x: 250, y: 612, text: "THE SUM OVER THE TRIALS", a: g }, { cls: "plain k", x: cp.X(cp.sT) + 6, y: 530, text: "true best fit", a: appear(t, tO + 0.3) }, { cls: "plain a r", x: cp.X(cp.sF) - 6, y: 530, text: "best fit under fixed sampling", a: appear(t, tO + 0.3) }];
+    } },
+  { id: "3.6", line: "More simulations reduce the bias, but how many are enough depends on the probabilities you want to estimate. With fixed sampling, a hundred simulations per trial still left one parameter of the four-in-a-row model biased.",
+    caption: "More simulations reduce the bias, but how many are enough depends on the probabilities you want to estimate. With fixed sampling, a hundred simulations per trial still left one parameter of the four-in-a-row model biased.*",
+    note: "At the rare response, the cloud for twenty simulations, with its bracket. On “reduce the bias”, the clouds for fifty and then a hundred simulations drop in beside it, each with its mean and bracket: the gap narrows, slowly. On “With fixed sampling”, the four-in-a-row board comes back small on the right, labelled four-in-a-row model; on “a hundred simulations per trial”, the number of simulations; on “still left one parameter”, fitted parameter still biased. Footnote: the paper’s Figure 9A.", dur: 13,
+    draw(t) {
+      const v0 = -6, v1 = 0, y0 = 120, y1 = 560, tR = cue("reduce the bias"), tF = cue("With fixed sampling"), tH = cue("a hundred simulations"), tP = cue("still left one"), t0s = [-2, tR - 0.6, tR + 0.4];
+      cloudAxis(v0, v1, y0, y1);
+      [CL.c, CL.c50, CL.c100].forEach((cl, i) => { const t0 = t0s[i]; cloudT(cl, 340 + i * 260, y0, y1, v0, v1, t, { seed: 60 + i, tr: t0, fx: [t0, t0 + 0.6], fm: t0 + 0.7, gap: t0 + 0.9 }); });
+      const bA = appear(t, tF); if (bA) board(1010, 150, 22, POS[0], { ring: true, a: bA });
+      if (bA) footnote("*van Opheusden, Acerbi & Ma (2020), Figure 9A.", bA);
+      return [{ cls: "small", x: 280, y: 600, text: "20 SIMULATIONS" }, { cls: "small", x: 540, y: 600, text: "50 SIMULATIONS", a: appear(t, t0s[1]) }, { cls: "small", x: 800, y: 600, text: "100 SIMULATIONS", a: appear(t, t0s[2]) }, { cls: "small", x: 120, y: 100, text: "LOG PROBABILITY, P = 0.01" }, { cls: "plain k", x: 980, y: 480, text: "true value" }, { cls: "plain a", x: 980, y: 445, text: "fixed sampling, mean" }, { cls: "small", x: 1010, y: 262, text: "FOUR-IN-A-ROW MODEL", a: bA }, { cls: "small", x: 1010, y: 286, text: "100 SIMULATIONS PER TRIAL", a: appear(t, tH) }, { cls: "plain a", x: 1010, y: 318, text: "fitted parameter still biased", a: appear(t, tP) }];
+    } },
+  // ---------------------------------------------------------------- 4. Inverse binomial sampling
+  { id: "4.1", line: "Inverse binomial sampling turns the obvious approach around. It simulates each trial until the first match and counts how many simulations it took.",
+    note: "The likely position, and beside it, faint, the row of twenty from line 3.1 under its label, fixed sampling. On “turns the obvious approach around”, that row empties from the right and the label becomes inverse binomial sampling. On “It simulates each trial”, the model simulates moves on the position one at a time, the recorded run’s own: a miss, a miss, then the person’s move. Each shows as a ghost piece on the board and drops into the row as a cross or a check, with the count above it, in green. The row stops at the match, and the count stands under it: three simulations to the first match.", dur: 8,
+    draw(t) {
+      const A = RD.A, tT = cue("turns the obvious"), tS = cue("It simulates"), tM = cue("until the first match"), fx = A.fixed20.map((sq) => sq === A.move);
+      for (let i = 0; i < FM; i++) { const a = 0.45 * (1 - appear(t, tT + (FM - 1 - i) * 0.03, 0.25)); if (a > 0) cell(480 + i * 30 * 1.28, 280, 30, fx[i], a); }
+      const { ts, land } = sims41();
+      let ghost; ts.forEach((x, j) => { if (t >= x && t < land[j]) ghost = A.row[j]; });
+      board(120, 240, 34, POS[0], { ring: true, model: ghost, flare: ghost === A.move ? 1 : 0, flareCol: C.green });
+      cellsIn(480, 280, 30, ibsHits(KA), t, land, 0.28);
+      const n = land.filter((x) => t >= x).length;
+      if (n) text(String(n), 480 + (n - 0.5) * 30 * 1.28, 250, 22, C.green, { fam: "mono", align: "center" });
+      text(`${KA} simulations to the first match`, 480, 370, 24, C.green, { fam: "mono", a: appear(t, land[KA - 1] + 0.4) });
+      return [{ cls: "term a", x: 480, y: 210, text: "fixed sampling", a: 0.6 * (1 - appear(t, tT, 0.4)) }, { cls: "term", x: 480, y: 210, text: "inverse binomial sampling", a: appear(t, tT + 0.3) }];
+    } },
+  { id: "4.2", line: "Likely responses need few simulations. Unlikely ones need many more. The average count is one over the probability.",
+    note: "Two trials, one above the other. The likely move: its cells come in, a check after three. On “Unlikely ones”, the surprising move: a long row of crosses comes in, ending in a check. Both counts are the recorded run’s, 3 and 32. On “The average count”, one over each move’s probability appears beside its count, about 1.7 and about 33, with the label geometric distribution.", dur: 9,
+    draw(t) {
+      const tU = cue("Unlikely ones"), tA = cue("The average count"), la = spread(KA, 0.2, 0.8), lb = spread(KB, tU, tU + 1.6), pa = appear(t, tA);
+      board(120, 150, 26, POS[0], { ring: true }); board(120, 360, 26, POS[1], { ring: true });
+      cellsIn(400, 170, 26, ibsHits(KA), t, la, 0.28); cellsIn(400, 380, 22, ibsHits(KB), t, lb, 0.16);
+      text(String(KA), 400 + (KA - 0.5) * 26 * 1.28, 148, 20, C.green, { fam: "mono", align: "center", a: appear(t, la[KA - 1] + 0.15, 0.3) });
+      text(String(KB), 400 + (KB - 0.5) * 22 * 1.16, 358, 20, C.green, { fam: "mono", align: "center", a: appear(t, lb[KB - 1] + 0.15, 0.3) });
+      return [{ cls: "term", x: 400, y: 470, text: "geometric distribution", a: appear(t, tA + 0.3) }, { cls: "small", x: 400, y: 128, text: `1 / PROBABILITY ≈ ${(1 / RD.A.p).toFixed(1)}`, a: pa }, { cls: "small", x: 400, y: 338, text: `1 / PROBABILITY ≈ ${Math.round(1 / RD.B.p)}`, a: pa }];
+    } },
+  { id: "4.3", line: "The estimate starts at zero. Each miss before the match subtracts one more term, first one, then a half, then a third.",
+    note: "The surprising move’s row of thirty-two. On “starts at zero”, a zero under its first cell and the running estimate, in green. On “Each miss before the match”, one term appears under each cross, left to right, −1, −1/2, −1/3, …, −1/31, and the running estimate counts down with them to the sum. Labels: digamma, and the formula. All of it stands before the voice names the first three terms.", dur: 8,
+    draw(t) {
+      const tZ = cue("starts at zero"), tE = cue("Each miss");
+      const step = 28 * 1.19, za = appear(t, tZ), t0 = tE + 0.2, dt = 0.05, xk = (k) => 140 + (k - 0.5) * step;
+      cellRow(140, 200, 28, ibsHits(KB), KB, 1, 0.19);
+      text("0", 124, 288, 15, C.ink, { fam: "mono", align: "center", a: za });
+      let shown = 0;
+      for (let k = 1; k < KB; k++) {
+        const a = appear(t, t0 + (k - 1) * dt, 0.15), x = xk(k);
+        if (t >= t0 + (k - 1) * dt) shown = k;
+        if (!a) continue;
+        if (k <= 6 || k === KB - 1) { text("−", x - 13, 288, 14, C.ink, { fam: "mono", align: "center", a }); text("1", x + 3, 278, 13, C.ink, { fam: "mono", align: "center", a }); line(x - 4, 287, x + 10, 287, C.ink, 1, a); text(String(k), x + 3, 298, 13, C.ink, { fam: "mono", align: "center", a }); }
+        else if (k === 8) text("…", x, 280, 16, C.dim, { fam: "mono", align: "center", a });
+      }
+      text(`= ${ibsEst(shown + 1).toFixed(2)}`, 140, 380, 30, C.green, { fam: "mono", a: za });
+      const da = appear(t, t0 + (KB - 1) * dt + 0.2);
+      text("ψ(1) − ψ(K)", 1140, 380, 24, C.dim, { fam: "serif", it: true, align: "right", a: da });
+      return [{ cls: "term r", x: 1140, y: 418, text: "digamma", a: da }, { cls: "small", x: 140, y: 160, text: `K = ${KB} SIMULATIONS TO THE FIRST MATCH` }];
+    } },
+  { id: "4.4", line: "This estimate is unbiased. On average it equals the true log probability, however small the probability is.",
+    caption: "This estimate is unbiased. On average it equals the true log probability, however small the probability is.*",
+    note: "The amber clouds of line 3.4 return with their grey lines and means. Green dots of repeated IBS estimates fall in beside them, column by column. On “On average”, the green mean of each column, the exact expectation, lands on its grey line, at every probability, while the amber mean sits above. On “however small”, the column of the smallest probability lights. Footnote: de Groot (1959) and [1] Appendix A.1.", dur: 8,
+    draw(t) {
+      const v0 = -8, v1 = 0, y0 = 110, y1 = 510, tA = cue("On average"), tS = cue("however small"), lit = appear(t, tS);
+      cloudAxis(v0, v1, y0, y1);
+      const ends = [CL.a, CL.b, CL.c].map((cl, i) => cloudT(cl, 340 + i * 260, y0, y1, v0, v1, t, { seed: 70 + i, tr: -2, fx: [-2, -1.5], fm: -2, ix: [0.2 + 0.3 * i, 0.9 + 0.3 * i], im: tA + 0.15 * i }));
+      if (lit) glow(878, ends[2].yTrue, 46, C.green, 0.35 * lit);
+      footnote("*de Groot (1959); van Opheusden, Acerbi & Ma (2020), Appendix A.1. Under this sampling, no other estimator that is unbiased for every probability has a smaller variance.");
+      return [{ cls: "small", x: 300, y: 534, text: "P = 0.2" }, { cls: "small", x: 560, y: 534, text: "P = 0.05" }, { cls: lit > 0.5 ? "small g" : "small", x: 820, y: 534, text: "P = 0.01" }, { cls: "small", x: 120, y: 84, text: "LOG PROBABILITY" }, { cls: "plain k", x: 980, y: 300, text: "true value" }, { cls: "plain a", x: 980, y: 265, text: "fixed sampling, mean" }, { cls: "plain g", x: 980, y: 335, text: "IBS, mean", a: appear(t, tA) }];
+    } },
+  { id: "4.5", line: "Summing over the trials gives an unbiased estimate of the log-likelihood.",
+    note: "The column of trials, each row’s cells coming in down the column, each row stopped at its first match with its count. On “an unbiased estimate”, a rule under the column and the green sum counting to its value: one IBS estimate of the toy model’s log-likelihood, near the true value beside it in grey, not on it.", dur: 6,
+    draw(t) {
+      const tU = cue("an unbiased estimate"), rnd = mulberry32(77), counts = TRIALS.map((tr) => Math.min(14, geometric(rnd, tr.p))), g = appear(t, tU, 0.3);
+      trialColumn(100, 128, 56, { counts, cells: (i) => appear(t, 0.1 + 0.12 * i, 0.3) }); moreTrials(100, appear(t, 1.0));
+      if (g) { line(250, 575, lerp(250, 640, g), 575, C.dim, 1.2); text(fmt(TOP.ibs * ease(lin(t, tU + 0.1, tU + 0.7))), 640, 605, 30, C.green, { fam: "mono", align: "right", a: g }); }
+      text("true value " + fmt(TOP.L), 670, 605, 18, C.grey, { fam: "mono", a: appear(t, tU + 0.8) });
+      return [{ cls: "term", x: 250, y: 605, text: "log-likelihood", a: g }, { cls: "small", x: 250, y: 95, text: "SIMULATIONS TO THE FIRST MATCH, PER TRIAL" }];
+    } },
+  // ---------------------------------------------------------------- 5. What comes with it
+  { id: "5.1", line: "The count also gives an error bar for the estimate. Summed over the trials, the error bars are calibrated. The true log-likelihood falls inside them as often as it should.",
+    note: "At the top, the surprising position’s stopped row and its estimate; on “an error bar”, the estimate’s error bar, labelled trigamma, with its formula. On “Summed over the trials”, twenty summed estimates of a whole data set drop in one under another, each with its error bar of one SD. On “The true log-likelihood”, a grey line marks the true value; the bars that contain it stay bright, the others dim, and a count says how many contain it, against about two in three for bars of one SD. Illustration on the toy model of scene 1: one IBS repeat per estimate, computed in the page.", dur: 13.5,
+    draw(t) {
+      const tB = cue("an error bar"), tS = cue("Summed over"), tT = cue("The true");
+      cellRow(140, 150, 22, ibsHits(KB), KB, 1, 0.19);
+      const est = ibsEst(KB), sd = Math.sqrt(ibsVar(KB)), a1 = appear(t, tB, 0.5);
+      text(`${est.toFixed(2)}`, 140, 212, 26, C.green, { fam: "mono" }); text(`± ${sd.toFixed(2)}`, 270, 212, 26, C.green, { fam: "mono", a: a1 }); text("ψ₁(1) − ψ₁(K)", 1140, 212, 22, C.dim, { fam: "serif", it: true, align: "right", a: a1 });
+      const x0 = 260, x1 = 1020, span = 30, X = (v) => lerp(x0, x1, (v - (TOP.L - span)) / (2 * span)), y0 = 290, dy = 13, ga = appear(t, tT - 0.2);
+      let cover = 0;
+      FOREST.forEach((e, j) => { const a = ramp(t, tS + j * 0.06, tS + j * 0.06 + 0.2); if (!a) return; const inside = Math.abs(e.L - TOP.L) <= e.sd; if (inside) cover++; const dim = inside ? 1 : lerp(1, 0.35, ramp(t, tT + 0.2, tT + 0.7)), y = y0 + j * dy; line(X(e.L - e.sd), y, X(e.L + e.sd), y, C.green, 2, a * dim * 0.85); disc(X(e.L), y, 3.5, C.green, a * dim); });
+      if (ga) line(X(TOP.L), y0 - 14, X(TOP.L), y0 + FOREST_N * dy, C.grey, 2.2, ga);
+      return [{ cls: "small", x: 140, y: 128, text: `K = ${KB}` }, { cls: "term r", x: 1140, y: 248, text: "trigamma", a: a1 }, { cls: "small", x: x0, y: 248, text: "THE SUMMED ESTIMATE OF A WHOLE DATA SET, TWENTY TIMES, ± 1 SD", a: appear(t, tS) }, { cls: "plain k", x: X(TOP.L) + 8, y: y0 - 16, text: "true value", a: ga }, { cls: "small", x: x0, y: 572, text: `${cover} OF ${FOREST_N} CONTAIN THE TRUE VALUE; FOR BARS OF ONE SD, ABOUT TWO IN THREE SHOULD`, a: appear(t, tT + 0.6) }];
+    } },
+  { id: "5.2", line: "To reduce the noise, you can repeat the estimate and average.",
+    note: "The column of trials with its counts, and at the right one estimate with its error bar, labelled one repeat. On “you can repeat”, the whole column runs again with new counts, and the error bar of the average narrows, labelled average of 2 repeats; then once more, average of 3. A faint outline keeps the width of the first bar.", dur: 8,
+    draw(t) {
+      const t2 = cue("you can repeat") - 0.1, t3 = t2 + 0.45, r = t < t2 ? 1 : t < t3 ? 2 : 3, tr = r === 2 ? t2 : t3;
+      const rnd = mulberry32(77 + 100 * (r - 1)), counts = TRIALS.map((tr) => Math.min(14, geometric(rnd, tr.p)));
+      trialColumn(100, 128, 56, { counts, cells: r === 1 ? 1 : appear(t, tr, 0.2) }); moreTrials(100);
+      const x = 1020, y = 330, sdOf = (k) => 90 / Math.sqrt(k), sd = r === 1 ? sdOf(1) : lerp(sdOf(r - 1), sdOf(r), appear(t, tr, 0.3));
+      const bar = (w, col, a, lw) => { line(x - w, y, x + w, y, col, lw, a); line(x - w, y - 10, x - w, y + 10, col, lw, a); line(x + w, y - 10, x + w, y + 10, col, lw, a); };
+      if (r > 1) bar(sdOf(1), C.green, 0.25, 1.5);
+      bar(sd, C.green, 1, 3); disc(x, y, 6, C.green);
+      const l2 = appear(t, t2, 0.2), l3 = appear(t, t3, 0.2);
+      return [{ cls: "small", x: 250, y: 95, text: "SIMULATIONS TO THE FIRST MATCH, PER TRIAL" }, { cls: "small c", x, y: y - 40, text: "ONE REPEAT", a: 1 - l2 }, { cls: "small c", x, y: y - 40, text: "AVERAGE OF 2 REPEATS", a: l2 * (1 - l3) }, { cls: "small c", x, y: y - 40, text: "AVERAGE OF 3 REPEATS", a: l3 }, { cls: "small c", x, y: y + 40, text: "THE ERROR BAR" }];
+    } },
+  { id: "5.3", line: "PyIBS simulates all the trials together, one round at a time, until each has matched.",
+    note: "The recorded run: a hundred rows, one per real position, and one square per simulation. Round by round, a column of squares fills for every trial that has not yet matched; a match is green and its row dims. A counter gives the round and the trials still open. By the end of the line, forty rounds have run and twelve trials are still open.", dur: 7,
+    draw(t) { const r = 1 + Math.floor(39 * lin(t, 0.3, lineEnd() - 0.3)), open = runRaster(r); return [{ cls: "small", x: 90, y: 92, text: "100 POSITIONS, ONE ROW EACH; ONE SQUARE PER SIMULATION" }, { cls: "small r", x: 1190, y: 92, text: `ROUND ${r} · ${open} OPEN` }]; } },
+  { id: "5.4", line: "Then it returns the estimate and its error bar.",
+    note: "The last trials run on alone, the longest to round 293, then the last match. As it lands, the readout: the run’s estimate of the log-likelihood and its error bar, with the number of simulations and rounds.", dur: 6,
+    draw(t) { const r = Math.round(lerp(40, RUN.maxK, ease(lin(t, 0, 1.0)))), open = runRaster(r), ra = appear(t, Math.min(1.0, cue("the estimate") - 0.1)); text(`${fmt(RUN.L)} ± ${RUN.sd.toFixed(1)}`, 1190, 592, 28, C.green, { fam: "mono", align: "right", a: ra }); return [{ cls: "small", x: 90, y: 92, text: "100 POSITIONS, ONE ROW EACH; ONE SQUARE PER SIMULATION" }, { cls: "small r", x: 1190, y: 92, text: `ROUND ${r} · ${open} OPEN` }, { cls: "term r", x: 960, y: 592, text: "log-likelihood", a: ra }, { cls: "small", x: 90, y: 592, text: `${RUN.sims.toLocaleString("en-US")} SIMULATIONS IN ${RUN.maxK} ROUNDS`, a: ra }]; } },
+  // ---------------------------------------------------------------- 6. The hand-off
+  { id: "6.1", line: "The four-in-a-row model is only one example. PyIBS works with any model that can simulate each observation on its own, as long as the observations are discrete.",
+    note: "The board of the four-in-a-row model, labelled four-in-a-row model. On “PyIBS works”, the wordmark. On “any model”, the board’s label becomes a simulator; on “simulate each observation”, ghost pieces fall where the model’s simulated moves land, one after another. On “as long as the observations are discrete”, three response tokens come in one by one, labelled discrete observations.", dur: 9,
+    draw(t) {
+      const tW = cue("PyIBS works"), tM = cue("any model"), tS = cue("simulate each"), tD = cue("as long as");
+      const ghost = t >= tS && t < tD + 0.6 ? RD.A.sims40[Math.floor((t - tS) / 0.35) % RD.A.sims40.length] : undefined;
+      board(180, 230, 34, POS[0], { ring: true, model: ghost });
+      [1, 0, 2].forEach((kind, j) => { const a = appear(t, tD - 0.2 + 0.2 * j, 0.3); if (a) token(560 + 80 * j, 300, 60, kind, C.ink, a); });
+      return [{ cls: "cond g", x: 870, y: 280, text: "PYIBS", a: appear(t, tW) }, { cls: "plain", x: 870, y: 320, text: "Inverse Binomial Sampling", a: appear(t, tW + 0.2) }, { cls: "small", x: 180, y: 400, text: "FOUR-IN-A-ROW MODEL", a: 1 - appear(t, tM, 0.3) }, { cls: "small", x: 180, y: 400, text: "A SIMULATOR", a: appear(t, tM + 0.2, 0.3) }, { cls: "small", x: 560, y: 400, text: "DISCRETE OBSERVATIONS", a: appear(t, tD + 0.2) }];
+    } },
+  { id: "6.2", line: "You can then use PyBADS to find the maximum-likelihood fit or PyVBMC to approximate the Bayesian posterior.",
+    note: "Two panels with the curve of scene 1, faint. On “PyBADS”, green IBS estimates with their error bars appear one by one where the optimizer tries the parameter, the earlier ones dimming as they gather toward the top, and a ring lands there, labelled maximum likelihood. On “PyVBMC”, estimates appear spread over the range, and a purple posterior grows over the parameter axis, labelled Bayesian posterior, as the voice says it. Illustration on the toy model of scene 1: each estimate is the average of ten IBS repeats, computed in the page; the points tried are chosen for the picture.", dur: 9,
+    draw(t) {
+      const PA = curvePanel(130, 210, 440, 250, { grey: 0.35, ring: false }), PB = curvePanel(710, 210, 440, 250, { grey: 0.35, ring: false });
+      const tA = cue("PyBADS"), tB = cue("or PyVBMC"), tR = tA + 1.7, nA = EST.bads.length, nB = EST.vbmc.length;
+      const shown = Math.max(1, Math.min(nA, Math.floor(lerp(0, nA, (t - tA) / (tR - 0.3 - tA))) + 1));
+      EST.bads.forEach((e, i) => { const ti = lerp(tA, tR - 0.3, i / nA); estPoint(PA, e, C.green, appear(t, ti, 0.15) * (0.35 + 0.65 * Math.min(1, (i + 1) / shown)), appear(t, ti, 0.3)); });
+      const f = EST.badsFit, ra = appear(t, tR); if (ra) disc(PA.X(f), PA.Y(toyTrue(f)), 9, C.ink, ra, 2.4);
+      posterior(PB, 210, 250, appear(t, tB + 0.7, 0.3), appear(t, tB + 0.7, 1.2));
+      EST.vbmc.forEach((e, i) => { const ti = lerp(tB, tB + 1.2, i / nB); estPoint(PB, e, C.green, 0.8 * appear(t, ti, 0.15), appear(t, ti, 0.3)); });
+      return [{ cls: "cond", x: 130, y: 170, text: "PYBADS", a: appear(t, tA - 0.3, 0.3) }, { cls: "cond", x: 710, y: 170, text: "PYVBMC", a: appear(t, tB - 0.1, 0.3) }, { cls: "small r", x: 570, y: 480, text: "A PARAMETER" }, { cls: "small r", x: 1150, y: 480, text: "A PARAMETER" }, { cls: "term", x: 130, y: 520, text: "maximum likelihood", a: ra }, { cls: "term p", x: 710, y: 520, text: "Bayesian posterior", a: appear(t, tB + 1.2) }];
+    } },
+  { id: "6.3", line: "Both are designed to work with noisy estimates like those of IBS. No fitting method can correct a biased estimate like that of fixed sampling.",
+    note: "One large panel with the grey curve of line 3.5. During the first sentence, green IBS estimates appear one by one with their error bars, scattered around the grey curve, and on “noisy” the label noise. On “No fitting method”, amber fixed-sampling estimates appear one by one, all above the grey curve, and the amber curve draws through them from the left. On “biased”, a bracket between the two curves is labelled bias. Illustration on the toy model: each estimate is the average of ten repeats of its estimator, computed in the page.", dur: 12,
+    draw(t) {
+      const tN = cue("No fitting method"), tB = Math.max(cue("biased"), tN + 1.6), n = EST.ibs.length;
+      const P = curvePanel(240, 170, 720, 330, { fixed: appear(t, tN + 0.9, 0.2) * 0.8, reveal: ramp(t, tN + 0.9, tN + 1.7), ring: false });
+      EST.fixed.forEach((e, i) => { const ti = lerp(tN, tN + 1.0, i / n); estPoint(P, e, C.amber, appear(t, ti, 0.15)); });
+      EST.ibs.forEach((e, i) => { const ti = lerp(0.3, 2.0, i / n); estPoint(P, e, C.green, appear(t, ti, 0.15), appear(t, ti, 0.3)); });
+      const sb = 1.46, xb = P.X(sb), yT = P.Y(toyTrue(sb)), yF = P.Y(toyFixedMean(sb)), g = ramp(t, tB, tB + 0.5);
+      if (g) { const yb = lerp(yT, yF, g); line(xb, yb, xb, yT, C.amber, 2); line(xb - 6, yb, xb + 6, yb, C.amber, 2); line(xb - 6, yT, xb + 6, yT, C.amber, 2); }
+      const e0 = EST.ibs[1];
+      return [{ cls: "plain a", x: xb + 12, y: (yT + yF) / 2, text: "bias", a: appear(t, tB + 0.4) }, { cls: "plain g", x: P.X(e0.sig) + 12, y: P.Y(e0.L), text: "noise", a: appear(t, cue("noisy")) }, { cls: "plain g", x: 985, y: 200, text: "IBS estimates", a: appear(t, 0.3) }, { cls: "plain a", x: 985, y: 232, text: "fixed-sampling estimates", a: appear(t, tN) }, { cls: "plain k", x: 985, y: 264, text: "true log-likelihood" }, { cls: "small r", x: 960, y: 520, text: "A PARAMETER" }];
+    } },
+  { id: "6.4", line: "With a biased estimate, a study can reach a false conclusion and be confident in it. With IBS, the estimate is only noisy. Its error bar shows how far to trust it.",
+    note: "The panel of line 6.3. The estimates fade and the bracket goes. On “a false conclusion”, the amber top flares and its dashed line drops to the axis, labelled fit with fixed sampling. On “With IBS”, the true top’s dashed line drops, and a green ring lands near it with its own line, labelled fit with IBS. On “the estimate is only noisy”, the IBS estimate at that fit appears, and on “Its error bar” its error bar opens. Then the end card.", dur: 14,
+    draw(t) { const tF = cue("a false conclusion"), tI = cue("With IBS"), tN = cue("the estimate is only"), tE = cue("Its error bar"), fade = lerp(1, 0.25, ramp(t, 0, 0.8)); const P = curvePanel(240, 170, 720, 330, { fixed: 0.8, drops: { amber: ramp(t, tF, tF + 0.6), grey: ramp(t, tI, tI + 0.6) } }); EST.fixed.forEach((e) => estPoint(P, e, C.amber, fade)); EST.ibs.forEach((e) => estPoint(P, e, C.green, fade)); const ba = 1 - ramp(t, 0, 0.6); if (ba > 0) { const sb = 1.46, xb = P.X(sb), yT = P.Y(toyTrue(sb)), yF = P.Y(toyFixedMean(sb)); line(xb, yF, xb, yT, C.amber, 2, ba); line(xb - 6, yF, xb + 6, yF, C.amber, 2, ba); line(xb - 6, yT, xb + 6, yT, C.amber, 2, ba); } const fl = ramp(t, tF, tF + 0.3) * (1 - ramp(t, tF + 0.8, tF + 1.8)); if (fl > 0) glow(P.X(P.sF), P.Y(P.vF), 30, C.amber, 0.6 * fl); const f = EST.fit, gi = ramp(t, tI + 0.3, tI + 0.9); if (gi) { line(P.X(f), P.Y(toyTrue(f)) + 8, P.X(f), lerp(P.Y(toyTrue(f)) + 8, 500, gi), C.green, 1, 0.7, [4, 4]); disc(P.X(f), P.Y(toyTrue(f)), 9, C.green, gi, 2.4); } estPoint(P, EST.atFit, C.green, ramp(t, tN, tN + 0.3), ramp(t, tE, tE + 0.5)); return [{ cls: "plain a r", x: P.X(P.sF) - 6, y: 525, text: "fit with fixed sampling", a: ramp(t, tF + 0.3, tF + 0.7) }, { cls: "plain g", x: P.X(f) + 6, y: 525, text: "fit with IBS", a: ramp(t, tI + 0.6, tI + 1) }, { cls: "plain g", x: 985, y: 200, text: "IBS estimates" }, { cls: "plain a", x: 985, y: 232, text: "fixed-sampling estimates" }, { cls: "plain k", x: 985, y: 264, text: "true log-likelihood" }]; } },
+  // ---------------------------------------------------------------- the end card
+  { id: "7.1", line: "", note: "The end card: PyIBS 1.5, the install line, the lab’s page of its tools, the paper, the credits.", dur: 6, endcard: true,
+    draw(t) { return []; } },
+];
+
+// ================================================================ the events, for the score
+// What each shot shows, as [time in the line's seconds, kind, value], timed by the same cues as its picture. A
+// simulation that lands is a "miss" or a "match" (its index); the marks that come in are "data", "bar", "log", "row",
+// "count", "est", "point" (an estimate's log-likelihood) and "fpoint" (one of fixed sampling); a cloud's dots fall as
+// "rain" ([seconds, column]); "truth", "mean" and "imean" are a cloud's true value and its means under fixed sampling
+// and IBS, and "bias" a bias as it is drawn (its size). "knob" is line 1.3's knob, sampled at 20 Hz (its place on the
+// axis); "term" is the k-th term of line 4.3; "round" a round of the run (how many trials match in it). The rest are
+// the film's moments. ibsFilm.events() places them on the film's timeline and keeps those that fall while their
+// picture is on screen.
+const simKind = (hit) => (hit ? "match" : "miss");
+const biasOf = (cl) => cl.fixedMean - cl.truth;
+const EVENTS = {
+  "1.1": () => { const tD = cue("some data"), tB = cue("The model assigns"); return [...TRIALS.map((_, i) => [tD + 0.1 * i, "data", i]), ...TRIALS.map((tr, i) => [tB + 0.3 + 0.12 * i, "bar", tr.p]), [cue("a person gave"), "trial", 0]]; },
+  "1.2": () => { const tS = cue("the sum"), tP = cue("of these probabilities"); return [...TRIALS.map((tr, i) => [tS + 0.1 * i, "log", Math.log(tr.p)]), [tP + 0.8, "sum", TOP.L]]; },
+  "1.3": () => { const tC = cue("changes with"), tH = cue("choose the parameters"), out = []; for (let t = tC - 0.1; t <= tH + 0.7; t += 0.05) out.push([t, "knob", knob13(t)]); return out.concat([[tH + 0.5, "top", 0]]); },
+  "1.4": () => [[cue("compare models"), "other", 0], [cue("the Bayesian posterior") - 0.2, "post", 0]],
+  "2.1": () => { const tN = cue("there is no formula"); return [[tN, "drain", 0], [tN + 0.3, "question", 0]]; },
+  "2.2": () => { const tT = cue("Each trial is"); return [[cue("four-in-a-row") - 0.2, "pieces", 1.0], ...[0, 1, 2, 3].map((i) => [tT + 0.25 * i, "board", i]), [cue("The response is"), "move", 0]]; },
+  "2.3": () => {
+    const tS = cue("searches a few"), tR = cue("partly random"), tP = cue("The probability"), tT = cue("every search tree"), out = [[tS, "node", 0]];
+    for (let j = 0; j < 4; j++) out.push([tS + 0.25 + 0.12 * j, "node", 1 + j]);
+    for (let k = 0; tR + 0.3 * k < tP; k++) out.push([tR + 0.3 * k, "flicker", k]);
+    return out.concat([[tT, "trees", 1.4], [tT + 1.0, "question", 0]]);
+  },
+  "2.4": () => { const { land } = sims24(), A = RD.A; return A.sims40.map((sq, i) => [land(i), simKind(sq === A.move), i]); },
+  "3.1": () => { const tS = cue("to simulate each trial"), ts = spread(FM, tS, tS + 1.6), A = RD.A; return A.fixed20.map((sq, i) => [ts[i] + 0.1, simKind(sq === A.move), i]).concat([[tS + 1.8, "count", A.fixed20.filter((sq) => sq === A.move).length], [Math.max(cue("take the log"), tS + 2.2), "flog", 0]]); },
+  "3.2": () => { const tN = cue("none of the"), ts = spread(FM, tN, tN + 1.4); return [[cue("an unlikely move"), "unlikely", 0], ...ts.map((x, i) => [x + 0.1, "miss", i]), [tN + 1.6, "count", 0], [cue("the log of zero"), "flog", 0], [cue("minus infinity"), "neginf", 0]]; },
+  "3.3": () => { const tA = cue("adds one"); return [[tA + 0.3, "fix", 0], [tA + 0.9, "flog", 0], [cue("one in a hundred"), "row", 0], [cue("one in a million"), "same", 0]]; },
+  "3.4": () => { const tO = cue("This one"), tH = cue("too high"), tW = cue("most of all"); return [CL.a, CL.b, CL.c].flatMap((cl, i) => [[1.0 + 0.15 * i, "truth", i], [1.3 + 0.15 * i, "rain", [tO - 0.4 - 1.3 - 0.15 * i, i]], [tH + 0.15 * i, "mean", i], [tW + 0.3 * i, "bias", biasOf(cl)]]); },
+  "3.5": () => { const tA = cue("does not average out"); return [...TRIALS.map((_, i) => [tA + 0.22 * i, "push", i]), [cue("It adds up"), "addup", 0.8], [cue("It is larger"), "morph", 1.0], [cue("than at others") + 0.2, "shift", 0]]; },
+  "3.6": () => { const tR = cue("reduce the bias"); return [[CL.c50, tR - 0.6], [CL.c100, tR + 0.4]].flatMap(([cl, t0], j) => [[t0, "rain", [0.6, 1 + j]], [t0 + 0.7, "mean", 1 + j], [t0 + 0.9, "bias", biasOf(cl)]]).concat([[cue("With fixed sampling"), "board", 0], [cue("still left one"), "still", 0]]); },
+  "4.1": () => { const { land } = sims41(), A = RD.A; return [[cue("turns the obvious") + 0.3, "turn", 0], ...A.row.map((sq, j) => [land[j], simKind(sq === A.move), j]), [land[KA - 1] + 0.4, "count", KA]]; },
+  "4.2": () => { const tU = cue("Unlikely ones"), la = spread(KA, 0.2, 0.8), lb = spread(KB, tU, tU + 1.6); return [...la.map((x, i) => [x + 0.1, simKind(i === KA - 1), i]), ...lb.map((x, i) => [x + 0.1, simKind(i === KB - 1), i]), [cue("The average count"), "inv", 0]]; },
+  "4.3": () => { const t0 = cue("Each miss") + 0.2, out = [[cue("starts at zero"), "zero", 0]]; for (let k = 1; k < KB; k++) out.push([t0 + (k - 1) * 0.05, "term", k]); return out.concat([[t0 + (KB - 1) * 0.05 + 0.2, "digamma", 0]]); },
+  "4.4": () => { const tA = cue("On average"); return [0, 1, 2].flatMap((i) => [[0.2 + 0.3 * i, "rain", [0.7, i]], [tA + 0.15 * i, "imean", i]]).concat([[cue("however small"), "lit", 0]]); },
+  "4.5": () => [...TRIALS.map((_, i) => [0.1 + 0.12 * i, "row", i]), [cue("an unbiased estimate") + 0.7, "sum", TOP.ibs]],
+  "5.1": () => { const tS = cue("Summed over"); return [[cue("an error bar"), "errbar", 0], ...FOREST.map((e, j) => [tS + 0.06 * j, "est", Math.abs(e.L - TOP.L) <= e.sd ? 1 : 0]), [cue("The true") - 0.2, "truth", 0]]; },
+  "5.2": () => { const t2 = cue("you can repeat") - 0.1; return [[t2, "repeat", 2], [t2 + 0.45, "repeat", 3]]; },
+  "5.3": () => { const e = lineEnd(); return Array.from({ length: 40 }, (_, j) => [j ? 0.3 + (j / 39) * (e - 0.6) : 0.05, "round", RUN.rounds[j] - RUN.rounds[j + 1]]); },
+  "5.4": () => {
+    const out = [], rOf = (t) => Math.round(lerp(40, RUN.maxK, ease(lin(t, 0, 1.0))));
+    for (let k = 1, r0 = 40; k <= 50; k++) { const r = rOf(0.02 * k), m = RUN.K.filter((K) => K > r0 && K <= r).length; if (m) out.push([0.02 * k, "round", m]); r0 = r; }
+    return out.concat([[Math.min(1.0, cue("the estimate") - 0.1), "result", RUN.L]]);
+  },
+  "6.1": () => { const tS = cue("simulate each"), tD = cue("as long as"), out = [[cue("PyIBS works"), "name", 0]]; for (let t = tS; t < tD + 0.6; t += 0.35) out.push([t, "ghost", 0]); return out.concat([0, 1, 2].map((j) => [tD - 0.2 + 0.2 * j, "token", j])); },
+  "6.2": () => { const tA = cue("PyBADS"), tB = cue("or PyVBMC"), tR = tA + 1.7; return [...EST.bads.map((e, i) => [lerp(tA, tR - 0.3, i / EST.bads.length), "point", e.L]), [tR, "fit", 0], ...EST.vbmc.map((e, i) => [lerp(tB, tB + 1.2, i / EST.vbmc.length), "point", e.L]), [tB + 0.7, "post", 0]]; },
+  "6.3": () => { const tN = cue("No fitting method"), n = EST.ibs.length; return [...EST.ibs.map((e, i) => [lerp(0.3, 2.0, i / n), "point", e.L]), ...EST.fixed.map((e, i) => [lerp(tN, tN + 1.0, i / n), "fpoint", e.L]), [Math.max(cue("biased"), tN + 1.6), "bias", toyFixedMean(1.46) - toyTrue(1.46)]]; },
+  "6.4": () => [[cue("a false conclusion"), "false", 0], [cue("With IBS") + 0.3, "withibs", 0], [cue("the estimate is only"), "estimate", 0], [cue("Its error bar"), "errbar", 0]],
+  "7.1": () => [[0, "end", 0]],
+};
+// The captions as the film shows them, for the subtitle files: [start, end, text] on the film's timeline. A line's
+// first sentence comes in with the line, each later one 0.15 s before the voice reaches it (captionAt), and the last
+// stays until the next line starts.
+function filmCaptions() {
+  const out = [], r3 = (x) => +x.toFixed(3);
+  CUES.forEach((c, i) => {
+    const S = SHOTS[c.k], cap = S.caption || S.line;
+    if (!cap || !c.seconds) return;
+    setLine(S, c.seconds);
+    const parts = cap.match(/[^.!?]+[.!?]+\*?(\s+|$)/g) || [cap];
+    let at = 0;
+    const starts = parts.map((part, j) => { const a = j ? c.start + spokenAt(at) - 0.15 : c.start; at += part.length; return a; });
+    const end = i + 1 < CUES.length ? CUES[i + 1].start : FILM.seconds;
+    parts.forEach((part, j) => out.push([r3(starts[j]), r3(j + 1 < parts.length ? starts[j + 1] : end), part.trim()]));
+  });
+  return out;
+}
+// The film's events on its timeline: { seconds, lines (the span of each take), shots (the span of each picture),
+// events: [T, kind, value, line id] in order, dropped: the events that fall outside their picture's span }.
+function filmEvents() {
+  const events = [], dropped = [], lines = {}, shots = {}, r3 = (x) => +x.toFixed(3);
+  CUES.forEach((c) => {
+    const S = SHOTS[c.k], f = EVENTS[S.id];
+    if (c.seconds) lines[S.id] = [r3(c.start), r3(c.start + c.seconds)];
+    shots[S.id] = [r3(c.pic), r3(c.end)];
+    if (!f) return;
+    setLine(S, c.seconds || null);
+    for (const [t, kind, v] of f()) {
+      const e = [r3(c.start + t), kind, typeof v === "number" ? +v.toFixed(4) : v.map((x) => +x.toFixed(4)), S.id];
+      (c.start + t >= c.pic - 1e-6 && c.start + t <= c.end ? events : dropped).push(e);
+    }
+  });
+  events.sort((a, b) => a[0] - b[0]);
+  return { seconds: FILM.seconds, lines, shots, events, dropped };
+}
+
+// The canvas cleared to black; a shot drawn at t, with its line and its take's length, returning its labels; the
+// caption of a line at t.
+function clear(c) { c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = C.black; c.fillRect(0, 0, c.canvas.width, c.canvas.height); c.restore(); }
+function clearHud() { $("foot").textContent = ""; $("foot").style.opacity = ""; $("prov").textContent = ""; }
+function drawShot(S, t, voiced = null) { setLine(S, voiced); GA = 1; return S.draw(t) || []; }
+function showCaption(S, t, voiced = null) { setLine(S, voiced); const cap = CAPTIONS ? captionAt(S.caption || S.line, t) : ""; $("cap").textContent = cap; $("cap").style.fontSize = cap.length > 170 ? "1.5cqw" : ""; }
+
+// ================================================================ the film: the shots on the voice's timeline
+// film_timeline.js (written by scripts/voice.py) gives each scene's start and each line's start and length. A shot is
+// drawn in its line's own seconds, from the start of the take, and its cues fall on the take's words. Its picture is
+// on screen from the start of its line to the start of the next, or until its `hold` seconds into the next line,
+// so that a mark that lands near the end of a line stays long enough to be read; the end card is on screen from the
+// start of its scene to the end. The captions follow the voice. At a change of scene the picture before fades out as
+// the new one fades in, over XF seconds; within a scene the pictures cut.
+const FILM = window.IBS_FILM || null, XF = 0.6;
+const CUES = [];
+if (FILM) {
+  const shotOf = (id) => { const k = SHOTS.findIndex((x) => x.id === id); if (k < 0) throw new Error("the timeline names a line that no shot has: " + id); return k; };
+  for (const sc of FILM.scenes) {
+    for (const ln of sc.lines) CUES.push({ k: shotOf(ln.id), scene: sc.id, start: sc.start + ln.start, seconds: ln.seconds });
+    if (sc.endcard) CUES.push({ k: shotOf(sc.endcard), scene: sc.id, start: sc.start, seconds: 0 });
+  }
+  CUES.forEach((c, i) => { c.pic = c.start + (i > 0 ? SHOTS[CUES[i - 1].k].hold || 0 : 0); });
+  CUES.forEach((c, i) => { c.end = i + 1 < CUES.length ? CUES[i + 1].pic : FILM.seconds; });
+}
+// A shot's take on the timeline (its seconds, or null), and the time into its line at which its picture leaves.
+const cueOf = (k) => (FILM ? CUES.find((c) => c.k === k) : null);
+const voicedOf = (k) => { const c = cueOf(k); return c && c.seconds ? c.seconds : null; };
+const endOf = (k) => { const c = cueOf(k); return c ? c.end - c.start : Math.max(SHOTS[k].dur, LEAD + SHOTS[k].line.length / RATE + 1); };
+
+function render(k, t) {
+  const S = SHOTS[k], v = voicedOf(k);
+  clear(ctx); clearHud();
+  setLabels(drawShot(S, t, v));
+  showCaption(S, t, v);
+  $("endcard").style.display = S.endcard ? "grid" : "none"; $("endcard").style.opacity = "";
+}
+
+let OFF = null;
+const cueAt = (T, key) => { let i = 0; while (i + 1 < CUES.length && CUES[i + 1][key] <= T) i++; return i; };
+function renderFilm(T) {
+  const i = cueAt(T, "pic"), c = CUES[i], S = SHOTS[c.k], t = Math.max(0, T - c.start);
+  const fade = i > 0 && CUES[i - 1].scene !== c.scene && T - c.pic < XF, m = fade ? ramp(T - c.pic, 0, XF) : 1;
+  let before = [];
+  if (fade) {
+    if (!OFF || OFF.width !== cv.width || OFF.height !== cv.height) { OFF = document.createElement("canvas"); OFF.width = cv.width; OFF.height = cv.height; }
+    const p = CUES[i - 1], main = ctx;
+    ctx = OFF.getContext("2d"); ctx.setTransform(SX, 0, 0, SX, 0, 0); clear(ctx);
+    before = drawShot(SHOTS[p.k], p.end - p.start, p.seconds || null);
+    ctx = main;
+  }
+  clear(ctx); clearHud();
+  const labels = drawShot(S, t, c.seconds || null);
+  if (fade) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1 - m; ctx.drawImage(OFF, 0, 0); ctx.restore(); }
+  const scaled = (ls, f) => ls.map((l) => ({ ...l, a: (l.a ?? 1) * f }));
+  setLabels([...scaled(before, 1 - m), ...scaled(labels, m)]);
+  const j = cueAt(T, "start"), cc = CUES[j];
+  showCaption(SHOTS[cc.k], Math.max(0, T - cc.start), cc.seconds || null);
+  $("endcard").style.display = S.endcard ? "grid" : "none"; $("endcard").style.opacity = S.endcard ? String(ramp(T - c.pic, 0, 1.2)) : "";
+}
+
+// ibsFilm.holds(fps): for each picture of the film, the last time at which it changes, in seconds after it comes on
+// screen, and how long it then holds before the next replaces it. A change is a label that comes, goes, moves or
+// fades, a change of the footnote, or a pixel of the canvas, scaled down to 160 x 90, whose three channels move by
+// more than 24 together. The captions are left out.
+function holds(fps = 10) {
+  const sm = document.createElement("canvas"); sm.width = 160; sm.height = 90;
+  const sc = sm.getContext("2d", { willReadFrequently: true });
+  const out = CUES.map((c) => ({ id: SHOTS[c.k].id, on: +(c.end - c.pic).toFixed(2), last: 0 }));
+  let prev = null, prevLab = null;
+  for (let f = 0; f / fps < FILM.seconds; f++) {
+    const T = f / fps;
+    renderFilm(T);
+    sc.clearRect(0, 0, 160, 90); sc.drawImage(cv, 0, 0, 160, 90);
+    const px = sc.getImageData(0, 0, 160, 90).data, lab = $("labels").innerHTML + "|" + $("foot").textContent + $("foot").style.opacity + "|" + $("prov").textContent + "|" + $("endcard").style.opacity;
+    const i = cueAt(T, "pic");
+    let moved = prev !== null && lab !== prevLab;
+    if (!moved && prev) for (let q = 0; q < px.length; q += 4) if (Math.abs(px[q] - prev[q]) + Math.abs(px[q + 1] - prev[q + 1]) + Math.abs(px[q + 2] - prev[q + 2]) > 24) { moved = true; break; }
+    if (moved) out[i].last = +(T - CUES[i].pic).toFixed(2);
+    prev = px; prevLab = lab;
+  }
+  return out.map((o) => ({ ...o, hold: +(o.on - o.last).toFixed(2) }));
+}
+
+// film.html?shot=K draws shot K as it leaves the screen, &t=T at T seconds into its line; film.html?film=1&T=T draws
+// the film at T seconds on the voice's timeline. ibsFilm.render(k, t) and ibsFilm.frame(T) are the hooks a recorder
+// steps; a shot's dur there is the time into its line at which its picture leaves the screen. ibsFilm.events() gives
+// the film's events, which the score follows.
+window.ibsFilm = { shots: SHOTS.map((s, k) => ({ id: s.id, line: s.line, caption: s.caption || null, note: s.note, dur: +endOf(k).toFixed(3) })), render, frame: renderFilm, holds, events: filmEvents, captions: filmCaptions, seconds: FILM ? FILM.seconds : 0 };
+if (document.fonts && document.fonts.ready) await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]);
+setup();
+const filmMode = q.has("film") && FILM;
+const k = Math.max(1, Math.min(SHOTS.length, Number(q.get("shot") || 1))) - 1;
+const t = q.has("t") ? Number(q.get("t")) : endOf(k), T0 = Number(q.get("T") || 0);
+const draw0 = () => (filmMode ? renderFilm(T0) : render(k, t));
+draw0();
+window.addEventListener("resize", () => { setup(); draw0(); });
+document.title = "ready " + (filmMode ? "film" : SHOTS[k].id);
+})();
+</script>
+</body>
+</html>

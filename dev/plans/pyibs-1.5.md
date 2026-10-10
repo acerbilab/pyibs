@@ -843,7 +843,9 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 ### Phase 7: the film
 
-**Status**: pending
+**Status**: in progress: steps 1 and 2 done; the film is made and its
+masters recorded (2026-10-10). Its publication, step 3, waits for the
+release (Phase 5) and the PI's instruction.
 **Executor**: Opus (orchestrator), on the PI's machine.
 **Needs**: `dev/private/film.md` and what it names. The phase comes last,
 after the release (D17).
@@ -851,9 +853,9 @@ after the release (D17).
 from the README, the documentation and the model-fitting page.
 
 **Steps**:
-1. Follow `dev/private/film.md`. The PyBADS film's sources, `dev/film/` on
+1. [x] Follow `dev/private/film.md`. The PyBADS film's sources, `dev/film/` on
    PyBADS's `feat-film` branch, are the model of a production.
-2. The script and the storyboard source every claim from [1], from the
+2. [x] The script and the storyboard source every claim from [1], from the
    validation record of Phase 3 or from the references of Phase 4's
    Positioning, which they follow; the PI approves both before anything is
    recorded.
@@ -1777,3 +1779,25 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 - Deviations: the notebooks last ran with PyVBMC from its release branch
   (`af6df49`); their rerun with PyVBMC 1.5.0 from PyPI comes on the pull
   request's head (Timing).
+
+### Phase 7 — 2026-10-10
+
+- The film's sources are in `dev/film/`, which `dev/README.md` indexes:
+  the storyboard and script (`STORYBOARD.md`, with the claims table and
+  the sources of every line), the page that draws the film (`film.html`),
+  the recorded PyIBS run it shows (`run/`), and the scripts that voice,
+  time, score and record it. The PI approved the script and the
+  storyboard after four rounds and an independent review of the script
+  against [1], then reviewed animatics v1 to v4, whose notes changed the
+  motion, the timing, line 6.1 and the score. The voice is Kokoro's
+  `am_michael`, which the PI keeps for the final.
+- The masters, 1920 x 1080 at 25 fps, 4:07, with captions and without,
+  the subtitles as SubRip and WebVTT, and the encodes for the web are in
+  the gitignored `dev/film/media/masters/`, with the voice's takes, which
+  Kokoro cannot give again, in `dev/film/media/v4/`.
+- Deviation: the film was made before the release, which the phase's
+  Needs place first (D17). Its end card names PyIBS 1.5 and `pip install
+  --upgrade pyibs`, and the documentation's address answers only once
+  the release is deployed, so the publication waits for the release.
+- Verification: pending the PI's approval of the masters; the links are
+  made at the publication.
