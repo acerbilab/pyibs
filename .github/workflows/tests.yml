@@ -3,6 +3,11 @@ name: tests
 
 on:
   workflow_dispatch:
+  schedule:
+    # Run on the 13th and 28th of each month, at 00:23 UTC (on main), so that
+    # a new release of NumPy, SciPy or pytest that breaks PyIBS is seen
+    # before the next pull request.
+    - cron:  '23 00 13,28 * *'
   # Development branches (dev-next and whatever succeeds it): a reduced
   # smoke run on every push that touches the package, so a long-lived branch
   # without a PR is not left to manual dispatch. PRs to main run the full
@@ -19,8 +24,8 @@ on:
       - '.github/workflows/tests.yml'
       - '.github/workflows/test-matrix.yml'
 
-# A newer push to the same branch supersedes a running smoke run; dispatched
-# runs are never cancelled.
+# A newer push to the same branch supersedes a running smoke run; scheduled
+# and dispatched runs are never cancelled.
 concurrency:
   group: tests-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: ${{ github.event_name == 'push' }}
@@ -29,7 +34,8 @@ jobs:
   tests:
     uses: ./.github/workflows/test-matrix.yml
     with:
-      # Full 3 OS x 5 Python matrix on dispatch; Ubuntu with the newest
-      # Python only on branch pushes. The minimum-versions job runs in both.
+      # Full 3 OS x 5 Python matrix on schedule and dispatch; Ubuntu with
+      # the newest Python only on branch pushes. The minimum-versions job
+      # runs in every case.
       os: ${{ github.event_name == 'push' && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest", "macos-latest"]' }}
       python-version: ${{ github.event_name == 'push' && '["3.14"]' || '["3.10", "3.11", "3.12", "3.13", "3.14"]' }}

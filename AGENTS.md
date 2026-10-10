@@ -161,7 +161,8 @@ Windows, macOS × Python 3.10–3.14) on a pull request to `main` or to a
 or one of the three test workflows, so that a
 Dependabot update of an action they use is tested before it merges; a pull
 request that changes anything else runs no tests. `tests.yml` runs the full
-matrix on dispatch, and a smoke run, the matrix reduced to Ubuntu with
+matrix on dispatch and on `main` twice a month (which gives the README's
+`tests` badge its status), and a smoke run, the matrix reduced to Ubuntu with
 Python 3.14, on each push to a `dev*` branch that touches `pyibs/`,
 `examples/`, `pyproject.toml`, `setup.py`, `tests.yml` or
 `test-matrix.yml`.

@@ -1,6 +1,7 @@
 # The test jobs, defined once: the matrix, and one run at the minimum
-# versions. Called by tests.yml (manual dispatch, pushes to dev* branches)
-# and merge-tests.yml (PRs to main and dev* branches), which run both jobs
+# versions. Called by tests.yml (manual dispatch, the twice-monthly schedule
+# on main, pushes to dev* branches) and merge-tests.yml (PRs to main and
+# dev* branches), which run both jobs
 # whenever they run the tests. Not triggered on its own.
 name: test-matrix
 
