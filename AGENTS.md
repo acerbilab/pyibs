@@ -220,7 +220,10 @@ notebook opens with a cell that installs the packages it imports when it
 runs in Colab (`"google.colab" in sys.modules`), and Binder builds from
 `binder/requirements.txt`. A new notebook takes the same cell, and the
 versions that both name follow the README's install line for the
-notebooks. `make -C
+notebooks. Nothing in CI builds Binder; this builds a pushed ref and
+streams its log:
+`curl -sNL -H "Accept: text/event-stream" https://mybinder.org/build/gh/acerbilab/pyibs/<ref>`.
+`make -C
 examples/scripts run`, with the venv's interpreter first on `PATH` (the
 target calls `python`) and nbconvert, ipykernel, matplotlib, PyBADS and
 PyVBMC installed, reruns them in place in about two minutes, nearly all of

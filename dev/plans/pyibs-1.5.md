@@ -756,8 +756,10 @@ moves, and from then on a change for 1.5.0 goes into the section
 PyPI, and its documentation published, before step 4: the README and the
 installation pages install `pyvbmc>=1.5` and link that documentation,
 and `AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
-release branch. Colab and Binder can be tried from the notebook pages
-(D26) once PyIBS 1.5.0 is on PyPI and the documentation is published.
+release branch, and Binder's build of the pushed `dev-next` is checked
+with the command in `AGENTS.md` ("Setup and commands"). Colab can be tried
+from the notebook pages (D26) once PyIBS 1.5.0 is on PyPI and the
+documentation is published.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
