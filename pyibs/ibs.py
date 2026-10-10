@@ -34,8 +34,7 @@ _ZERO_VARIANCE = (
     f"refuse an SD of 0 for a noisy target: see {_FAQ_ZERO_SD}"
 )
 
-# The messages of the exit flags, after ibslike.m's descriptions of its
-# exit flags.
+# The messages of the exit flags.
 _EXIT_MESSAGES = {
     0: (
         "All requested IBS repeats completed without reaching the "
@@ -225,7 +224,8 @@ class IBS:
         same kind of response: text and bytes do not match numbers.
         For responses that mix numbers and text, use ``dtype=object`` for
         both observed and simulated arrays. Otherwise NumPy converts the
-        numbers to text, and IBS raises ``TypeError`` for the mismatch.
+        numbers to text: simulated text against observed objects raises
+        ``TypeError``, and observed text never matches simulated objects.
     design_matrix : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. With None (the default), the simulator receives trial
@@ -241,10 +241,10 @@ class IBS:
         calls and exposed through the ``vectorized`` attribute.
 
         This timing cannot distinguish a fixed cost per simulator call
-        from a cost per response. It can choose False even when batching
-        would be faster. Set True for a simulator that benefits from
-        batching. If its first call compiles code or performs other setup,
-        warm it up before IBS times it. With ``num_reps=1``, IBS uses the
+        from a cost per response. It can choose False for a simulator with
+        a large fixed cost per call, which True spreads over more samples;
+        set True for such a simulator. If its first call compiles code or
+        performs other setup, warm it up before IBS times it. With ``num_reps=1``, IBS uses the
         False schedule and warns if True was explicitly requested.
     acceleration : float, optional
         Factor by which the requested samples per trial grow between
@@ -261,7 +261,8 @@ class IBS:
         sampling can then continue indefinitely if an observed response
         has zero probability under the model.
     max_time : float, optional
-        Time limit in seconds, > 0. Checked after each simulator call.
+        Time limit of each call in seconds, > 0. Checked after each
+        simulator call.
         The default, ``np.inf``, imposes no limit. If the limit stops
         sampling, IBS averages each trial's completed repeats, returns
         exit flag 2 and warns. A trial with no completed repeat raises
@@ -312,8 +313,8 @@ numpy.random.Generator, optional
     Attributes
     ----------
     rng : numpy.random.Generator
-        Random generator passed to ``sample_from_model`` when it accepts
-        an ``rng`` keyword.
+        Random generator passed to ``sample_from_model`` when it has a
+        parameter named ``rng`` that accepts a keyword.
     vectorized : bool or None
         Selected sampling schedule. With automatic selection, remains
         None until the first call with ``num_reps > 1``.
@@ -325,9 +326,9 @@ numpy.random.Generator, optional
         wrong type, such as a boolean for a count or a time.
     ValueError
         If ``response_matrix`` is empty, has more than two dimensions, or
-        contains a NaN; if ``design_matrix`` does not have N rows; or if a
-        setting is out of range. NaNs are rejected because they cannot
-        match a simulated response.
+        contains a NaN, an element not equal to itself, which no simulated
+        response matches; if ``design_matrix`` does not have N rows; or if
+        a setting is out of range.
 
     Notes
     -----
@@ -473,7 +474,7 @@ numpy.random.Generator, optional
 
     @property
     def num_samples_per_call(self):
-        """Initial samples per trial per simulator call; 0 uses ``num_reps``."""
+        """Initial samples per trial per call; 0 uses ``num_reps``."""
         return self._num_samples_per_call
 
     @property
@@ -533,11 +534,12 @@ numpy.random.Generator, optional
             Number of independent IBS repeats to average, at least 1.
             Whole-number floats are accepted as integers. Default 10.
         trial_weights : None, float or array_like of shape (N,), optional
-            Non-negative, finite real weights for the trials. Booleans and
-            strings are rejected. A scalar applies the same weight to
-            every trial; None (the default) uses unit weights. Zero-weight
-            trials are still sampled and can reach the sample cap or time
-            limit. Remove trials from the data to exclude them entirely.
+            Non-negative, finite real weights of the trials'
+            log-likelihoods. Booleans and strings are rejected. A scalar
+            applies the same weight to every trial; None (the default) uses
+            unit weights. Zero-weight trials are still sampled and can
+            reach the sample cap or time limit. Remove trials from the data
+            to exclude them entirely.
         additional_output : None or str, optional
             None or ``"none"`` returns only the estimate. ``"var"`` adds
             its estimated variance; ``"std"`` adds the square root of that

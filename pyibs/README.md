@@ -134,9 +134,10 @@ positive, and that `TrialWeights` has one element or one per trial (lines
 139-168). PyIBS checks every setting when `IBS` is created, and `num_reps`,
 `trial_weights`, `additional_output` and `return_positive` at each call.
 It raises `ValueError` for an invalid value and `TypeError` for the wrong
-type, naming the argument and its requirements. `return_positive` accepts
-only Python and NumPy booleans, preventing values such as the string
-`"False"` from silently reversing the sign. The counts (`num_reps`,
+type, naming the argument and its requirements. `return_positive` takes
+only Python and NumPy booleans, where `ibslike.m` (line 226) and PyIBS 0.1.0
+test the truth of any value, so that the string `"False"` returns the
+log-likelihood. The counts (`num_reps`,
 `num_samples_per_call`, `max_iter`, `max_samples`, `max_mem`) take integers and
 whole-number floats, such as `1e5`, and refuse booleans, fractions and
 infinity; `num_samples_per_call` is at least 0, the others at least 1.
@@ -159,9 +160,9 @@ have shape (N,), where `ibslike.m` flattens any array of one or N elements
 - PyIBS: `IBS.__init__`, `IBS.__call__` (`pyibs/ibs.py`); `_check_count`,
   `_check_real`, `_Settings` (`pyibs/_sampler.py`); `trial_weights`
   (`pyibs/_estimates.py`).
-- MATLAB: `ibslike.m:139-168`, `185`, `193`, `248`, `259-266`, `269`,
-  `281-284`, `296`, `361`, `372`, `413`, `427`, `439`.
-- Settled by: D16. Kind: deliberate change.
+- MATLAB: `ibslike.m:139-168`, `185`, `193`, `226`, `248`, `259-266`,
+  `269`, `281-284`, `296`, `361`, `372`, `413`, `427`, `439`.
+- Settled by: D16, D25. Kind: deliberate change.
 
 ## Sampling
 
@@ -347,15 +348,17 @@ ended, the log-likelihood estimate is (n_e / n)(-T) + (1 - n_e / n) times
 the weighted sum of the trials' averages. The call has exit flag 2 and
 issues a `UserWarning`, since the exit flag is not seen in the `"std"`
 output that PyBADS and PyVBMC take. A trial with no completed count
-raises `IBSSamplingError`. In `ibslike.m` as in PyIBS, selecting calls that
-finish within a finite time limit can introduce bias: smaller counts give
-higher log-likelihood estimates and are more likely to finish in time.
-In PyIBS such calls can have exit flag 0, which describes completion rather
-than unbiasedness. An infinite `max_time` avoids this source of bias.
+raises `IBSSamplingError`. In `ibslike.m` as in PyIBS, a finite time limit
+also biases the calls that complete in time: completing in time is more
+likely with small counts, which give high log-likelihoods, so only an
+infinite `max_time` gives unbiased estimates. Such a call has exit flag 0,
+or 1 when the threshold ended a repeat. PyIBS's message of flag 0 states
+that every repeat completed, where `ibslike.m` describes flag 0 as "Correct
+run of IBS; the estimate is unbiased" (line 44).
 - PyIBS: `sample`, `_limited_estimates` (`pyibs/_sampler.py`);
   `IBS.__call__` (`pyibs/ibs.py`).
-- MATLAB: `ibslike.m:86`, `210-213`, `272-275`, `347-373`, `396-398`,
-  `422-425`, `456-458`, `468-473`, `483-485`.
+- MATLAB: `ibslike.m:44`, `86`, `210-213`, `272-275`, `347-373`,
+  `396-398`, `422-425`, `456-458`, `468-473`, `483-485`.
 - Settled by: D3, D24. Kind: deliberate change.
 
 ## Responses and matching
@@ -409,7 +412,8 @@ checked: a design of NaN serves a simulator that reads only its size, as
 ## ibs_basic
 
 **KD-18. `ibs_basic` runs without a design, passes a generator, and
-raises on its data and on responses that cannot match.**
+raises on its data and on responses that cannot match or have another
+shape.**
 `ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33); it
 returns 0 for empty responses (lines 28-29, 39), ignores extra rows of `S` and
 fails at an index when rows are missing (line 33); and it loops forever on a
@@ -420,15 +424,18 @@ generator from `random_seed` and passes it to a simulator that takes `rng`, as
 `IBS` does (KD-4), checks that `R` is a non-empty array of one or two
 dimensions and that `S` has one row per trial, and refuses a NaN response
 (KD-17) and a simulated response of a kind that NumPy never finds equal to `R`
-(KD-16), as `IBS` does. It also requires each simulated response to have
-shape (C,) or (1, C), with a scalar accepted only for C = 1. Empty or
-wrongly shaped responses raise `ValueError`, preventing vacuous matches or
-matches caused by broadcasting. MATLAB's comparison at line 33 has no
-explicit shape check and permits scalar expansion. PyIBS returns the
-log-likelihood estimate, not its negative, as `ibs_basic.m` does (line 39).
+(KD-16), as `IBS` does. It takes a simulated response of shape (C,) or
+(1, C) for responses of C columns, or a scalar when C = 1, and raises
+`ValueError` for any other shape. `ibs_basic.m` compares with
+`any(fun(theta,S(i,:)) ~= R(i,:))` (line 33), which MATLAB's implicit
+expansion broadcasts: a column of C values is compared as a C × C array,
+and an empty output gives an empty comparison, for which `any` is false,
+so that the loop ends as on a match. PyIBS returns the log-likelihood estimate, not its negative, as
+`ibs_basic.m` does (line 39).
 - PyIBS: `ibs_basic` (`pyibs/ibs_basic.py`).
 - MATLAB: `ibs_basic.m:28-39`.
-- Settled by: D23 (the NaN response). Kind: deliberate change.
+- Settled by: D22 (the shapes), D23 (the NaN response). Kind: deliberate
+  change.
 
 ## Self-tests
 

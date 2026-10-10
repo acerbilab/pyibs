@@ -19,7 +19,9 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
     For each trial, it simulates one response at a time until a response
     matches the observation, then adds that trial's log-likelihood
     estimate to the total. Use :class:`pyibs.IBS` for fitting models: it
-    supports batching, variance estimates and stopping limits.
+    samples every open trial in each simulator call, estimates the
+    variance, and has a sample cap, a time limit and a likelihood
+    threshold.
 
     Parameters
     ----------
@@ -39,7 +41,9 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
         trial. A simulated response matches only if every column agrees.
         For responses that mix numbers and text, use ``dtype=object`` for
         both observed and simulated arrays. Otherwise NumPy converts the
-        numbers to text, and the mismatch raises ``TypeError``.
+        numbers to text: simulated text against observed objects raises
+        ``TypeError``, and observed text never matches simulated objects,
+        so the sampling never ends.
     S : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. None (the default) passes the trial index instead.
@@ -57,8 +61,9 @@ numpy.random.Generator, optional
     ------
     ValueError
         If ``R`` is empty, has more than two dimensions, or contains a
-        NaN; if ``S`` does not have N rows; or if the simulator returns
-        the wrong shape. NaNs cannot match a simulated response.
+        NaN, an element not equal to itself, which no simulated response
+        matches; if ``S`` does not have N rows; or if the simulator returns
+        a response of another shape.
     TypeError
         If the simulator returns a response of a kind that cannot match
         ``R``, such as text for numeric responses.

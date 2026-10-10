@@ -14,7 +14,7 @@ The parameter vector is ``theta = (log(sigma), bias, lapse)``.
 :func:`psycho_generator` simulates responses, and :func:`psycho_neg_logl`
 gives the exact negative log-likelihood. The model is simple enough to have
 a closed-form likelihood, which provides a reference for checking IBS.
-Use the closed-form likelihood directly when fitting this model.
+Whenever a model has a closed-form likelihood, fit it with that.
 
 References
 ----------

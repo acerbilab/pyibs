@@ -65,8 +65,8 @@ says where PyIBS differs from it, and why.
 ### Added
 
 - **Reproducible runs.** `IBS(..., random_seed=...)` seeds the object's
-  random generator and passes it to simulators that accept an `rng`
-  keyword, following PyBADS's `random_seed` interface; `ibs_basic` accepts
+  random generator and passes it to a simulator with a parameter named
+  `rng`, following PyBADS's `random_seed` interface; `ibs_basic` accepts
   the same argument. Two objects with the same seed reproduce the same
   sequence of estimates when `vectorized` is explicit and `max_time` and
   `acceleration_threshold` retain their defaults.
@@ -100,9 +100,10 @@ says where PyIBS differs from it, and why.
   simulator call, a number that grows from call to call, and
   `vectorized=False` one sample per trial and call.
 - **Likelihood threshold.** Both sampling schedules check each repeat
-  against `neg_logl_threshold`; a stopped repeat contributes that threshold
-  to the weighted negative log-likelihood, or its negative with
-  `return_positive=True`, before averaging. This follows Appendix C.1 of
+  against `neg_logl_threshold`; a stopped repeat counts exactly that
+  threshold in the weighted negative log-likelihood (its negative in the
+  log-likelihood that `return_positive=True` returns), before the average
+  over the repeats. This follows Appendix C.1 of
   the IBS paper and produces exit flag 1 when a repeat is stopped.
 - **Time limit.** When `max_time` stops the sampling, each trial's value
   averages its completed repeats that were not thresholded; thresholded
