@@ -1,8 +1,8 @@
 # Plan: PyIBS 1.5
 
 Created: 2026-10-09
-Status: APPROVED (2026-10-09); its first open questions are settled as D17
-to D19, and step 2 of Phase 5 raised new ones (Open Questions)
+Status: APPROVED (2026-10-09); its open questions are settled as D17 to
+D19, D24 and D26, but for the release date (Open Questions)
 
 ## Summary
 
@@ -736,9 +736,9 @@ the other two.
 ### Phase 5: release
 
 **Status**: in progress: steps 1 and 2 done (Worklog). Next, step 3, with
-the expected release date, which the PI gives, and the PI's answers to the
-questions that step 2 raised (Open Questions); the gate runs again on the
-pull request's head, with PyVBMC 1.5.0 from PyPI (Timing)
+the expected release date, which the PI gives (Open Questions); the gate
+runs again on the pull request's head, with PyVBMC 1.5.0 from PyPI
+(Timing)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -1132,24 +1132,8 @@ from the README, the documentation and the model-fitting page.
 
 The PI settled the plan's first questions on 2026-10-09: D17 to D19, D24,
 and timings against 0.1.0 only, with no MATLAB installation in the
-comparison (Phase 3, step 3). Phase 5's step 2 leaves these for the PI:
-
-1. The expected release date, which step 3 takes.
-2. The Python of the conda-forge package. Its recipe takes conda-forge's
-   `python_min`, 3.11 in October 2026, as PyBADS's does, while pip serves
-   Python 3.10; the FAQ, the README and the installation page say so, and
-   step 7 lists the recipe's lines. The alternative is a recipe that sets
-   `python_min` to 3.10, against conda-forge's guidance for noarch recipes.
-3. `tests.yml`'s full run on `main` on the 13th and 28th of each month, as
-   in PyBADS, which also gives the README's `tests` badge its status.
-4. The review's optional findings, not taken: an integration test of
-   PyVBMC that compares the ELBO with the exact log evidence, as Example 3
-   does; tests of a zero returned as 0.0 rather than -0.0, of the warnings'
-   `stacklevel`, and of a zero-weight trial under the time limit; KD-6
-   citing line 287 of `ibslike.m` beside 284 for a row vector `Nreps`,
-   reasoned from the code and not run; the validation record stating the
-   SDs (1.1, 1.2, 1.4) and the differences (49, 55) that the FAQ cites from
-   it; one copy of the test helpers that several test modules repeat.
+comparison (Phase 3, step 3). Phase 5's step 2 leaves one, the expected
+release date, which step 3 takes.
 
 ## Worklog
 
@@ -1757,13 +1741,30 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   which used 0.37% of its 0.5% tolerance, and its references; five tests
   of behaviours that a mutated implementation passed, and the example
   model's test, whose 10 repeats allowed an error of 15 to 20 nats;
-  `pyibs.version`. Not taken: Open Questions, item 4.
-- Decided at the review with the PI's leave to use judgment, and open to
-  the PI's confirmation (Open Questions): the conda-forge package's Python
-  and the run of the tests twice a month. Decided after the review (PI,
-  2026-10-10): D26, the notebooks of the three packages open in Colab and
-  in Binder, once each installs what it needs there; until then, the
-  notebook pages have neither button.
+  `pyibs.version`. Not taken: the next item.
+- Decided at the review with the PI's leave to use judgment, and
+  confirmed by the PI (2026-10-10): the conda-forge package takes
+  conda-forge's `python_min`, 3.11 in October 2026, as PyBADS's does,
+  while pip serves Python 3.10 (step 7), rather than a recipe that forces
+  3.10 against conda-forge's guidance for noarch recipes; `tests.yml` runs
+  the full matrix on `main` twice a month, as PyBADS's does. Decided after
+  the review (PI, 2026-10-10): D26, the notebooks of the three packages
+  open in Colab and in Binder, once each installs what it needs there;
+  until then, the notebook pages have neither button. Not taken (PI): an
+  integration test of PyVBMC against the exact log evidence, which Example
+  3 makes; tests of a zero returned as 0.0, of the warnings' `stacklevel`
+  and of a zero-weight trial under the time limit; KD-6 citing line 287 of
+  `ibslike.m` beside 284, reasoned from the code and not run; one copy of
+  the test helpers that several test modules repeat.
+- The PI read the FAQ's answer on `num_reps` after the review: it gave the
+  SDs of two parameter vectors chosen for a unit test as evidence that the
+  variance changes moderately, and the review had checked the figures and
+  not what they told a reader. A sweep of the user-facing text by the
+  orchestrator for such figures, unsupported claims, chains of caveats
+  that reviews had added, and boilerplate (`112856a`) cut them: the FAQ
+  states the bound on the variance in their place, and AGENTS.md's rule on
+  links to the lab, read literally, had put one sentence in nearly every
+  answer and in each notebook.
 - Deviations: Examples 1 and 2 keep their committed outputs; the rerun of
   all three notebooks with PyVBMC 1.5.0 from PyPI comes on the pull
   request's head (Timing).
