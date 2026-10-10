@@ -110,7 +110,7 @@ def grid_reference(n_grid, width):
     return log_evidence, mean, sd
 
 
-configurations = [(31, 6), (61, 6), (61, 9)]
+configurations = [(31, 8), (61, 8), (61, 12)]
 references = [grid_reference(n, width) for n, width in configurations]
 log_evidence, reference_mean, reference_sd = references[1]
 
