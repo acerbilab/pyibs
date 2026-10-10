@@ -66,20 +66,11 @@ likelihood threshold ``neg_logl_threshold``.
 Choose a sampling schedule
 ==========================
 
-The example sets ``vectorized=True`` to request batches of independent
-responses. The default, ``vectorized=None``, times one response per trial at
-the first call with more than one repeat: a simulation faster than 0.1
-seconds selects batching; otherwise, it selects one sample per active trial
-per simulator call. The object keeps that choice.
-
-.. important::
-
-   This timing cannot distinguish a fixed overhead per simulator call from
-   a cost per response. If fixed overhead dominates, ``vectorized=True`` can
-   be much faster even when the automatic choice is False. Compilation at
-   the first simulator call can also mislead the choice; warm up the
-   simulator or set ``vectorized`` explicitly. See
-   :ref:`Should I set vectorized? <faq-should-i-set-vectorized>`.
+The example sets ``vectorized=True``, which requests batches of independent
+responses. The default, ``vectorized=None``, chooses by timing one
+simulation at the first call, which a fixed cost per simulator call or a
+first-call compilation can mislead; see
+:ref:`Should I set vectorized? <faq-should-i-set-vectorized>`.
 
 With PyBADS and PyVBMC
 ======================
@@ -89,9 +80,7 @@ vector ``x0``, hard bounds ``lb`` and ``ub``, and plausible bounds ``plb``
 and ``pub``; PyVBMC also needs a prior.
 :doc:`Example 2 <_examples/pyibs_example_2_maximum_likelihood_with_pybads>`
 and :doc:`Example 3 <_examples/pyibs_example_3_posterior_with_pyvbmc>` define
-these inputs for the orientation-discrimination model. PyBADS and PyVBMC
-are among the lab's
-`tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
+these inputs for the orientation-discrimination model.
 
 For `PyBADS <https://acerbilab.github.io/pybads/>`__, which minimizes its
 target, return the negative log-likelihood and its estimated standard

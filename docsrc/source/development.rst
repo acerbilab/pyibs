@@ -210,9 +210,6 @@ passing tests through a pull request. For example, replacing
 See `Feature Branch <https://martinfowler.com/bliki/FeatureBranch.html>`__
 for background on this workflow.
 
-When switching to an existing branch, pull its latest changes before
-starting work; switching branches does not update it from the remote.
-
 Changelog
 ---------
 

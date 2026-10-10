@@ -14,7 +14,7 @@ PyIBS is one of the open-source [tools for fitting models to data](https://acerb
 
 PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [[1](#references-and-citation)]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial's log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is `ibslike.m` in [MATLAB IBS](https://github.com/acerbilab/ibs).
 
-Use the estimates with a method that handles noisy objectives: [PyBADS](https://github.com/acerbilab/pybads) for maximum-likelihood or maximum-a-posteriori estimation, or [PyVBMC](https://github.com/acerbilab/pyvbmc) for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept. These packages are among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+Use the estimates with a method that handles noisy objectives: [PyBADS](https://github.com/acerbilab/pybads) for maximum-likelihood or maximum-a-posteriori estimation, or [PyVBMC](https://github.com/acerbilab/pyvbmc) for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.
 
 ## What's new in PyIBS 1.5
 
@@ -33,7 +33,7 @@ Results differ from PyIBS 0.1.0 even with a fixed seed, and `IBS` rejects some s
 
 Read the [full documentation](https://acerbilab.github.io/pyibs/) for tutorials, practical guidance, and the API reference.
 
-To use the [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md), give the file to your coding agent or copy the `skills/pyibs` folder into its skill directory. Update a copied skill from the PyIBS version you use.
+To use the [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md), give the file to your coding agent or copy the `skills/pyibs` folder into its skill directory. To update a copied skill, copy the folder again from the PyIBS version you use.
 
 ## When should I use PyIBS?
 
@@ -42,7 +42,7 @@ Use PyIBS when you can simulate a model's responses but cannot compute its likel
 - **Use a tractable likelihood when available.** The IBS paper recommends a closed form or an analytical or numerical approximation whenever one is practical. IBS estimates can help check its implementation, and the accuracy of an approximation [[1](#references-and-citation), Section 6.4].
 - **Amortized simulation-based inference is often better when fitting one model to many datasets with cheap simulations.** A neural network trained once on simulations can share that training cost across datasets. In neural posterior estimation, it then estimates the posterior for each new dataset almost immediately [[3](#references-and-citation)].
 - **IBS remains the method of choice when trial contexts are numerous and richly structured.** An amortized estimator must learn the model's behaviour across the contexts it may encounter; IBS only simulates the contexts present in the data. For example, a model of human board-game play chooses each move from the current board position, which may occur only once in the dataset [[1](#references-and-citation), Section 5.4; [2](#references-and-citation)].
-- **IBS also helps when guarantees for each dataset matter.** An amortized estimator can be accurate on some datasets and unreliable on others, so each dataset needs diagnostics, and a fallback for the datasets that fail them [[3](#references-and-citation)]. IBS requires no training and gives unbiased log-likelihood and variance estimates for any dataset when all observed responses have positive probability, sampling runs to completion, and no call is discarded or kept for its outcome. These guarantees concern the likelihood estimates: optimization and posterior approximation still introduce errors that need their own checks. An estimated standard deviation also need not give accurate normal confidence intervals; see [How does it work?](#how-does-it-work).
+- **IBS also helps when guarantees for each dataset matter.** An amortized estimator can be accurate on some datasets and unreliable on others, so each dataset needs its own diagnostics [[3](#references-and-citation)]. IBS needs no training, and its log-likelihood and variance estimates are unbiased for any dataset whose observed responses all have positive probability.
 - **Account for the cost of improbable responses.** A trial whose observed response has model probability p takes 1/p samples on average. A lapse component that gives every possible response positive probability limits this cost. The likelihood threshold can save work at poor parameter vectors, at the cost of bias [[1](#references-and-citation), Sections 2.2 and 6.4, Appendix C.1]. Continuous responses require binning or an approximate matching rule [[1](#references-and-citation), Section 6.3]; see the [FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-can-i-use-ibs-with-continuous-responses).
 
 The FAQ discusses [IBS and amortized simulation-based inference](https://acerbilab.github.io/pyibs/faq.html#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference) in more detail.
@@ -61,7 +61,7 @@ Install PyIBS from PyPI or conda-forge. It requires Python 3.10 or later, NumPy 
     ```
     The minimum version in the Conda command prevents it from silently selecting PyIBS 0.1.0 in an environment with NumPy 1.x or Python 3.10: on conda-forge, PyIBS 1.5 requires Python 3.11 or newer.
 
-2. (Optional) To fit models with PyIBS's estimates, as the example notebooks do, install [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc), among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/), and [Jupyter Notebook](https://jupyter.org/install) to run the notebooks:
+2. (Optional) To fit models with PyIBS's estimates, as the example notebooks do, install [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc), and [Jupyter Notebook](https://jupyter.org/install) to run the notebooks:
    ```console
    python -m pip install --upgrade "pybads>=1.5.1" "pyvbmc>=1.5" notebook
    ```
@@ -109,9 +109,9 @@ To use your own model, pass these inputs to `IBS`:
 
 `ibs(params)` returns the *negative* log-likelihood estimate, averaging 10 independent IBS repeats by default. Set `num_reps` to change this number. With `additional_output="std"`, the call also returns an estimated standard deviation, which measures variation between IBS calls at the same parameters; it is not uncertainty in the parameters. With `"full"`, it returns an [`EstimateResult`](https://acerbilab.github.io/pyibs/api/classes/estimate_result.html) containing per-trial estimates and the cost of the call. The [`IBS` reference](https://acerbilab.github.io/pyibs/api/classes/ibs.html) describes all settings, including the likelihood threshold `neg_logl_threshold`.
 
-**Choose the sampling schedule for your simulator.** The example sets `vectorized=True` to request batches of independent responses. The default, `vectorized=None`, times one response per trial at the first call with more than one repeat: a simulation faster than 0.1 seconds selects batching; otherwise, it selects one sample per active trial per simulator call. The object keeps that choice. This timing cannot distinguish a fixed overhead per simulator call from a cost per response. If fixed overhead dominates, `vectorized=True` can be much faster even when the automatic choice is False. Compilation at the first simulator call can also mislead the choice; warm up the simulator or set `vectorized` explicitly. See [the FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-should-i-set-vectorized).
+**Choose the sampling schedule for your simulator.** The example sets `vectorized=True`, which requests batches of independent responses. The default, `vectorized=None`, chooses by timing one simulation at the first call, which a fixed cost per simulator call or a first-call compilation can mislead; see [the FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-should-i-set-vectorized).
 
-The fitting snippets below are templates. Supply a starting parameter vector `x0`, hard bounds `lb` and `ub`, and plausible bounds `plb` and `pub`; PyVBMC also needs a prior. [Example 2](https://acerbilab.github.io/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html) and [Example 3](https://acerbilab.github.io/pyibs/_examples/pyibs_example_3_posterior_with_pyvbmc.html) define these inputs for the orientation-discrimination model. PyBADS and PyVBMC are among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+The fitting snippets below are templates. Supply a starting parameter vector `x0`, hard bounds `lb` and `ub`, and plausible bounds `plb` and `pub`; PyVBMC also needs a prior. [Example 2](https://acerbilab.github.io/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html) and [Example 3](https://acerbilab.github.io/pyibs/_examples/pyibs_example_3_posterior_with_pyvbmc.html) define these inputs for the orientation-discrimination model.
 
 For [PyBADS](https://github.com/acerbilab/pybads), which minimizes its target, return the negative log-likelihood and its estimated standard deviation:
 
@@ -163,7 +163,7 @@ Suppose a trial's observed response has probability p under the model. IBS does 
 
 The estimate is 0 when K = 1. For every p > 0, it is exactly unbiased and has the least variance among unbiased estimators based on this sampling procedure. Its variance is bounded by π²/6 even as p approaches 0 [[1](#references-and-citation), Sections 2.4 and 4.3]. The same count K gives an estimate of that variance, ψ₁(1) − ψ₁(K), where ψ₁ is the trigamma function [[1](#references-and-citation), Section 4.3]. Its expectation is the variance itself, Li₂(1 − p) (Fig 1), so the variance estimate is unbiased too.
 
-Summing over trials and averaging independent repeats often makes the estimated standard deviation useful for normal confidence intervals [[1](#references-and-citation), Section 4.6]. This approximation is not reliable for every model or number of repeats. For example, if every response matches on its first draw, the variance estimate is 0 even when repeated IBS calls can vary. The [validation record](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md) examines these limitations.
+Summing over trials and averaging independent repeats often makes the estimated standard deviation useful for normal confidence intervals [[1](#references-and-citation), Section 4.6], though not always: if every response matches on its first draw, the variance estimate is 0 even though repeated IBS calls can vary.
 
 **Fig 1: the cost and variance of IBS.** A trial with matching probability p takes 1/p samples on average (left). The variance of its log p estimate, Li₂(1 − p), stays below π²/6 even as p approaches 0 (right) [[1](#references-and-citation), Sections 4.2 and 4.3]. ![The expected number of samples, 1/p, and the variance of the IBS estimate, Li2(1 - p), against p](https://raw.githubusercontent.com/acerbilab/pyibs/main/docsrc/source/_static/ibs-cost-and-variance.png)
 
@@ -201,7 +201,7 @@ To support the project and keep in touch:
 - Follow Luigi Acerbi on [X](https://x.com/AcerbiLuigi) or [Bluesky](https://bsky.app/profile/lacerbi.bsky.social) for updates about IBS/PyIBS and other projects;
 - Tell us about your model-fitting problem and your experience with PyIBS (positive or negative) in the lab's [Discussions forum](https://github.com/orgs/acerbilab/discussions).
 
-Explore [PyBADS](https://github.com/acerbilab/pybads), [PyVBMC](https://github.com/acerbilab/pyvbmc), and the lab's other [tools for fitting models to data](https://acerbilab.org/model-fitting/) for ways to fit models using these estimates.
+Explore [PyBADS](https://github.com/acerbilab/pybads), [PyVBMC](https://github.com/acerbilab/pyvbmc), and the lab's other [model-fitting tools](https://acerbilab.org/model-fitting/) for ways to fit models using these estimates.
 
 ### BibTeX
 

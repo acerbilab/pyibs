@@ -39,13 +39,10 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
     R : array_like of shape (N,) or (N, C)
         Observed responses, one row per trial; a scalar represents one
         trial. A simulated response matches only if every column agrees.
-        For responses that mix numbers and text, use ``dtype=object`` for
-        both observed and simulated arrays. If only one of them is an
-        object array, NumPy has made text of the other's numbers:
-        simulated text against observed objects raises ``TypeError``, and
-        observed text never matches the numbers of simulated objects, so
-        the sampling never ends. If both are text, numbers match only when
-        written alike (1 and 1.0 differ).
+        For responses that mix numbers and text, give both the observed
+        and the simulated responses as object arrays (``dtype=object``):
+        otherwise NumPy converts the numbers to text, responses can fail
+        to match, and the sampling, which has no cap, never ends.
     S : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. None (the default) passes the trial index instead.

@@ -418,7 +418,8 @@ gave.
   Luigi Acerbi goes to his personal page, https://lacerbi.github.io/. A
   link to the group goes preferably to its main page,
   https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence.
-  A paragraph that sends the reader to another of the lab's methods
-  (PyBADS, PyVBMC, MATLAB IBS) links the lab's page of them,
-  https://acerbilab.org/model-fitting/, with the text "tools for fitting
-  models to data".
+  The lab's page of its tools, https://acerbilab.org/model-fitting/, is
+  linked where a document introduces PyIBS among them (the README's opening
+  and closing, `index.rst`, the FAQ's introduction, the documentation's
+  footer), in words that vary; elsewhere PyBADS and PyVBMC are linked to
+  their own documentation.

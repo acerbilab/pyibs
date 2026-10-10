@@ -23,9 +23,8 @@ runtime dependencies.
 
 2. (Optional) To fit models with PyIBS's estimates, as the example
    notebooks do, install `PyBADS <https://acerbilab.github.io/pybads/>`__
-   and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, among the lab's
-   `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__,
-   and `Jupyter Notebook <https://jupyter.org/install>`__ to run the
+   and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, and
+   `Jupyter Notebook <https://jupyter.org/install>`__ to run the
    notebooks::
 
      python -m pip install --upgrade "pybads>=1.5.1" "pyvbmc>=1.5" notebook

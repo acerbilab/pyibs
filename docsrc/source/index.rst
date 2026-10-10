@@ -9,7 +9,7 @@ What is it?
 
 PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [`1 <#references>`__]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial's log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is ``ibslike.m`` in :labrepos:`MATLAB IBS <ibs>`.
 
-Use the estimates with a method that handles noisy objectives: `PyBADS <https://acerbilab.github.io/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, or `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept. These packages are among the lab's `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
+Use the estimates with a method that handles noisy objectives: `PyBADS <https://acerbilab.github.io/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, or `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.
 
 What's new in PyIBS 1.5
 -----------------------
@@ -48,8 +48,9 @@ What's new in PyIBS 1.5
   PyVBMC, plus a :doc:`FAQ <faq>`. The
   :mainbranch:`PyIBS skill <skills/pyibs/SKILL.md>` helps coding agents
   find the relevant documentation. To use it, give the file to your coding
-  agent or copy the ``skills/pyibs`` folder into its skill directory.
-  Update a copied skill from the PyIBS version you use.
+  agent or copy the ``skills/pyibs`` folder into its skill directory. To
+  update a copied skill, copy the folder again from the PyIBS version you
+  use.
 
 Results differ from PyIBS 0.1.0 even with a fixed seed, and ``IBS`` rejects
 some settings that the earlier version accepted. Before upgrading an
@@ -70,12 +71,9 @@ The estimate is 0 when :math:`K = 1`. For every :math:`p > 0`, it is exactly unb
 
 Summing over trials and averaging independent repeats often makes the
 estimated standard deviation useful for normal confidence intervals
-[`1 <#references>`__, Section 4.6]. This approximation is not reliable for
-every model or number of repeats. For example, if every response matches on
-its first draw, the variance estimate is 0 even when repeated IBS calls can
-vary. The
-:mainbranch:`validation record <dev/results/2026-10-09-validation.md>`
-examines these limitations.
+[`1 <#references>`__, Section 4.6], though not always: if every response
+matches on its first draw, the variance estimate is 0 even though repeated
+IBS calls can vary.
 
 .. image:: _static/ibs-cost-and-variance.png
     :align: center
@@ -123,15 +121,9 @@ Use PyIBS when you can simulate a model's responses but cannot compute its likel
   Section 5.4; `2 <#references>`__].
 - **IBS also helps when guarantees for each dataset matter.** An amortized
   estimator can be accurate on some datasets and unreliable on others, so
-  each dataset needs diagnostics, and a fallback for the datasets that fail
-  them [`3 <#references>`__]. IBS requires no training and gives unbiased
-  log-likelihood and variance estimates for any dataset when all observed
-  responses have positive probability, sampling runs to completion, and no
-  call is discarded or kept for its outcome.
-  These guarantees concern the likelihood estimates: optimization and
-  posterior approximation still introduce errors that need their own
-  checks. An estimated standard deviation also need not give accurate
-  normal confidence intervals; see `How does it work? <#how-does-it-work>`__.
+  each dataset needs its own diagnostics [`3 <#references>`__]. IBS needs
+  no training, and its log-likelihood and variance estimates are unbiased
+  for any dataset whose observed responses all have positive probability.
 - **Account for the cost of improbable responses.** A trial whose observed
   response has model probability :math:`p` takes :math:`1/p` samples on
   average. A lapse component that gives every possible response positive
@@ -201,7 +193,7 @@ License and source
 
 PyIBS is released under the terms of the :mainbranch:`BSD 3-Clause License <LICENSE>`.
 The Python source code is on :labrepos:`GitHub <pyibs>`.
-Explore `PyBADS <https://acerbilab.github.io/pybads/>`__, `PyVBMC <https://acerbilab.org/pyvbmc/>`__, the original :labrepos:`MATLAB IBS toolbox <ibs>`, and the lab's other `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__ for related software.
+Explore `PyBADS <https://acerbilab.github.io/pybads/>`__, `PyVBMC <https://acerbilab.org/pyvbmc/>`__, the original :labrepos:`MATLAB IBS toolbox <ibs>`, and the lab's other `model-fitting tools <https://acerbilab.org/model-fitting/>`__ for related software.
 
 Acknowledgments
 ###############

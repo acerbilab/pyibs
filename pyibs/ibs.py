@@ -222,13 +222,10 @@ class IBS:
         Responses must be discrete and comparable with ``==``: numbers,
         booleans, text, bytes, or objects. The simulator must return the
         same kind of response: text and bytes do not match numbers.
-        For responses that mix numbers and text, use ``dtype=object`` for
-        both observed and simulated arrays. If only one of them is an
-        object array, NumPy has made text of the other's numbers:
-        simulated text against observed objects raises ``TypeError``, and
-        observed text never matches the numbers of simulated objects. If
-        both are text, numbers match only when written alike (1 and 1.0
-        differ).
+        For responses that mix numbers and text, give both the observed
+        and the simulated responses as object arrays (``dtype=object``):
+        otherwise NumPy converts the numbers to text, and responses can
+        fail to match.
     design_matrix : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. With None (the default), the simulator receives trial
@@ -273,9 +270,9 @@ class IBS:
         threshold contribute ``neg_logl_threshold`` to the negative
         log-likelihood before averaging.
 
-        A finite limit can bias the returned estimates. Selecting only
-        calls that finish in time can also introduce bias, since runs
-        requiring fewer samples tend to have higher log-likelihoods.
+        A finite limit can bias the returned estimates, since repeats that
+        need fewer samples, which give higher log-likelihoods, are likelier
+        to finish in time.
     max_samples : int, optional
         Maximum samples per trial in one simulator call. Default 10**4.
     acceleration_threshold : float or None, optional
