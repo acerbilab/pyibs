@@ -1,5 +1,0 @@
-# The environment that mybinder.org builds for the example notebooks: this
-# repository's PyIBS, with the packages that the notebooks import
-.
-pybads>=1.5.1
-pyvbmc>=1.5

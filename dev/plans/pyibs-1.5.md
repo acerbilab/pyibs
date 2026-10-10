@@ -756,10 +756,8 @@ moves, and from then on a change for 1.5.0 goes into the section
 PyPI, and its documentation published, before step 4: the README and the
 installation pages install `pyvbmc>=1.5` and link that documentation,
 and `AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
-release branch, and Binder's build of the pushed `dev-next` is checked
-with the command in `AGENTS.md` ("Setup and commands"). Colab can be tried
-from the notebook pages (D26) once PyIBS 1.5.0 is on PyPI and the
-documentation is published.
+release branch. Colab can be tried from the notebook pages (D26) once
+PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
@@ -837,8 +835,9 @@ documentation is published.
    `README.md`, `docsrc/source/index.rst`, `docsrc/source/faq.md` and
    `skills/*/SKILL.md` link PyIBS on GitHub, or MATLAB IBS where they
    address Python users, link the PyIBS documentation; PyVBMC's example
-   notebooks open in Colab and in Binder as D26 has PyIBS's and PyBADS's
-   do, each installing what it imports; and `AGENTS.md` names the labels of
+   notebooks open in Colab as D26 has PyIBS's and PyBADS's do, each
+   installing what it imports, and its documentation drops its Binder
+   button; and `AGENTS.md` names the labels of
    the FAQ that PyIBS links (PyBADS's in its list of linked labels).
 
 **Verification**:
@@ -1112,22 +1111,21 @@ from the README, the documentation and the model-fitting page.
   in 0.1.0 and `ibslike.m` (a string or another non-boolean then sets the
   sign silently); the integers 0 and 1 as well (a second spelling of a
   boolean option, which `vectorized` does not take either).
-- **D26. The example notebooks open in Colab and in Binder** (PI,
-  2026-10-10) — Colab's runtime has none of PyIBS, PyBADS and PyVBMC, so
-  each notebook opens with a cell that installs the packages it imports
-  (`"pyibs>=1.5"`, and `"pybads>=1.5.1"` or `"pyvbmc>=1.5"`) when it runs
-  in Colab (`"google.colab" in sys.modules`) and does nothing elsewhere;
-  Binder builds from `binder/requirements.txt`, the repository's PyIBS with
-  PyBADS 1.5.1 and PyVBMC 1.5; and `docsrc/source/conf.py` gives the
-  notebook pages both buttons. PyBADS's notebooks took the same cell in its
-  pull request #122, and its Binder builds from its `environment.yml`;
-  PyVBMC's follow in Phase 6. Rejected: no
-  launch buttons (a tutorial that runs without any setup is the easiest
-  start, Colab's with a Google account and Binder's without one); a cell
-  that installs everywhere (`make -C examples/scripts run` would install
-  into the venv, and the outputs that ship would hold pip's log); buttons
-  without what they need, as the notebook pages had them until step 2 of
-  Phase 5 (the notebooks failed at their first import).
+- **D26. The example notebooks open in Colab** (PI, 2026-10-10) —
+  Colab's runtime has none of PyIBS, PyBADS and PyVBMC, so each notebook
+  opens with a cell that installs the packages it imports (`"pyibs>=1.5"`,
+  and `"pybads>=1.5.1"` or `"pyvbmc>=1.5"`) when it runs in Colab
+  (`"google.colab" in sys.modules`) and does nothing elsewhere, and
+  `docsrc/source/conf.py` gives the notebook pages Colab's launch button.
+  PyBADS's notebooks took the same cell in its pull request #122; PyVBMC's
+  follow in Phase 6. Rejected: no launch button (a tutorial that runs
+  without any setup is the easiest start); a Binder button beside Colab's,
+  in any of the three packages (PI, 2026-10-10: PyBADS's Binder build kept
+  failing after several fixes, and Colab serves); a cell that installs
+  everywhere (`make -C examples/scripts run` would install into the venv,
+  and the outputs that ship would hold pip's log); a button without what
+  it needs, as the notebook pages had them until step 2 of Phase 5 (the
+  notebooks failed at their first import).
 
 ## Open Questions
 
@@ -1750,10 +1748,12 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   3.10 against conda-forge's guidance for noarch recipes; `tests.yml` runs
   the full matrix on `main` twice a month, as PyBADS's does. Decided after
   the review (PI, 2026-10-10): D26, the notebooks of the three packages
-  open in Colab and in Binder, once each installs what it needs there:
-  PyBADS's took their cell in its pull request #122, and PyIBS's in
-  `af6df49`, with `binder/requirements.txt` and both buttons, the notebooks
-  rerun and their scripts regenerated and run. Not taken (PI): an
+  open in Colab, once each installs what it needs there: PyBADS's took
+  their cell in its pull request #122, and PyIBS's in `af6df49`, the
+  notebooks rerun and their scripts regenerated and run. D26 first took
+  Binder too, which `af6df49` added with `binder/requirements.txt`; the PI
+  dropped it for the three packages the same day, after PyBADS's Binder
+  build kept failing, and it was removed again. Not taken (PI): an
   integration test of PyVBMC against the exact log evidence, which Example
   3 makes; tests of a zero returned as 0.0, of the warnings' `stacklevel`
   and of a zero-weight trial under the time limit; KD-6 citing line 287 of

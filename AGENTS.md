@@ -214,16 +214,12 @@ and `index.rst` show, is drawn by `dev/scripts/ibs_cost_variance.py`.
 
 The notebooks in `examples/` ship in the wheel as `pyibs.examples` and are
 rendered without execution by the documentation's build; no CI job runs
-them, so a change that breaks one goes unnoticed. The launch buttons of the
-rendered notebooks (`docsrc/source/conf.py`) need two things: each
-notebook opens with a cell that installs the packages it imports when it
-runs in Colab (`"google.colab" in sys.modules`), and Binder builds from
-`binder/requirements.txt`. A new notebook takes the same cell, and the
-versions that both name follow the README's install line for the
-notebooks. Nothing in CI builds Binder; this builds a pushed ref and
-streams its log:
-`curl -sNL -H "Accept: text/event-stream" https://mybinder.org/build/gh/acerbilab/pyibs/<ref>`.
-`make -C
+them, so a change that breaks one goes unnoticed. The rendered notebooks
+open in Colab from their launch button (`docsrc/source/conf.py`), and
+each notebook opens with a cell that installs the packages it imports
+when it runs there (`"google.colab" in sys.modules`). A new notebook
+takes the same cell, and the versions it names follow the README's
+install line for the notebooks. `make -C
 examples/scripts run`, with the venv's interpreter first on `PATH` (the
 target calls `python`) and nbconvert, ipykernel, matplotlib, PyBADS and
 PyVBMC installed, reruns them in place in about two minutes, nearly all of
