@@ -37,7 +37,7 @@ length = f"{chars:,} characters of narration, about {mmss(secs(chars, 13.3))} to
 SCENES = {
     "1": (
         "The log-likelihood",
-        "Generic trials. The number at the foot of the column is drawn for the picture. The curve comes from a toy model kept off screen, one parameter and 300 trials with a lapse rate, the same that frames 3.5 and 6.2 to 6.4 use; the dashed curve of frame 1.4 is the same model with a larger lapse rate.",
+        "Generic trials, drawn for the picture as eight of the 300 trials of a toy model kept off screen. The number at the foot of the column is that toy model’s log-likelihood at its best parameter value. The curve comes from the same toy model, one parameter and 300 trials with a lapse rate, the same that frames 3.5 and 6.2 to 6.4 use; the dashed curve of frame 1.4 is the same model with a larger lapse rate.",
     ),
     "2": (
         "Models you can only simulate",
@@ -53,7 +53,7 @@ SCENES = {
     ),
     "5": (
         "What comes with it",
-        "The error bars follow the paper’s variance formula from the counts shown. Frames 5.3 and 5.4 are the recorded PyIBS run: a hundred real positions, one row each, and its estimate.",
+        "The row at the top of frame 5.1 is the recorded run’s count for the surprising position, with the estimate and the error bar that the paper’s formulas give for it. The twenty summed estimates below it are of the toy model of scene 1 at its best parameter value, one IBS repeat each, with error bars from the paper’s variance formula, computed in the page from counts that are not shown. In frame 5.2 the counts are drawn in the page, and the error bar is drawn to narrow as one over the square root of the number of repeats. Frames 5.3 and 5.4 are the recorded PyIBS run: a hundred real positions, one row each, and its estimate.",
     ),
     "6": (
         "The hand-off, and why bias matters",
@@ -188,7 +188,7 @@ page = f"""<title>PyIBS Film Storyboard</title>
   {"".join(blocks)}
 
   <footer>
-    <div>What is data and what is not: the positions, the simulated moves, the counts and the run of scenes 2 to 5 are the recorded PyIBS run’s, on real positions from human-versus-human games. The averages of frame 3.3, the clouds of frames 3.4, 3.6 and 4.4, and the curves and estimates of frames 1.2 to 1.4, 3.5, 4.5 and 6.2 to 6.4 are computed from the paper’s formulas and a toy model, as each scene says. The search tree of frame 2.3 is drawn for the picture.</div>
+    <div>What is data and what is not: the positions, the simulated moves and the counts of frames 2.2 to 4.3, the count at the top of frame 5.1, the run of frames 5.3 and 5.4 and the board of frame 6.1 are the recorded PyIBS run’s, on real positions from human-versus-human games. The averages of frame 3.3, the clouds of frames 3.4, 3.6 and 4.4, the twenty estimates of frame 5.1, and the curves and estimates of frames 1.2 to 1.4, 3.5, 4.5 and 6.2 to 6.4 are computed from the paper’s formulas and a toy model, as each scene says. The trials of frames 1.1 to 2.2, 4.5 and 5.2 and the search tree of frame 2.3 are drawn for the picture.</div>
     <div>Next: the director’s review of the masters, then the publication, after the release of PyIBS 1.5.</div>
   </footer>
 </main>

@@ -45,10 +45,10 @@ down, and as the trial on screen while IBS is explained. The film says
 what the model is used for, from the Nature paper, and makes no other
 claim about the game or the model beyond what [1] states.
 
-**Length.** 3,665 characters of narration in this draft. On the draft
-voice, Kokoro's `am_michael` at speed 1.12, the film runs 4:07 with its
-end card (the masters, `media/masters`). The soft target is 2:20, and the two previous
-films ran 2:48 and 3:00. The film stays at full length for now; the cut
+**Length.** 3,665 characters of narration in this draft. On Kokoro's
+`am_michael` at speed 1.12, the voice of the masters, the film runs 4:07
+with its end card. The soft target is 2:20, and the two previous films
+ran 2:48 and 3:00. The film stays at full length for now; the cut
 candidates are listed at the end.
 
 ## Format
@@ -60,8 +60,8 @@ candidates are listed at the end.
   unclear without it, and two full clauses joined by "and" are two
   sentences. A line lands a point only when the film has set it up, as
   lines 4.4 and 6.4 answer the problem of scene 3.
-- The tool's name is on screen from the first frame: "PYIBS Inverse
-  Binomial Sampling", small, top left, until the end card.
+- The tool's name is on screen from the first frame to the last:
+  "PYIBS Inverse Binomial Sampling", small, top left.
 - A flat 2D page, not a 3D landscape. The marks: a trial is a row; a
   simulation is a small cell, a grey cross for a miss and a green check
   for a match, and on the board a ghost piece where the simulated move
@@ -89,7 +89,7 @@ candidates are listed at the end.
 - Numbers are spoken in words and shown in digits, and appear on screen
   only after the narration has introduced them.
 - The spoken text respells the names for the voice ("Pie-I-B-S",
-  "Pie-Bads", "Pie-V-B-M-C"); the captions write them normally.
+  "Pie-Bads", "Pie V B M C"); the captions write them normally.
 
 ## The score
 
@@ -102,7 +102,7 @@ miss. From inverse binomial sampling to the end card it is the PyBADS
 film's groove, with drums, a pulsing bass, a pad, an arpeggio and a
 sparse lead, from that film's synthesizer.
 
-- The first half follows the lines. On "there is no formula" the pads
+- The first half follows the lines. When line 2.1 begins, the pads
   darken to one low chord. The chords of line 2.4 change faster as its
   simulations speed up. At "minus infinity" a swell rises into a low
   boom, and the music stops.
@@ -130,8 +130,8 @@ sparse lead, from that film's synthesizer.
 - The second half runs on a tempo map. Each section starts on a
   downbeat where its picture starts, or at "turns around", at "PyIBS
   works", at "a false conclusion" and at "With IBS". It holds a fixed
-  number of bars, which on the draft voice gives tempi from 92 to 103
-  BPM.
+  number of bars, which on the voice of the masters gives tempi from 92
+  to 103 BPM. Over the end card the tempo slows, from 110 to 76 BPM.
 - Under the voice the music dips by 45 % and the events by 25 %. Over the
   film the score sits 17 LU below the voice, the PyBADS film's setting.
   The first half's music sits 1.5 LU below the second half's. Line by
@@ -561,12 +561,19 @@ fresh ones of the likely position, from the same build and parameters.
   7.6 at the top, and the picture needs the two to be told apart. The
   dashed curve of line 1.4 is the same model with a lapse rate of 0.12,
   as another model to compare.
-- 1.2 to 1.4 and 4.5: the column shows eight of the toy model's 300
-  trials, and its number is the toy's log-likelihood, or in line 4.5 one
-  IBS estimate of it.
-- 2.2 to 5.4: the positions, the simulated moves, the counts and the
-  run of scene 5 are the recorded run's (`run/`). The search tree of
-  line 2.3 is drawn for the picture.
+- 1.1 to 2.2 and 4.5: the column stands for eight of the toy model's
+  300 trials. Its stimuli, responses and probabilities are drawn for the
+  picture. Its number is the toy's log-likelihood at its best parameter
+  value, or in line 4.5 one IBS estimate of it, and the counts of line
+  4.5 are drawn in the page.
+- 5.1: below the surprising position's row, twenty summed estimates of
+  the toy model at its best parameter value, one IBS repeat each, with
+  the error bar of [1] 4.3 from counts drawn in the page and not shown.
+- 5.2: the counts are drawn in the page, and the error bar is drawn to
+  narrow as one over the square root of the number of repeats.
+- 2.2 to 4.3, the top row of 5.1, 5.3, 5.4 and 6.1: the positions, the
+  simulated moves, the counts and the run are the recorded run's
+  (`run/`). The search tree of line 2.3 is drawn for the picture.
 
 ## The page and its files
 
@@ -576,7 +583,7 @@ fresh ones of the likely position, from the same build and parameters.
 line, the caption when it differs, a note on what moves, a draft length
 and a `draw(t)`. `film.html?shot=K` draws shot K as its picture leaves
 the screen in the film, and `&t=T` draws it T seconds into its line.
-`scripts/stills.mjs` draws one still per shot so in headless Chrome
+`scripts/stills.mjs` draws one still per shot in headless Chrome
 into `storyboard/frames/s<ID>.jpg` and writes the shot list to
 `storyboard/shots.json`; `scripts/gen_storyboard.py` turns that into
 `storyboard/storyboard.html`, the review page, which shows the previous
@@ -603,14 +610,17 @@ with a crossfade, and the shots within a scene cut. Without a voice, a
 cue falls where the narration reaches its phrase at 13.3 characters a
 second, after a lead of 0.4 s.
 
-`scripts/record.mjs --film --audio media/<version>/narration.wav`
-records the animatic, and `scripts/record.mjs OUT.json --film --holds`
+`scripts/record.mjs OUT.mp4 --film --audio media/<version>/narration.wav`
+records the film with its voice, and
+`scripts/record.mjs OUT.json --film --holds`
 reports, for each picture, its last change and how long it then holds
 before the next replaces it. The same script records one shot as an MP4
 through the hook `ibsFilm.render(k, t)`, with the captions changing by
 sentence (`film.html?timed=1`); the review page plays a clip in
-`storyboard/motion/s<ID>.mp4` in place of that line's still. Recordings
-use the ffmpeg of the lab's media environment as `FFMPEG`.
+`storyboard/motion/s<ID>.mp4` in place of that line's still. The
+recorder needs Node 22 or later, Chrome (`CHROME`, else its default
+install location on Windows) and ffmpeg (`FFMPEG`, else on the
+`PATH`).
 
 Each shot lists its events, for the score, in `EVENTS`, timed by the
 same cues as its picture. `scripts/record.mjs OUT.json --film --events`
@@ -621,8 +631,9 @@ bar. It imports `scripts/synth.py`, the PyBADS film's synthesizer, for
 the second half. `scripts/mux.py` puts the mix under a recorded film at
 -16 LUFS. The score is made again from a new export of the events
 whenever a line is voiced again or a shot's timing changes. `score.py`
-and `mux.py` run in the lab's media environment, about two and a half
-minutes for the score.
+needs NumPy, SciPy and soundfile, and takes about four minutes; `mux.py`
+needs ffmpeg. `voice.py` needs Kokoro, and `words.py` needs
+faster-whisper.
 
 The masters are recorded as the reviewed 1280 x 720 layout at a device
 pixel ratio of 1.5, 1920 x 1080 at 25 fps:
@@ -631,7 +642,12 @@ pixel ratio of 1.5, 1920 x 1080 at 25 fps:
 mix under each. `scripts/record.mjs OUT.srt --film --captions` writes
 the subtitles, as SubRip and WebVTT, from the captions that the page
 shows: a line's first sentence with the line, each later one 0.15 s
-before the voice reaches it.
+before the voice reaches it. The web encode copies the clean master's
+picture and encodes the mix at 128 kb/s, with the same two passes of
+loudness normalization. A lower bitrate raises the true peak, so it is
+measured after the encode (-16.13 LUFS and -1.18 dBTP). The poster
+(1600 x 900), the link preview (1200 x 630) and the thumbnail
+(1280 x 720) are the clean master's frame at 79.0 s, in line 2.4.
 
 ## Claims to check
 
@@ -675,6 +691,12 @@ has to come down:
 3. 5.3 itself, the package's rounds.
 4. 6.1, whose words can go on the end card.
 5. The spoken terms of 4.3, which can stay on screen.
+
+Every cut changes the score. Each section of its second half holds a
+fixed number of bars between its anchors (`ANCHORS` and `SONG` in
+`scripts/score.py`), so a cut inside a section changes its bar count.
+Cuts 2 and 3 also remove the anchor at the start of line 5.3, and cut 4
+the anchor on "PyIBS works" in line 6.1.
 
 ## Open
 

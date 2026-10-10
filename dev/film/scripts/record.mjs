@@ -35,7 +35,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const pos = [], opt = {};
 for (const argv = process.argv.slice(2); argv.length;) { const a = argv.shift(); if (["--clean", "--film", "--holds", "--events", "--captions"].includes(a)) opt[a.slice(2)] = true; else if (a.startsWith("--")) opt[a.slice(2)] = argv.shift(); else pos.push(a); }
-if (pos.length !== 1 || !(opt.shot || opt.film)) { console.error("usage: node scripts/record.mjs OUT.mp4|DIR (--shot ID | --film) [--fps N] [--size WxH] [--scale S] [--clean] [--from S] [--to S] [--times T1,T2] [--hold S] [--crf N] [--audio WAV]"); process.exit(2); }
+if (pos.length !== 1 || !(opt.shot || opt.film)) { console.error("usage: node scripts/record.mjs OUT.mp4|DIR (--shot ID | --film) [--fps N] [--size WxH] [--scale S] [--clean] [--from S] [--to S] [--times T1,T2] [--hold S] [--crf N] [--audio WAV] [--holds | --events | --captions]"); process.exit(2); }
 if ((opt.holds || opt.events) && !(opt.film && pos[0].endsWith(".json"))) { console.error("--holds and --events go with --film and write a .json"); process.exit(2); }
 if (opt.captions && !(opt.film && pos[0].endsWith(".srt"))) { console.error("--captions goes with --film and writes a .srt"); process.exit(2); }
 if (!opt.times && !opt.holds && !opt.events && !opt.captions && !pos[0].endsWith(".mp4")) { console.error(`a recording is written as an MP4: ${pos[0]} does not end in .mp4`); process.exit(2); }
@@ -105,6 +105,8 @@ try {
   const started = Date.now();
   if (opt.captions) {
     const cues = await evaluate("JSON.stringify(ibsFilm.captions())").then(JSON.parse);
+    const err = await evaluate("document.getElementById('err').textContent");
+    if (err) throw new Error(`the page reported: ${err}`);
     const stamp = (t, sep) => { const ms = Math.round(t * 1000), h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60; return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}${sep}${String(ms % 1000).padStart(3, "0")}`; };
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, cues.map(([a, b, text], i) => `${i + 1}\n${stamp(a, ",")} --> ${stamp(b, ",")}\n${text}\n`).join("\n"));

@@ -31,8 +31,9 @@ cite, and the tooling that produced it. They are not user documentation.
 - `film/` holds the sources of the film about PyIBS: its storyboard and
   script (`STORYBOARD.md`, which says what each file does), the page that
   draws it, the recorded run it shows and the scripts that voice, score
-  and record it. Its media and its review page are gitignored and made
-  again from the sources.
+  and record it. Its media and its review page are gitignored. The
+  sources make them again, except the takes of the voice, since Kokoro
+  does not give the same take twice.
 - `private/` is gitignored: maintainer notes that are not published. A
   tracked record may point to one by its path, but never restates it.
 

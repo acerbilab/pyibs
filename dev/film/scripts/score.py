@@ -31,8 +31,8 @@ shows it. In the second, accents move to the nearest thirty-second note of
 the beat. The second half runs on a tempo map. Each section starts on a
 downbeat at its anchor, the start of a picture or an event, and holds a
 fixed number of bars, whose tempo is fitted to its span. The bars were
-fitted to the draft voice. A new take of the voice moves the anchors, and
-the tempi move with them.
+fitted to the voice of the masters. A new take of the voice moves the
+anchors, and the tempi move with them.
 
 V is the folder of a voice's media. Reads V/events.json (``node
 scripts/record.mjs V/events.json --film --events``) and V/narration.wav

@@ -50,7 +50,10 @@ build of its own on one machine, and a rebuild can fetch a different Eigen.
 - `film_data.py` writes `run_data.js`, which `film.html` loads: the
   counts, the rounds, the estimate, and the two positions of scenes 2 to
   4 with their recorded rows and some fresh simulations (seed 11).
-- `logs/` holds the output of the three scripts.
+
+Each script printed its results to a log under `logs/`, which git does
+not track. What the film uses is in `trial_h_s1_s1.json` and
+`run_data.js`.
 
 They ran in WSL (Ubuntu), from this folder:
 
