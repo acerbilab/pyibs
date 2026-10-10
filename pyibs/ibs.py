@@ -223,9 +223,12 @@ class IBS:
         booleans, text, bytes, or objects. The simulator must return the
         same kind of response: text and bytes do not match numbers.
         For responses that mix numbers and text, use ``dtype=object`` for
-        both observed and simulated arrays. Otherwise NumPy converts the
-        numbers to text: simulated text against observed objects raises
-        ``TypeError``, and observed text never matches simulated objects.
+        both observed and simulated arrays. If only one of them is an
+        object array, NumPy has made text of the other's numbers:
+        simulated text against observed objects raises ``TypeError``, and
+        observed text never matches the numbers of simulated objects. If
+        both are text, numbers match only when written alike (1 and 1.0
+        differ).
     design_matrix : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. With None (the default), the simulator receives trial
@@ -244,8 +247,9 @@ class IBS:
         from a cost per response. It can choose False for a simulator with
         a large fixed cost per call, which True spreads over more samples;
         set True for such a simulator. If its first call compiles code or
-        performs other setup, warm it up before IBS times it. With ``num_reps=1``, IBS uses the
-        False schedule and warns if True was explicitly requested.
+        performs other setup, warm it up before IBS times it. With
+        ``num_reps=1``, IBS uses the False schedule and warns if True was
+        explicitly requested.
     acceleration : float, optional
         Factor by which the requested samples per trial grow between
         simulator calls. Must be finite and >= 1. Default 1.5.
@@ -262,11 +266,10 @@ class IBS:
         has zero probability under the model.
     max_time : float, optional
         Time limit of each call in seconds, > 0. Checked after each
-        simulator call.
-        The default, ``np.inf``, imposes no limit. If the limit stops
-        sampling, IBS averages each trial's completed repeats, returns
-        exit flag 2 and warns. A trial with no completed repeat raises
-        :class:`IBSSamplingError`. Repeats ended by the likelihood
+        simulator call. The default, ``np.inf``, imposes no limit. If the
+        limit stops sampling, IBS averages each trial's completed repeats,
+        returns exit flag 2 and warns. A trial with no completed repeat
+        raises :class:`IBSSamplingError`. Repeats ended by the likelihood
         threshold contribute ``neg_logl_threshold`` to the negative
         log-likelihood before averaging.
 
@@ -474,7 +477,8 @@ numpy.random.Generator, optional
 
     @property
     def num_samples_per_call(self):
-        """Initial samples per trial per call; 0 uses ``num_reps``."""
+        """Initial samples per trial per simulator call; 0 uses
+        ``num_reps``."""
         return self._num_samples_per_call
 
     @property

@@ -33,11 +33,11 @@ IBS estimates the log-likelihood of a model from simulated discrete
 responses. The simulator generates each trial in its own context, which
 may include earlier observed responses. When every observed response has
 positive model probability, sampling runs to completion, and no call is
-discarded or kept for its outcome, both the log-likelihood estimate and
-its variance estimate are unbiased. Normal
-confidence intervals based on the estimated SD are an approximation whose
-reliability depends on the model and number of repeats. PyBADS and PyVBMC
-use IBS estimates as a noisy target.
+discarded or kept for its outcome, both the log-likelihood estimate and its
+variance estimate are unbiased. Normal confidence intervals based on the
+estimated SD are an approximation whose reliability depends on the model
+and number of repeats. PyBADS and PyVBMC use IBS estimates as a noisy
+target.
 
 When choosing a method for a new analysis, discuss the alternatives with
 the user, using the README's and FAQ's explanations below. For an existing
@@ -88,11 +88,11 @@ published at <https://acerbilab.github.io/pyibs/faq.html>.
 
 Before running estimates in bulk or fitting a model, estimate the cost. A
 call draws about `num_reps` times the sum over trials of `1 / p_i` samples,
-where `p_i` is the probability of trial i's observed response. Parameter vectors
-that make some responses improbable can therefore be expensive, and an
-optimizer or inference method can call the target hundreds of times. Time
-a call at plausible parameters and include diagnostic calls in the user's
-budget. Check the sampling schedule: the automatic decision can be
+where `p_i` is the probability of trial i's observed response. Parameter
+vectors that make some responses improbable can therefore be expensive,
+and an optimizer or inference method can call the target hundreds of
+times. Time a call at plausible parameters and include diagnostic calls in
+the user's budget. Check the sampling schedule: the automatic decision can be
 misleading when fixed overhead per simulator call or compilation dominates
 the first timing; the FAQ explains when to set `vectorized` explicitly.
 Inspect an existing analysis's saved results before deciding whether

@@ -1031,20 +1031,21 @@ from the README, the documentation and the model-fitting page.
   2026-10-09) — so that a model ported from MATLAB, where both are column
   vectors, runs unchanged; responses of C > 1 columns take an output of
   shape (r, C) only. The rule lives in the engine's shape check (Phase 1,
-  step 2), the one place where `IBS` checks the output's shape. `ibslike.m` checks
-  only the number of rows and compares with
+  step 2), the one place where `IBS` checks the output's shape.
+  `ibslike.m` checks only the number of rows and compares with
   `all(respMat(T,:) == simdata, 2)` (lines 303-316, 444-450), which
   MATLAB's implicit expansion broadcasts, so it accepts more shapes: a
-  deliberate difference. Rejected: the engine's exact match of shapes (a
+  deliberate difference. `ibs_basic`, which asks for one response at a
+  time, takes an output of shape (C,) or (1, C) for responses of C
+  columns, or a scalar when C = 1, and raises `ValueError` for any other
+  (PI, 2026-10-10): `ibs_basic.m` compares with
+  `any(fun(theta,S(i,:)) ~= R(i,:))` (line 33), which broadcasts a column
+  against the row, and with one response column ends its loop on an empty
+  output as on a match. Rejected: the engine's exact match of shapes (a
   `ValueError` for such a port); MATLAB's broadcasting (an output of one
   column compared with every column of the responses); 0.1.0's comparison
   (an (N, 1) response against an (r,) output broadcasts to an (r, r)
-  array). `ibs_basic`, which asks for one response at a time, takes an
-  output of shape (C,) or (1, C) for responses of C columns, or a scalar
-  when C = 1, and raises `ValueError` for any other (PI, 2026-10-10):
-  `ibs_basic.m` compares with `any(fun(theta,S(i,:)) ~= R(i,:))` (line 33),
-  which broadcasts a column against the row, and ends its loop on an empty
-  output as on a match.
+  array).
 - **D23. A NaN response raises `ValueError` when `IBS` is created** (PI,
   2026-10-09) — a NaN never matches. Without a likelihood threshold its
   trial samples until the cap and fails there after `max_iter * num_reps`
@@ -1083,12 +1084,13 @@ from the README, the documentation and the model-fitting page.
   ended repeats included (at odds with D5).
 - **D25. `return_positive` takes only Python and NumPy booleans** (PI,
   2026-10-10) — it is a boolean option, and a value read for its truth, as
-  0.1.0 and `ibslike.m` (line 226) read it, turns the string `"False"` into
-  the log-likelihood without an error. A script that passes 0 or 1 stops
-  with a `TypeError` that names the argument, which the changelog's
-  "Upgrading from 0.1.0" lists. Rejected: any value read for its truth
-  (0.1.0 and `ibslike.m`); the integers 0 and 1 as well (a second spelling
-  of a boolean option, which `vectorized` does not take either).
+  0.1.0 and `ibslike.m` (line 226) read it, makes the string `"False"`
+  return the log-likelihood without an error. A script that passes 0 or 1
+  stops with a `TypeError` that names the argument, which the changelog's
+  "Upgrading from 0.1.0" lists. Rejected: any value read for its truth, as
+  in 0.1.0 and `ibslike.m` (a string or another non-boolean then sets the
+  sign silently); the integers 0 and 1 as well (a second spelling of a
+  boolean option, which `vectorized` does not take either).
 
 ## Open Questions
 
@@ -1609,9 +1611,10 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   documentation built with no warning, the sdist and the wheel built, both
   integration tests passed (PyBADS 1.5.1; PyVBMC at `89007a4`), and the
   notebooks reran without error, their scripts regenerating identically.
-  Fixed in `3a0ed74`, `b77b681` and `919ca57`: the validation's bullet in the README and
-  `index.rst`, which stated the thresholded estimates' agreement with their
-  expected value, and "early stopping", which nothing defined; the
+  Fixed in `3a0ed74`, `b77b681` and `919ca57`: the validation's bullet in
+  the README and `index.rst`, which stated the thresholded estimates'
+  agreement with their expected value, and "early stopping", which nothing
+  defined; the
   citations of [1] for an unbiased variance estimate, which [1] calls
   calibrated (it is unbiased: its expectation is Li₂(1 − p)); the
   condition of the guarantee, which only the FAQ's copy of "When IBS fits"
@@ -1626,7 +1629,11 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   the SDs, as large as the differences it judged (0.5% in place of 2%);
   smaller corrections. The FAQ's five labels with underscores, whose
   anchors Sphinx writes with hyphens, take hyphens before a release ships
-  them.
+  them. A review of those fixes (two read-only Opus reviewers: the code,
+  catalogue and records; the user-facing text and notebooks) found that the
+  FAQ called a call with flag 0 unbiased under a likelihood threshold too,
+  which keeping only such calls is not, and smaller points, fixed in the
+  commit after `0a8d2d4`.
 - Decided after that review (PI, 2026-10-10): D25 (`return_positive`); D22
   covers `ibs_basic`; `AGENTS.md` states that an FAQ label does not change
   once a release has shipped it, in place of the list of the labels that

@@ -272,9 +272,10 @@ gave.
   shipped it, even when its question is reworded: the warning on a
   variance estimate of 0 (`_FAQ_ZERO_SD` in `pyibs/ibs.py`) links one from
   every installed copy, the README of each release is its page on PyPI,
-  and the notebooks ship in the wheel. Before a question is moved or
-  removed, `git grep` for its label finds the files that link it. The FAQ
-  and the notebooks also link labels of the FAQs of PyBADS (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
+  and the notebooks ship in the wheel. Before a label is changed, or its
+  question moved or removed, `git grep` for the label finds the files that
+  link it. The FAQ and the notebooks also link labels of the FAQs of PyBADS
+  (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
   (`acerbilab.org/pyvbmc/faq.html#…`), which nothing here checks: grep for
   those addresses to check them against the two repositories' `faq.md`.
 - **When IBS fits.** What PyIBS is for, and when amortized

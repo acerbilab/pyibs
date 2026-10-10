@@ -103,8 +103,8 @@ says where PyIBS differs from it, and why.
   against `neg_logl_threshold`; a stopped repeat counts exactly that
   threshold in the weighted negative log-likelihood (its negative in the
   log-likelihood that `return_positive=True` returns), before the average
-  over the repeats. This follows Appendix C.1 of
-  the IBS paper and produces exit flag 1 when a repeat is stopped.
+  over the repeats. This follows Appendix C.1 of the IBS paper and
+  produces exit flag 1 when a repeat is stopped.
 - **Time limit.** When `max_time` stops the sampling, each trial's value
   averages its completed repeats that were not thresholded; thresholded
   repeats contribute to the total as described above. The call warns with

@@ -40,10 +40,12 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
         Observed responses, one row per trial; a scalar represents one
         trial. A simulated response matches only if every column agrees.
         For responses that mix numbers and text, use ``dtype=object`` for
-        both observed and simulated arrays. Otherwise NumPy converts the
-        numbers to text: simulated text against observed objects raises
-        ``TypeError``, and observed text never matches simulated objects,
-        so the sampling never ends.
+        both observed and simulated arrays. If only one of them is an
+        object array, NumPy has made text of the other's numbers:
+        simulated text against observed objects raises ``TypeError``, and
+        observed text never matches the numbers of simulated objects, so
+        the sampling never ends. If both are text, numbers match only when
+        written alike (1 and 1.0 differ).
     S : array_like of shape (N, ...), optional
         Experimental conditions or other simulator inputs, one row per
         trial. None (the default) passes the trial index instead.
@@ -63,7 +65,7 @@ numpy.random.Generator, optional
         If ``R`` is empty, has more than two dimensions, or contains a
         NaN, an element not equal to itself, which no simulated response
         matches; if ``S`` does not have N rows; or if the simulator returns
-        a response of another shape.
+        an output not shaped as one response.
     TypeError
         If the simulator returns a response of a kind that cannot match
         ``R``, such as text for numeric responses.

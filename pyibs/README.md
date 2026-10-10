@@ -135,8 +135,8 @@ positive, and that `TrialWeights` has one element or one per trial (lines
 `trial_weights`, `additional_output` and `return_positive` at each call.
 It raises `ValueError` for an invalid value and `TypeError` for the wrong
 type, naming the argument and its requirements. `return_positive` takes
-only Python and NumPy booleans, where `ibslike.m` (line 226) and PyIBS 0.1.0
-test the truth of any value, so that the string `"False"` returns the
+only Python and NumPy booleans, where `ibslike.m` (line 226) and PyIBS
+0.1.0 test the truth of any value, so that the string `"False"` returns the
 log-likelihood. The counts (`num_reps`,
 `num_samples_per_call`, `max_iter`, `max_samples`, `max_mem`) take integers and
 whole-number floats, such as `1e5`, and refuse booleans, fractions and
@@ -412,8 +412,8 @@ checked: a design of NaN serves a simulator that reads only its size, as
 ## ibs_basic
 
 **KD-18. `ibs_basic` runs without a design, passes a generator, and
-raises on its data and on responses that cannot match or have another
-shape.**
+raises on its data, on responses that cannot match, and on outputs not
+shaped as one response.**
 `ibs_basic.m` indexes the design, `S(i,:)`, which it requires (line 33); it
 returns 0 for empty responses (lines 28-29, 39), ignores extra rows of `S` and
 fails at an index when rows are missing (line 33); and it loops forever on a
@@ -428,10 +428,13 @@ dimensions and that `S` has one row per trial, and refuses a NaN response
 (1, C) for responses of C columns, or a scalar when C = 1, and raises
 `ValueError` for any other shape. `ibs_basic.m` compares with
 `any(fun(theta,S(i,:)) ~= R(i,:))` (line 33), which MATLAB's implicit
-expansion broadcasts: a column of C values is compared as a C × C array,
-and an empty output gives an empty comparison, for which `any` is false,
-so that the loop ends as on a match. PyIBS returns the log-likelihood estimate, not its negative, as
-`ibs_basic.m` does (line 39).
+expansion broadcasts. A column of C values is compared with the row as a
+C × C array, on which the loop ends once every simulated value equals the
+same entry of `R(i,:)`: a constant column can match falsely, and the
+response transposed never matches. With one response column, an empty
+output gives an empty comparison, for which `any` is false, so that the
+loop ends as on a match. PyIBS returns the log-likelihood estimate, not
+its negative, as `ibs_basic.m` does (line 39).
 - PyIBS: `ibs_basic` (`pyibs/ibs_basic.py`).
 - MATLAB: `ibs_basic.m:28-39`.
 - Settled by: D22 (the shapes), D23 (the NaN response). Kind: deliberate

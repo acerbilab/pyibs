@@ -21,7 +21,8 @@ What's new in PyIBS 1.5
 - **Validated against exact likelihoods.** Tests on 16 models with exact
   log-likelihoods detected no bias. The
   :mainbranch:`validation record <dev/results/2026-10-09-validation.md>`
-  gives the test coverage and the limits of the variance estimates.
+  lists the models and settings tested, and the limits of the variance
+  estimates.
 - **Ready for PyBADS and PyVBMC.** ``additional_output="std"`` returns a
   tuple of Python floats: the estimate and its estimated standard
   deviation. PyBADS 1.5 and PyVBMC 1.5 accept this format for noisy targets.
@@ -105,8 +106,8 @@ Use PyIBS when you can simulate a model's responses but cannot compute its likel
 
 - **Use a tractable likelihood when available.** The IBS paper recommends
   a closed form or an analytical or numerical approximation whenever one is
-  practical. IBS estimates can help check that implementation
-  [`1 <#references>`__, Section 6.4].
+  practical. IBS estimates can help check its implementation, and the
+  accuracy of an approximation [`1 <#references>`__, Section 6.4].
 - **Amortized simulation-based inference is often better when fitting one
   model to many datasets with cheap simulations.** A neural network trained once on
   simulations can share that training cost across datasets. In neural

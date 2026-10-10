@@ -44,13 +44,16 @@ title stays as it is while its item is open.
 - [ ] **Trial weights large enough to overflow the variance estimate.**
   `trial_weights` takes any finite weight of at least 0, and the variance
   estimate sums `var * w**2` over the trials (`repeat_estimates`,
-  `pyibs/_estimates.py`), which overflows once the weighted terms or their
-  sum exceed the largest float, about `1.8e308`. On 20 Bernoulli
-  trials with 10 repeats, `trial_weights=1e154` gives `neg_logl_var=inf`,
-  and `1e160` gives NaN, from `0 * inf` in a trial whose variance term is 0,
-  each with exit flag 0 and only NumPy's `RuntimeWarning`s; with
-  `neg_logl_threshold=10` and `1e308`, the call returns 10 with a variance
-  of NaN, an SD that PyBADS and PyVBMC refuse.
+  `pyibs/_estimates.py`, and `_limited_estimates`, `pyibs/_sampler.py`,
+  under the time limit). The sum overflows to `inf` once it exceeds the
+  largest float, about `1.8e308`, and `w**2` itself above weights of about
+  `1.34e154`, where every count of 1, whose variance term is 0, gives NaN
+  from `0 * inf`. On 20 trials whose responses the simulator matches with
+  probability 1/2, with 10 repeats, `trial_weights=1e154` gives
+  `neg_logl_var=inf`, and `1e160` gives NaN, each with exit flag 0 and only
+  NumPy's `RuntimeWarning`s; with `neg_logl_threshold=10` and `1e308`, the
+  call returns 10 with a variance of NaN, whose square root PyBADS and
+  PyVBMC refuse as an SD.
   - Open: a bound on the weights in their check (`trial_weights`,
     `pyibs/_estimates.py`), or a sentence in the docstring of
     `IBS.__call__`; no weighting in practical use comes near such values.
