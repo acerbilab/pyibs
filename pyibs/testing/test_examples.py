@@ -35,9 +35,10 @@ def data():
     ],
 )
 def test_ibs_agrees_with_the_closed_form(data, theta):
+    # 1,000 repeats give an SD of about 0.4, a tolerance under 2 nats.
     S, R = data
     ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=SEED_IBS)
-    neg_logl, sd = ibs(theta, num_reps=10, additional_output="std")
+    neg_logl, sd = ibs(theta, num_reps=1000, additional_output="std")
     assert abs(neg_logl - psycho_neg_logl(theta, S, R)) < 4.5 * sd
 
 

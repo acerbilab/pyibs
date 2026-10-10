@@ -14,6 +14,7 @@ from numpy.testing import assert_allclose
 import pyibs
 from pyibs import IBS, EstimateResult, IBSSamplingError, _sampler
 from pyibs import ibs as ibs_module
+from pyibs import ibs_basic
 from pyibs._estimates import ibs_loglik, ibs_var
 from pyibs.testing._exact import exact_loglik, exact_var
 from pyibs.testing._helpers import P, ScriptedSimulator, bernoulli
@@ -304,6 +305,15 @@ def test_invalid_trial_weights_raise(weights):
     ibs = IBS(never_called, np.ones(3))
     with pytest.raises(ValueError, match="Trial weights"):
         ibs(THETA, trial_weights=weights)
+
+
+def test_trial_weights_apply_to_their_call_only():
+    weighted, unit = bernoulli_ibs(), bernoulli_ibs()
+    weighted(THETA, trial_weights=W)
+    unit(THETA, trial_weights=W)
+    assert weighted(THETA, additional_output="var") == unit(
+        THETA, trial_weights=np.ones(P.size), additional_output="var"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -714,6 +724,34 @@ def test_time_limit_averages_the_completed_counts(clock):
     assert_allclose(res.neg_logl_var, 1.0, **EXACT)
 
 
+@pytest.mark.parametrize("output", [None, "var", "std"])
+def test_time_limit_warns_in_every_output_form(clock, output):
+    # Without "full", the warning is the only sign that the time ran out.
+    ibs, _ = timed_ibs(clock, TIMED_STREAMS, max_time=2.5)
+    with pytest.warns(UserWarning, match="max_time = 2.5 s") as record:
+        res = ibs(
+            THETA, num_reps=3, trial_weights=TIMED_W, additional_output=output
+        )
+    assert len(record) == 1
+    # The value, and with "var" or "std" also the variance or SD, are 1.
+    assert_allclose(res, 1.0, **EXACT)
+
+
+def test_nothing_is_printed(clock, capfd):
+    # Calls report through their outputs and warnings (0.1.0 printed the
+    # warnings of the threshold and of the time limit).
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        res = bernoulli_ibs(neg_logl_threshold=1.0)(
+            THETA, additional_output="full"
+        )
+        assert res.exit_flag == 1
+        ibs, _ = timed_ibs(clock, TIMED_STREAMS, max_time=2.5)
+        assert ibs(THETA, num_reps=3, additional_output="full").exit_flag == 2
+        ibs_basic(lambda theta, i: 1.0, THETA, np.ones(3))
+    assert capfd.readouterr() == ("", "")
+
+
 @pytest.mark.parametrize("return_positive", [False, True])
 def test_time_limit_under_the_threshold(clock, return_positive):
     # The time runs out after call 4, with repeat 0 ended and trial 0 open
@@ -837,14 +875,15 @@ def test_signature_follows_0_1_0():
     ]
     assert parameters["design_matrix"].default is None
     assert parameters["random_seed"].kind is inspect.Parameter.KEYWORD_ONLY
-    assert list(inspect.signature(IBS.__call__).parameters) == [
-        "self",
-        "params",
-        "num_reps",
-        "trial_weights",
-        "additional_output",
-        "return_positive",
-    ]
+    call = inspect.signature(IBS.__call__).parameters
+    assert {name: p.default for name, p in call.items()} == {
+        "self": inspect.Parameter.empty,
+        "params": inspect.Parameter.empty,
+        "num_reps": 10,
+        "trial_weights": None,
+        "additional_output": None,
+        "return_positive": False,
+    }
 
 
 def test_default_settings():
@@ -1291,12 +1330,15 @@ def test_one_repeat_does_not_warn_unless_vectorized_was_given(vectorized):
 def test_one_repeat_after_a_decision_of_true_does_not_warn(clock):
     # vectorized=None decided True: a call with num_reps=1 samples one at a
     # time, as the warning of vectorized=True says, but does not warn.
-    ibs = IBS(Timed(bernoulli, clock, 0.0), np.ones(P.size), random_seed=SEED)
+    sim = Timed(bernoulli, clock, 0.0)
+    ibs = IBS(sim, np.ones(P.size), random_seed=SEED)
     ibs(THETA, num_reps=2)
     assert ibs.vectorized is True
+    first = sim.calls
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         ibs(THETA, num_reps=1)
+    assert all(np.unique(r).size == r.size for r in sim.requests[first:])
 
 
 def test_max_time_counts_the_timing_call(clock):
