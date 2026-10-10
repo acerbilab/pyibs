@@ -22,10 +22,9 @@ fitting models to data (https://acerbilab.org/model-fitting/): PyBADS
 optimizes an IBS estimate as a noisy target, and PyVBMC uses it for
 posterior and evidence inference.
 
-The released version is 0.1.0, published on PyPI and conda-forge as
-`pyibs`. Version 1.5.0 is prepared on the branch `dev-next` by the plan
-`dev/plans/pyibs-1.5.md`, which states its scope, its phases and its
-decisions.
+PyIBS is published on PyPI and conda-forge as `pyibs`, and `CHANGELOG.md`
+lists its releases. The plan `dev/plans/pyibs-1.5.md` states the scope, the
+phases and the decisions of version 1.5.
 
 - `dev/` holds the maintainer records: plans, findings, the evidence they
   cite and the tooling that produced it. `dev/README.md` says where each
@@ -190,10 +189,12 @@ tags. No token is stored. A fresh environment outside the checkout then
 installs `pyibs[test]==X.Y.Z` from PyPI and runs `pytest --pyargs pyibs`.
 After the upload, the version bot of `conda-forge/pyibs-feedstock` opens an
 update pull request. The recipe keeps its own copy of the requirements
-(Python, NumPy and SciPy, and pytest for its test, `pytest --pyargs
-pyibs`), which the bot is not relied on to update: a release that changes
-them changes the recipe by hand, in a pull request opened before the bot's
-or pushed to it before it merges.
+(NumPy and SciPy, and pytest for its test, `pytest --pyargs pyibs`), which
+the bot is not relied on to update: a release that changes them changes the
+recipe by hand, in a pull request opened before the bot's or pushed to it
+before it merges. Its Python is conda-forge's `python_min`, as in PyBADS's
+recipe; `python_min` can be above `requires-python`, and the README,
+`installation.rst` and the FAQ state it.
 
 The documentation is built with
 `PATH="$PWD/.venv/Scripts:$PATH" make -C docsrc github` on Windows
@@ -394,7 +395,9 @@ gave.
   its results, also has a line in the "Upgrading from" list that opens the
   section: the change's only mention when that line says all a user
   needs, and otherwise a pointer to its entry, kept in step with it;
-  changes of one kind share a line.
+  changes of one kind share a line. Once a release has renamed
+  `Unreleased` ("Setup and commands"), a change for it goes into its
+  section until its tag.
 - **Code** follows PyBADS and PyVBMC: plain NumPy/SciPy, numpydoc
   docstrings, black at line length 79, isort with the black profile and
   pycln, which the pre-commit hooks enforce ("Setup and commands").

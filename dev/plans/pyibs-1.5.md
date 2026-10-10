@@ -31,7 +31,9 @@ The tree on `main` is PyIBS 0.1.0, as published on PyPI and conda-forge:
 `pyibs/ibs_basic.py` (a didactic loop), an example model
 (`pyibs/psycho_generator.py`, `pyibs/psycho_neg_logl.py`) and three
 notebooks inside the package directory. It has no tests, no documentation
-site, no CI and no changelog. Its defects, which 1.5 fixes and its
+site, no CI and no changelog. The published `pyibs/__init__.py` differs
+from `main`'s: it also imports the example model's two functions. Its
+defects, which 1.5 fixes and its
 changelog lists under "Upgrading from 0.1.0":
 
 1. The default `max_iter=10 ^ 5` is 15 (`^` is XOR in Python). The loop
@@ -166,8 +168,8 @@ from the original maintainer on 2026-10-09.
   conda-forge; the links that other repositories need for it; and the
   film.
 - **Out of scope**: any feature beyond `ibslike.m` that no decision below
-  adds. Changes to PyBADS, PyVBMC, gpyreg and MATLAB IBS, other than the
-  links of Phase 6.
+  adds. Changes to PyBADS, PyVBMC, gpyreg and MATLAB IBS, other than those
+  of Phase 6.
 
 ## Conventions for every phase
 
@@ -741,7 +743,7 @@ instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
 can fork repositories.
 **Goal**: PyIBS 1.5.0 on GitHub, PyPI and conda-forge, by the procedure of
-`../pybads/AGENTS.md`, "Setup and commands".
+`AGENTS.md`, "Setup and commands", which step 1 adapts from PyBADS's.
 **Timing**: steps 1 to 3 change nothing outside the repository and may run
 before the release (PI, 2026-10-09), once the PI says to start: the
 workflows of step 1 run only on `main`, on a published release or on
@@ -749,9 +751,11 @@ dispatch; the gate of step 2 is run again on the head that goes into the
 pull request, its integration tests and notebooks with PyVBMC 1.5.0 from
 PyPI; step 3 takes the expected release date, corrected if the release
 moves, and from then on a change for 1.5.0 goes into the section
-`[1.5.0]`, which `AGENTS.md` ("Changelog") then says. PyVBMC 1.5.0 is on
+`[1.5.0]`, as `AGENTS.md` ("Changelog") says. PyVBMC 1.5.0 is on
 PyPI, and its documentation published, before step 4: the README and the
-installation pages install `pyvbmc>=1.5` and link that documentation.
+installation pages install `pyvbmc>=1.5` and link that documentation, and
+`AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
+release branch.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
@@ -778,9 +782,10 @@ installation pages install `pyvbmc>=1.5` and link that documentation.
    skips them.
 5. The PI adds the trusted publisher on PyPI (repository
    `acerbilab/pyibs`, workflow `release.yml`, environment `pypi`) and
-   creates that environment on GitHub.
+   creates that environment on GitHub, with a deployment rule that admits
+   only tags `v*`.
 6. Tag `v1.5.0` on `main` and publish the GitHub release, its notes the
-   changelog's section with each paragraph joined onto one line.
+   changelog's section as `AGENTS.md` ("Setup and commands") states.
    `release.yml` uploads to PyPI. Check that
    `curl -s https://pypi.org/pypi/pyibs/json` reports version 1.5.0, and
    that a fresh venv outside the repository passes the installed tests:
@@ -792,12 +797,18 @@ installation pages install `pyvbmc>=1.5` and link that documentation.
    1.5.1.
 7. The conda-forge recipe: from the parent directory,
    `gh repo fork conda-forge/pyibs-feedstock --clone`, which creates
-   `../pyibs-feedstock`; in its `recipe/meta.yaml`, the version,
-   the sdist's sha256 from PyPI, the requirements (Python 3.10 or newer,
-   NumPy 2.0, SciPy 1.13, none of 0.1.0's others) and the test
-   `pytest --pyargs pyibs` with `pytest` among the test requirements, in a
-   pull request opened before the version bot's or pushed to it before it
-   merges. Its CI passes, and it is merged. Check that
+   `../pyibs-feedstock`; its `recipe/meta.yaml` follows that of
+   `conda-forge/pybads-feedstock`: the version; the source URL, whose file
+   name is `pyibs-{{ version }}.tar.gz` (the sdist of 0.1.0 was
+   `PyIBS-0.1.0.tar.gz`, and PyPI's URLs are case-sensitive), and the
+   sdist's sha256 from PyPI; host `setuptools >=77`; Python as
+   conda-forge's `python_min` (`python {{ python_min }}` in host and test,
+   `python >={{ python_min }}` in run), 3.11 in October 2026, whereas pip
+   serves Python 3.10; the run requirements NumPy 2.0 and SciPy 1.13, none
+   of 0.1.0's others; and the test `pytest --pyargs pyibs` with `pytest`
+   among the test requirements. It goes in a pull request opened before
+   the version bot's or pushed to it before it merges. Its CI passes, and
+   it is merged. Check that
    `curl -s https://api.anaconda.org/package/conda-forge/pyibs` reports
    1.5.0 as the latest version.
 8. `dev-next` is reset onto `main` (`AGENTS.md`, "Conventions").
@@ -818,10 +829,12 @@ installation pages install `pyvbmc>=1.5` and link that documentation.
 **Steps**:
 1. `../model-fitting`, `site/index.html`, the PyIBS card: a Docs link and a
    "New in 1.5" line, as on the PyBADS card, and an item in the news list.
-2. `../pybads` and `../pyvbmc`: where `README.md`, `docsrc/source/index.rst`,
-   `docsrc/source/faq.md` and `skills/*/SKILL.md` link PyIBS on GitHub, or
-   MATLAB IBS where they address Python users, link the PyIBS
-   documentation, in a pull request of each.
+2. `../pybads` and `../pyvbmc`, in a pull request of each: where
+   `README.md`, `docsrc/source/index.rst`, `docsrc/source/faq.md` and
+   `skills/*/SKILL.md` link PyIBS on GitHub, or MATLAB IBS where they
+   address Python users, link the PyIBS documentation; and `AGENTS.md`
+   names the labels of the FAQ that PyIBS links (PyBADS's in its list of
+   linked labels).
 
 **Verification**:
 - [ ] Each change is merged in its repository, and its links resolve.
