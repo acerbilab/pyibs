@@ -6,10 +6,11 @@ These notebooks form a short tutorial: basic use and checks of the
 uncertainty estimates, maximum-likelihood fitting with PyBADS, and posterior
 and model-evidence estimation with PyVBMC.
 
-Read their saved outputs below, download the
+Read them with their saved outputs on the pages below, download the
 :mainbranch:`Jupyter notebooks <examples/>`, or use the
-:mainbranch:`Python scripts <examples/scripts>`. Both are included with
-PyIBS; :doc:`Installation <installation>` shows how to find them and install
+:mainbranch:`Python scripts <examples/scripts>`. Both are installed with
+PyIBS, the scripts in the notebooks' folder under ``scripts``;
+:doc:`Installation <installation>` shows how to find that folder and install
 the packages needed to run the notebooks.
 
 .. toctree::

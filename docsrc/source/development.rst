@@ -216,10 +216,10 @@ starting work; switching branches does not update it from the remote.
 Changelog
 ---------
 
-In the same commit as a change to results, the interface, or observable
-behavior, add one or two sentences for users under ``Unreleased`` in
-:mainbranch:`CHANGELOG.md <CHANGELOG.md>`. A change that can break a script
-written for the last release or alter its results also needs an entry in
-the opening "Upgrading from" list. When a change adds, removes, or alters an
-intentional difference from ``ibslike.m``, update the corresponding entry in
-the :mainbranch:`catalogue <pyibs/README.md>`.
+In the same commit as a change to results, the interface, or what a
+script sees or has to handle, add one or two sentences for users under
+``Unreleased`` in :mainbranch:`CHANGELOG.md <CHANGELOG.md>`. A change that
+can break a script written for the last release or alter its results also
+needs an entry in the opening "Upgrading from" list. When a change adds,
+removes, or alters an intentional difference from ``ibslike.m``, update the
+corresponding entry in the :mainbranch:`catalogue <pyibs/README.md>`.

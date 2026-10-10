@@ -12,8 +12,8 @@ For questions not covered here, ask in the lab's
 
 PyIBS estimates log-likelihoods from a model's simulator. PyBADS can use
 these estimates to fit the parameters, and PyVBMC can use them to infer
-the posterior and model evidence. They are among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+the posterior and model evidence. PyIBS, PyBADS and PyVBMC are among the
+lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 **Acknowledgments:** Many of the questions answered here originated in a
 live Q&A session with the [Ma lab](http://www.cns.nyu.edu/malab/). We thank
@@ -49,7 +49,7 @@ worked setups.
   - [Which kind of problems is PyIBS suited for?](#faq-which-kind-of-problems-is-pyibs-suited-for)
   - [When should I use IBS rather than amortized simulation-based inference?](#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference)
   - [How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?](#faq-how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood)
-  - [What is `ibs_basic` for?](#faq-what-is-ibs_basic-for)
+  - [What is `ibs_basic` for?](#faq-what-is-ibs-basic-for)
 - [Installing PyIBS](#faq-installation)
   - [Where can I download PyIBS?](#faq-where-can-i-download-pyibs)
   - [Which external packages does PyIBS require?](#faq-which-external-packages-does-pyibs-require)
@@ -73,17 +73,17 @@ worked setups.
   - [I have several questions about using PyBADS to optimize the log-likelihood. Can you help?](#faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help)
   - [What if I want to use IBS to perform Bayesian posterior or model inference?](#faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference)
 - [Precision and IBS repeats](#faq-precision-and-ibs-repeats)
-  - [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)
+  - [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)
   - [Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?](#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)
   - [In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?](#faq-in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum)
-  - [As I increase `num_reps`, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?](#faq-as-i-increase-num_reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal)
+  - [As I increase `num_reps`, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?](#faq-as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal)
   - [What are trial-dependent repeats, and can I use them with PyIBS?](#faq-what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs)
 - [Cost, limits and the likelihood threshold](#faq-cost-limits-and-the-likelihood-threshold)
   - [How many samples does an estimate take?](#faq-how-many-samples-does-an-estimate-take)
   - [Should I set `vectorized`?](#faq-should-i-set-vectorized)
-  - [What does the likelihood threshold `neg_logl_threshold` do, and how do I choose it?](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+  - [What does the likelihood threshold `neg_logl_threshold` do, and how do I choose it?](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
   - [Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?](#faq-is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-eg-20)
-  - [What does `max_time` do?](#faq-what-does-max_time-do)
+  - [What does `max_time` do?](#faq-what-does-max-time-do)
 - [Troubleshooting](#faq-troubleshooting)
   - [A call raises `IBSSamplingError`. What do I do?](#faq-a-call-raises-ibssamplingerror-what-do-i-do)
   - [`IBS` calls my simulator with different subsets of trials. What does this mean for my simulator?](#faq-ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator)
@@ -118,8 +118,10 @@ likelihood. The problem must meet these requirements ([1], Section 2.2):
 For each trial, IBS simulates responses until one matches the observation.
 For discrete responses, the number of draws gives an unbiased estimate of
 the trial's log-likelihood. Summing these estimates gives an unbiased
-estimate of the data's log-likelihood. IBS also gives an unbiased estimate
-of its variance ([1], Sections 2.4, 4.3 and 4.6). With continuous responses,
+estimate of the data's log-likelihood. IBS also estimates the variance of
+its estimate ([1], Section 4.3), and that variance estimate is unbiased too:
+its expectation, `Li₂(1 − p)` for a response of probability `p`, is the
+variance itself. With continuous responses,
 the same guarantee applies to the log-probability of the matching event,
 with approximation error from discretization. The
 [answer on checking estimates](#faq-how-do-i-check-that-the-estimates-are-right-for-my-model)
@@ -146,9 +148,10 @@ will fit, and the accuracy you need.
 **What IBS gives.** IBS estimates the log-likelihood of one dataset at one
 parameter vector by simulating each trial in its own context. For discrete
 responses, the estimator is unbiased for each dataset and parameter vector,
-provided the observed responses have positive probabilities and the draws
-are neither truncated nor selected. It also estimates the variance ([1], Sections 2.4, 4.3 and
-4.6). IBS requires no training or summary statistics. Its estimates can
+provided the observed responses have positive probabilities, sampling runs
+to completion, and no call is discarded or kept for its outcome. Its
+variance estimate is unbiased too ([1], Section 4.3). IBS requires no
+training or summary statistics. Its estimates can
 serve as a target for methods that support noisy log-likelihoods, including
 PyBADS for optimization and PyVBMC for posterior and evidence inference,
 both among the lab's
@@ -203,7 +206,7 @@ inference (Li et al., 2026, Section 2.3).
 `1 / p` samples on average ([1], Section 4.2). Since this is
 `exp(-log p)`, an improbable response can be very expensive to match.
 A lapse rate can put a lower bound on response probabilities, and a
-[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
 can stop sampling at poor parameters ([1], Section 6.4 and Appendix C.1).
 
 Responses must be discrete or have a matching event defined by binning or
@@ -225,22 +228,23 @@ Its output can be used by likelihood-based methods that support noisy
 targets; ABC uses dedicated inference algorithms ([1], Section 6.3).
 
 A synthetic likelihood gives a noisy estimate of the log-likelihood of
-the summary statistics. It can also serve as a target for PyVBMC, one of
-the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
-as its FAQ explains
+the summary statistics. The FAQ of PyVBMC, one of the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), notes that it
+could also serve as a target
 ([Can I use *any* technique to estimate a noisy log-likelihood?](https://acerbilab.org/pyvbmc/faq.html#faq-can-i-use-any-technique-to-estimate-a-noisy-log-likelihood)).
 For continuous responses, [1] proposes approximate IBS, which borrows ABC's
 tolerance but compares the full responses (see
 [below](#faq-can-i-use-ibs-with-continuous-responses)).
 
-(faq-what-is-ibs_basic-for)=
+(faq-what-is-ibs-basic-for)=
 ### What is `ibs_basic` for?
 
 [`ibs_basic`](api/functions/ibs_basic.rst) is a minimal implementation for
 teaching and reading the algorithm. It follows `ibs_basic.m` of MATLAB IBS
 and the loop in [1], Section 4.1: sample one trial at a time, one response
 per simulator call, until it matches. The function returns one
-log-likelihood estimate. It has no averaging over repeats, variance
+log-likelihood estimate, not its negative as `IBS` does by default. It has
+no averaging over repeats, variance
 estimate, sampling cap or likelihood threshold. Use `IBS` for analyses.
 
 (faq-installation)=
@@ -554,8 +558,9 @@ log-likelihood at `theta`. It averages `num_reps` independent IBS repeats,
   trial), `fun_count` (the number of simulator calls),
   and the per-trial estimates `neg_logl_trials` and `neg_logl_var_trials`.
 
-PyBADS and PyVBMC use the `"std"` tuple for their noisy targets; both are
-among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+PyBADS and PyVBMC, among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), take the `"std"`
+tuple as a noisy target.
 `return_positive=True` changes the returned value to the log-likelihood.
 The variance estimate and the per-trial arrays keep their values and signs.
 `trial_weights` weights the trials' log-likelihoods. A zero-weight trial is
@@ -566,18 +571,21 @@ With `"full"`, `exit_flag` reports how sampling ended:
 
 - **0:** every repeat completed without reaching the likelihood threshold;
 - **1:** the
-  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
-  ended at least one repeat. The estimate is clipped and biased, and all
-  per-trial estimates are NaN;
-- **2:** [`max_time`](#faq-what-does-max_time-do) stopped sampling. The call
+  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
+  ended at least one repeat. Each ended repeat counts exactly
+  `neg_logl_threshold`, which biases the estimate, and all per-trial
+  estimates are NaN;
+- **2:** [`max_time`](#faq-what-does-max-time-do) stopped sampling. The call
   returns a potentially biased estimate and issues a warning.
 
-Flag 0 describes the work completed by this call. It does not establish
-unbiasedness after filtering calls by their exit status or discarding
-sampling errors. A finite time limit also affects which draws finish in
-time. See the answers on
+With the default `max_time=np.inf`, a call with flag 0 gives an unbiased
+estimate, as long as calls are not selected: discarding the calls that
+raise a sampling error, or keeping only those with a given exit flag,
+biases the estimates that remain. A finite `max_time` biases even the calls
+that end with flag 0, since a call with few samples, which gives a high
+log-likelihood, is the likelier to finish in time. See the answers on
 [sampling errors](#faq-a-call-raises-ibssamplingerror-what-do-i-do) and
-[`max_time`](#faq-what-does-max_time-do).
+[`max_time`](#faq-what-does-max-time-do).
 
 (faq-pybads-and-pyvbmc)=
 ## PyBADS and PyVBMC
@@ -585,11 +593,11 @@ time. See the answers on
 (faq-how-do-i-use-pyibs-with-pybads)=
 ### How do I use PyIBS with PyBADS?
 
-[PyBADS](https://acerbilab.github.io/pybads/) minimizes the target function,
-so return the *negative* log-likelihood estimate and its estimated SD as
-a tuple. Set `options={"specify_target_noise": True}` to tell PyBADS that
-the target supplies its noise level. PyBADS is among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+[PyBADS](https://acerbilab.github.io/pybads/), one of the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), minimizes the
+target function, so return the *negative* log-likelihood estimate and its
+estimated SD as a tuple. Set `options={"specify_target_noise": True}` to
+tell PyBADS that the target supplies its noise level.
 
 ```python
 from pybads import BADS
@@ -613,7 +621,7 @@ optimize_result = bads.optimize()
 - PyBADS calls the target with one one-dimensional parameter vector in
   the original parameter space, using the same coordinates as your bounds.
 - Choose `num_reps` for an SD of about 1 near the optimum (see
-  [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)), and
+  [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)), and
   re-evaluate the solution with more repeats
   ([below](#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)).
 - Run PyBADS from several starting points, as the
@@ -623,13 +631,13 @@ optimize_result = bads.optimize()
 (faq-how-do-i-use-pyibs-with-pyvbmc)=
 ### How do I use PyIBS with PyVBMC?
 
-[PyVBMC](https://acerbilab.org/pyvbmc/) approximates the parameter
-posterior and estimates the model evidence. When you give it a prior, its
-target should return the log-likelihood estimate (`return_positive=True`)
-and its estimated SD. PyVBMC adds the log prior itself. Set
-`options={"specify_target_noise": True}` so it uses the supplied noise
-level. PyVBMC is among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+[PyVBMC](https://acerbilab.org/pyvbmc/), one of the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), approximates the
+parameter posterior and estimates the model evidence. When you give it a
+prior, its target should return the log-likelihood estimate
+(`return_positive=True`) and its estimated SD. PyVBMC adds the log prior
+itself. Set `options={"specify_target_noise": True}` so it uses the
+supplied noise level.
 
 ```python
 from pyvbmc import VBMC
@@ -711,7 +719,7 @@ says the estimated SD `must be a finite, positive real-valued scalar`.
   as `num_reps` increases. They do not rule them out. A fit can make
   hundreds of evaluations, so account for the chance of encountering a
   zero over the whole run (see
-  [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)).
+  [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)).
 - *A lapse rate in the model* puts an upper bound below one on matching
   probabilities. If the lapse rate is at least `lapse` and a lapse chooses
   uniformly among `k` responses, then
@@ -732,13 +740,14 @@ requires it:
   `options={"uncertainty_handling": True}`. PyBADS then estimates the
   noise. IBS variance often changes moderately over the useful part of
   parameter space, so this can work (see
-  [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)). Still,
+  [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)). Still,
   PyIBS computes its SD without additional simulations, and supplying it
   gives PyBADS more information. The PyBADS FAQ recommends this too
   ([Should I provide an estimate of the noise associated with each evaluation?](https://acerbilab.github.io/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation)).
-- For *Bayesian inference* with PyVBMC, the evaluation noise affects both
-  the posterior approximation and the evidence estimate. PyVBMC can
-  infer a noise level from a scalar-valued target with
+- For *Bayesian inference* with PyVBMC, supply it. Bayesian inference is
+  very sensitive to noisy estimates of the log-likelihood, so the inference
+  algorithm needs all available information about the magnitude of the
+  noise. PyVBMC can infer a noise level from a scalar-valued target with
   `options={"uncertainty_handling": True}`, but supplying the SD of each
   evaluation is preferable. Its FAQ recommends this
   ([Does VBMC automatically detect that the target function is noisy?](https://acerbilab.org/pyvbmc/faq.html#faq-does-vbmc-automatically-detect-that-the-target-function-is-noisy)),
@@ -747,17 +756,21 @@ requires it:
 (faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help)=
 ### I have several questions about using PyBADS to optimize the log-likelihood. Can you help?
 
-The [PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html) covers
+[PyBADS](https://acerbilab.github.io/pybads/), one of the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), is a robust
+optimizer that works well with stochastic targets, and in particular with
+the noisy estimates of IBS. The
+[PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html) covers
 optimization settings, bounds, starting points and interpretation of
 results. Start with its section on
-[noisy objective functions](https://acerbilab.github.io/pybads/faq.html#faq-noisy-objective-function)
-for IBS targets. PyBADS is among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+[noisy objective functions](https://acerbilab.github.io/pybads/faq.html#faq-noisy-objective-function),
+but read the others too: all of them are relevant.
 
 (faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference)=
 ### What if I want to use IBS to perform Bayesian posterior or model inference?
 
-We recommend [Variational Bayesian Monte Carlo (PyVBMC)](https://acerbilab.org/pyvbmc/)
+We recommend [Variational Bayesian Monte Carlo (PyVBMC)](https://acerbilab.org/pyvbmc/),
+one of the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
 for approximating the posterior over model parameters and estimating the
 marginal likelihood, or model evidence. It supports noisy log-likelihood
 estimates such as IBS; see its FAQ on
@@ -765,9 +778,8 @@ estimates such as IBS; see its FAQ on
 VBMC performed well with IBS in the empirical benchmark of
 [Acerbi, 2020](https://arxiv.org/abs/2006.08655).
 
-The [integration answer](#faq-how-do-i-use-pyibs-with-pyvbmc) gives the
-target and settings. PyVBMC is among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+[How do I use PyIBS with PyVBMC?](#faq-how-do-i-use-pyibs-with-pyvbmc)
+gives the target and settings.
 
 (faq-precision-and-ibs-repeats)=
 ## Precision and IBS repeats
@@ -776,7 +788,7 @@ A *repeat* is an independent run of IBS ([1], Section 4.4). A PyIBS call
 averages `num_reps` repeats, ten by default. Increasing this number makes
 the estimate more precise at the cost of more simulations.
 
-(faq-how-do-i-choose-num_reps)=
+(faq-how-do-i-choose-num-reps)=
 ### How do I choose `num_reps`?
 
 For fitting, aim for an estimated SD of about 1 in the region that matters:
@@ -821,8 +833,9 @@ be as precise as you can afford.
 (faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)=
 ### Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?
 
-Yes. Re-evaluate the candidate solution with an independent, more precise
-estimate. Selecting a point because its noisy value was low can make the
+Yes. This is standard practice whenever a noisy target is optimized, with
+IBS or without: re-evaluate the candidate solution with an independent,
+more precise estimate. Selecting a point because its noisy value was low can make the
 reported minimum too optimistic ([1], Section 4.1). With PyBADS:
 
 ```python
@@ -831,7 +844,7 @@ neg_logl, sd = ibs(x_best, num_reps=1000, additional_output="std")
 ```
 
 Use an `IBS` object without a
-[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
 for this evaluation. Compare models using these independent estimates
 and their SDs.
 
@@ -845,7 +858,7 @@ target with the parameters alone; they do not choose its repeat count.
 Choose the count before drawing that evaluation's samples. Changing the
 count in response to those same samples can introduce selection bias.
 
-(faq-as-i-increase-num_reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal)=
+(faq-as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal)=
 ### As I increase `num_reps`, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?
 
 Yes. The expected sample count grows in proportion to `num_reps`, while
@@ -875,10 +888,12 @@ The allocation depends on unknown trial probabilities. The paper
 recommends computing it from a pilot estimate with many repeats at a
 representative parameter vector, and retaining it for the fit.
 
-For this to improve efficiency across a fit, the relatively improbable
-trials should remain so across the relevant parameter region. Unexpected
-responses, such as lapses, can make this plausible, but the benefit needs
-assessment for the model. In the paper's example of 500 trials with
+For this to work well, the trial likelihoods should be correlated across
+reasonable regions of parameter space, so that an allocation computed at
+one parameter vector remains beneficial at the others that the fit
+evaluates. This seems to hold often in practice, since the improbable
+trials are often those where something unexpected occurred, such as a
+lapse; more empirical studies are needed. In the paper's example of 500 trials with
 probabilities drawn uniformly between zero and one, the optimal allocation
 gave a median precision gain of about 1.6 over equal repeats at the same
 budget ([1], Appendix C.2).
@@ -933,7 +948,7 @@ simulator calls; and `elapsed_time` gives the call's duration.
 Since `1 / p = exp(-log p)`, the cost of matching an individual response
 can grow rapidly as its log-probability falls ([1], Appendix C.1).
 A positive lapse rate can bound this expected cost, and a
-[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
 can stop sampling at poor parameters ([1], Section 6.4).
 The sampling cap `max_iter` raises an error when a trial takes too many
 samples, including when its response is impossible (see
@@ -942,7 +957,7 @@ samples, including when its response is impossible (see
 (faq-should-i-set-vectorized)=
 ### Should I set `vectorized`?
 
-An explicit choice can improve speed and makes seeded runs more reliable.
+An explicit choice can improve speed, and makes a seeded run reproducible.
 `vectorized` controls how `IBS` batches simulator requests:
 
 - `True` requests several samples of each trial that still needs matches.
@@ -988,15 +1003,15 @@ first IBS call, or set `vectorized` explicitly. An explicit choice also
 removes this timing decision from
 [reproducibility](#faq-how-do-i-make-a-run-reproducible).
 
-(faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)=
+(faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)=
 ### What does the likelihood threshold `neg_logl_threshold` do, and how do I choose it?
 
 The threshold saves simulations at poor parameter vectors. During each
 repeat, IBS maintains a running lower bound on the repeat's final negative
 log-likelihood *estimate*. Once the bound exceeds `T`, the repeat stops
-and contributes exactly `T` to the negative log-likelihood estimate. If
-any repeat stops this way, the call reports exit flag 1, unless a time
-limit subsequently stops the call with exit flag 2 ([1], Appendix C.1).
+and contributes exactly `T` to the negative log-likelihood estimate ([1],
+Appendix C.1). If any repeat stops this way, the call reports exit flag 1,
+unless a time limit subsequently stops the call with exit flag 2.
 
 `T` applies to the weighted negative log-likelihood. With
 `return_positive=True`, the same rule applies, but the stopped repeat
@@ -1052,12 +1067,12 @@ sampling distribution and introduces bias, losing the benefit of IBS
 over fixed sampling ([1], Section 3). For optimization, the paper instead
 proposes an early-stopping threshold on the whole dataset's estimate
 ([1], Appendix C.1), implemented by the
-[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it).
+[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it).
 The sampling cap `max_iter` therefore raises an error instead of
 returning an estimate from incomplete counts (see
 [A call raises `IBSSamplingError`](#faq-a-call-raises-ibssamplingerror-what-do-i-do)).
 
-(faq-what-does-max_time-do)=
+(faq-what-does-max-time-do)=
 ### What does `max_time` do?
 
 `max_time` limits each call's duration in seconds. The limit is checked
@@ -1102,7 +1117,7 @@ response may be extremely improbable at the current parameters:
   can make every response possible and bound the expected cost ([1],
   Section 6.4). It should be part of the model you intend to fit.
 - For optimization, consider a
-  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
   to stop sampling poor parameter vectors before they reach the cap.
 
 Raise `max_iter` when the response probabilities justify the sample cost
@@ -1115,7 +1130,7 @@ biased subset. Investigate failures and revise the simulator or sampling
 settings instead.
 
 `IBSSamplingError` is also raised if
-[`max_time`](#faq-what-does-max_time-do) stops a call before a trial has
+[`max_time`](#faq-what-does-max-time-do) stops a call before a trial has
 completed a repeat.
 
 (faq-ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator)=
@@ -1229,9 +1244,8 @@ and variance when its draws are completed and not selected.
 
 If the estimates are approximately normal and the reported SDs are stable
 and positive, inspect the z-scores `(neg_logl - exact) / sd`. They should
-be approximately centered on zero with SD near one. This is an
-approximation, not a guarantee from unbiasedness alone or from using ten
-repeats. If nearly all trials match on their first samples, estimated
+be approximately centered on zero with SD near one. This rests on a normal
+approximation, which unbiasedness does not guarantee. If nearly all trials match on their first samples, estimated
 variances can be zero and z-scores can behave poorly even with many
 repeats; see the
 [zero-SD answer](#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
@@ -1242,8 +1256,9 @@ The [first example notebook](examples.rst) shows this comparison on 600
 trials, where the standardized errors are close to normal.
 
 Check the fit separately, for example by comparing independent runs of
-PyBADS or PyVBMC from different starting points. These are among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+PyBADS or PyVBMC, among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), from different
+starting points.
 
 (faq-miscellanea)=
 ## Miscellanea
@@ -1252,7 +1267,9 @@ PyBADS or PyVBMC from different starting points. These are among the lab's
 ### I used `ibslike` in MATLAB. What is different in PyIBS?
 
 PyIBS implements the same IBS estimator as `ibslike.m` 0.96 of
-[MATLAB IBS](https://github.com/acerbilab/ibs), with a Python interface:
+[MATLAB IBS](https://github.com/acerbilab/ibs), one of the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/), with a Python
+interface:
 
 - Create an `IBS` object with the simulator, responses and design:
   `ibs = IBS(sample_from_model, response_matrix, design_matrix, ...)`.
@@ -1302,8 +1319,7 @@ For the tests corresponding to `ibslike('test')`, run
 lists all differences from `ibslike.m` and the didactic `ibs_basic.m`,
 with their reasons. The two implementations draw random numbers
 differently, so runs do not match draw for draw even with the same
-simulator. MATLAB IBS is among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+simulator.
 
 (faq-i-used-pyibs-010-what-do-i-need-to-change)=
 ### I used PyIBS 0.1.0. What do I need to change?

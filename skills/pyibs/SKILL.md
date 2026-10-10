@@ -32,8 +32,9 @@ the [`check_for_updates` API](https://github.com/acerbilab/pyibs/blob/main/docsr
 IBS estimates the log-likelihood of a model from simulated discrete
 responses. The simulator generates each trial in its own context, which
 may include earlier observed responses. When every observed response has
-positive model probability and sampling runs to completion, both the
-log-likelihood estimate and its variance estimate are unbiased. Normal
+positive model probability, sampling runs to completion, and no call is
+discarded or kept for its outcome, both the log-likelihood estimate and
+its variance estimate are unbiased. Normal
 confidence intervals based on the estimated SD are an approximation whose
 reliability depends on the model and number of repeats. PyBADS and PyVBMC
 use IBS estimates as a noisy target.
@@ -45,7 +46,8 @@ revisit the method choice when the user asks or the analysis shows a reason
 to question it.
 
 - Use a closed-form likelihood or an accurate numerical likelihood when
-  one is tractable. IBS can help check an approximation to the likelihood.
+  one is tractable. IBS can help check its implementation and the
+  accuracy of an approximation.
 - Amortized simulation-based inference, such as neural posterior
   estimation, is often the better choice when one model is fitted to many
   datasets and its simulations are cheap.
@@ -85,8 +87,8 @@ The FAQ is [docsrc/source/faq.md](https://github.com/acerbilab/pyibs/blob/main/d
 published at <https://acerbilab.github.io/pyibs/faq.html>.
 
 Before running estimates in bulk or fitting a model, estimate the cost. A
-call takes about `num_reps` times the sum of `1 / p_i` over trials, where
-`p_i` is the probability of trial i's observed response. Parameter vectors
+call draws about `num_reps` times the sum over trials of `1 / p_i` samples,
+where `p_i` is the probability of trial i's observed response. Parameter vectors
 that make some responses improbable can therefore be expensive, and an
 optimizer or inference method can call the target hundreds of times. Time
 a call at plausible parameters and include diagnostic calls in the user's

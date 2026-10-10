@@ -7,7 +7,7 @@ PyIBS is one of the open-source `tools for fitting models to data <https://acerb
 What is it?
 ###########
 
-PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [`1 <#references>`__]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial's log-likelihood. Without early stopping, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is ``ibslike.m`` in :labrepos:`MATLAB IBS <ibs>`.
+PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [`1 <#references>`__]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial's log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is ``ibslike.m`` in :labrepos:`MATLAB IBS <ibs>`.
 
 Use the estimates with a method that handles noisy objectives: `PyBADS <https://acerbilab.github.io/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, or `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept. These packages are among the lab's `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__.
 
@@ -18,11 +18,10 @@ What's new in PyIBS 1.5
   ``ibslike.m`` 0.96 and has been compared with it line by line. The
   :mainbranch:`catalogue of deliberate differences <pyibs/README.md>`
   explains the choices made for the Python implementation.
-- **Validated against exact likelihoods.** Tests across 16 models found no
-  detectable bias without early stopping and reproduced the expected
-  values when a likelihood threshold was used. The
+- **Validated against exact likelihoods.** Tests on 16 models with exact
+  log-likelihoods detected no bias. The
   :mainbranch:`validation record <dev/results/2026-10-09-validation.md>`
-  describes the test coverage and the limits of the uncertainty estimates.
+  gives the test coverage and the limits of the variance estimates.
 - **Ready for PyBADS and PyVBMC.** ``additional_output="std"`` returns a
   tuple of Python floats: the estimate and its estimated standard
   deviation. PyBADS 1.5 and PyVBMC 1.5 accept this format for noisy targets.
@@ -45,9 +44,10 @@ What's new in PyIBS 1.5
   dependencies are NumPy 2.0 or later and SciPy 1.13 or later.
 - **Documentation and examples.** The documentation includes three
   :doc:`example notebooks <examples>` covering basic use, PyBADS, and
-  PyVBMC, plus a :doc:`FAQ <faq>`. To use the
-  :mainbranch:`PyIBS skill <skills/pyibs/SKILL.md>`, give the file to your
-  coding agent or copy the ``skills/pyibs`` folder into its skill directory.
+  PyVBMC, plus a :doc:`FAQ <faq>`. The
+  :mainbranch:`PyIBS skill <skills/pyibs/SKILL.md>` helps coding agents
+  find the relevant documentation. To use it, give the file to your coding
+  agent or copy the ``skills/pyibs`` folder into its skill directory.
   Update a copied skill from the PyIBS version you use.
 
 Results differ from PyIBS 0.1.0 even with a fixed seed, and ``IBS`` rejects
@@ -63,9 +63,9 @@ Suppose a trial's observed response has probability :math:`p` under the model. I
 
 .. math::
 
-   \hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k},
+   \hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k}.
 
-The estimate is 0 when :math:`K = 1`. For every :math:`p > 0`, it is exactly unbiased and has the least variance among unbiased estimators based on this sampling procedure. Its variance is bounded by :math:`\pi^2/6` even as :math:`p` approaches 0 [`1 <#references>`__, Sections 2.4 and 4.3]. The same count :math:`K` gives an unbiased variance estimate, :math:`\psi_1(1) - \psi_1(K)`, where :math:`\psi_1` is the trigamma function [`1 <#references>`__, Section 4.3].
+The estimate is 0 when :math:`K = 1`. For every :math:`p > 0`, it is exactly unbiased and has the least variance among unbiased estimators based on this sampling procedure. Its variance is bounded by :math:`\pi^2/6` even as :math:`p` approaches 0 [`1 <#references>`__, Sections 2.4 and 4.3]. The same count :math:`K` gives an estimate of that variance, :math:`\psi_1(1) - \psi_1(K)`, where :math:`\psi_1` is the trigamma function [`1 <#references>`__, Section 4.3]. Its expectation is the variance itself, :math:`\operatorname{Li}_2(1 - p)` (Fig 1), so the variance estimate is unbiased too.
 
 Summing over trials and averaging independent repeats often makes the
 estimated standard deviation useful for normal confidence intervals
@@ -86,8 +86,8 @@ The data's log-likelihood is the sum of the trial log-likelihoods. IBS
 therefore adds their estimates and variance estimates. An ``IBS`` call
 averages ``num_reps`` independent repeats, reducing the variance by that
 factor. Each simulator call samples all trials that still need a match.
-With ``vectorized=True``, it requests several samples per trial, increasing
-the batch size between calls as ``ibslike.m`` does.
+With ``vectorized=True``, it requests several samples per trial, a number
+that grows after every call.
 
 The optional likelihood threshold, ``neg_logl_threshold``, stops a repeat
 once its accumulating negative log-likelihood estimate exceeds the
@@ -122,10 +122,11 @@ Use PyIBS when you can simulate a model's responses but cannot compute its likel
   Section 5.4; `2 <#references>`__].
 - **IBS also helps when guarantees for each dataset matter.** An amortized
   estimator can be accurate on some datasets and unreliable on others, so
-  each dataset needs diagnostics and a fallback if they fail
-  [`3 <#references>`__]. IBS requires no training and gives unbiased
+  each dataset needs diagnostics, and a fallback for the datasets that fail
+  them [`3 <#references>`__]. IBS requires no training and gives unbiased
   log-likelihood and variance estimates for any dataset when all observed
-  responses have positive probability and sampling is allowed to complete.
+  responses have positive probability, sampling runs to completion, and no
+  call is discarded or kept for its outcome.
   These guarantees concern the likelihood estimates: optimization and
   posterior approximation still introduce errors that need their own
   checks. An estimated standard deviation also need not give accurate
