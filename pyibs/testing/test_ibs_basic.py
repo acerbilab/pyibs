@@ -94,6 +94,41 @@ def test_every_column_must_match():
     assert outputs == {0: [], 1: []}
 
 
+@pytest.mark.parametrize(
+    "observed, output",
+    [
+        ([1], []),
+        ([1], [1, 1]),
+        ([[1, 1]], 1),
+        ([[1, 1]], [1]),
+        ([[1, 1]], [[1], [1]]),
+        ([[1, 1]], [[[1, 1]]]),
+    ],
+)
+def test_invalid_simulator_shape_raises(observed, output):
+    calls = 0
+
+    def simulator(theta, s):
+        nonlocal calls
+        calls += 1
+        assert calls == 1, "Invalid responses must fail on the first draw."
+        return output
+
+    with pytest.raises(ValueError, match="shape"):
+        ibs_basic(simulator, THETA, observed)
+
+
+@pytest.mark.parametrize("output", [1, [1], [[1]]])
+@pytest.mark.parametrize("observed", [[1], [[1]]])
+def test_single_response_shapes(observed, output):
+    assert ibs_basic(lambda theta, s: output, THETA, observed) == 0.0
+
+
+@pytest.mark.parametrize("output", [[1, 2], [[1, 2]]])
+def test_multicolumn_response_shapes(output):
+    assert ibs_basic(lambda theta, s: output, THETA, [[1, 2]]) == 0.0
+
+
 def test_generator_reaches_the_simulator():
     seen = []
 

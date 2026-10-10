@@ -56,7 +56,7 @@ reported_sd = math.sqrt(np.mean(sds**2))  # Root mean square of the SDs
 print(f"Exact value:            {exact:.2f}")
 print(f"Mean of the estimates:  {values.mean():.2f} +/- {standard_error:.2f}")
 print(f"SD of the estimates:    {values.std(ddof=1):.2f}")
-print(f"SD reported by IBS:     {reported_sd:.2f}")
+print(f"RMS reported SD:        {reported_sd:.2f}")
 print(f"z-scores: mean {z.mean():.3f}, SD {z.std(ddof=1):.3f}")
 
 

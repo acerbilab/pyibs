@@ -1,22 +1,23 @@
 # PyIBS: Frequently Asked Questions
 
-This FAQ is curated by [Luigi Acerbi](https://lacerbi.github.io/), and in constant expansion.
-It is adapted for PyIBS 1.5 from the [MATLAB IBS FAQ](https://github.com/acerbilab/ibs/wiki),
-with further questions on the Python package.
+This FAQ covers PyIBS 1.5 and is curated by
+[Luigi Acerbi](https://lacerbi.github.io/). It adapts the
+[MATLAB IBS FAQ](https://github.com/acerbilab/ibs/wiki) and adds questions
+about the Python package.
 
 For a tutorial with detailed examples, see the [Jupyter notebook examples](examples.rst).
 
-If you have questions not covered here, please feel free to ask in the lab
+For questions not covered here, ask in the lab's
 [Discussions forum](https://github.com/orgs/acerbilab/discussions).
 
-PyIBS is one of the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
-which also give the best-fitting parameters (PyBADS) and the posterior and
-the model evidence (PyVBMC), both of which take PyIBS's estimates as their
-target.
+PyIBS estimates log-likelihoods from a model's simulator. PyBADS can use
+these estimates to fit the parameters, and PyVBMC can use them to infer
+the posterior and model evidence. They are among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 **Acknowledgments:** Many of the questions answered here originated in a
-live Q&A session with the [Ma lab](http://www.cns.nyu.edu/malab/), and thanks
-to Hsin-Hung Li for taking notes.
+live Q&A session with the [Ma lab](http://www.cns.nyu.edu/malab/). We thank
+Hsin-Hung Li for taking notes.
 
 In the answers, [1] is the IBS paper: B. van Opheusden, L. Acerbi and
 W. J. Ma (2020), "Unbiased and efficient log-likelihood estimation with
@@ -30,12 +31,17 @@ import numpy as np
 from pyibs import IBS
 ```
 
-Supply your simulator `sample_from_model`, the observed responses `R` and the
-design `S`, one row per trial (the arguments `response_matrix` and
-`design_matrix` of `IBS`), and a parameter vector `theta`, where they appear
-in a snippet. The snippets with PyBADS or PyVBMC also use a starting point
-`x0` and the bounds `lb`, `ub`, `plb`, `pub` of those packages, each a
-one-dimensional NumPy array with one element per parameter.
+The snippets use `sample_from_model` for your simulator, `R` for the
+observed responses, `S` for the design, and `theta` for a parameter vector.
+Both `R` and `S` have one row per trial; they are the `response_matrix`
+and `design_matrix` arguments of `IBS`. Define these inputs for your model
+before running a snippet.
+
+The fitting snippets also use a starting point `x0`, hard bounds `lb` and
+`ub`, and plausible bounds `plb` and `pub`. Each is a one-dimensional NumPy
+array with one element per parameter. The PyVBMC snippet additionally
+requires a prior. The [example notebooks](examples.rst) provide complete
+worked setups.
 
 ## Table of contents
 
@@ -94,62 +100,74 @@ one-dimensional NumPy array with one element per parameter.
 (faq-which-kind-of-problems-is-pyibs-suited-for)=
 ### Which kind of problems is PyIBS suited for?
 
-PyIBS estimates the log-likelihood of a model that you can simulate but whose
-likelihood you cannot compute. We recommend it for problems in which ([1],
-Section 2.2):
+Use PyIBS when you can simulate your model but cannot evaluate its
+likelihood. The problem must meet these requirements ([1], Section 2.2):
 
-- the responses are discrete (choices, categories, counts), or can be
-  binned (see [below](#faq-can-i-use-ibs-with-continuous-responses));
-- the model's simulator can draw a response for any trial given that trial's
-  context, such as its stimulus and possibly earlier stimuli and responses
-  (*conditional simulation*);
-- every observed response has a non-negligible probability under the model
-  at the parameters of interest: a trial whose observed response the model
-  produces with probability `p` takes about `1 / p` samples
-  ([1], Section 4.2).
+- the responses are discrete (choices, categories, counts), or you define
+  a matching event by binning or an approximate matching rule (see
+  [below](#faq-can-i-use-ibs-with-continuous-responses));
+- the simulator can generate a response for any trial given its context,
+  such as the stimulus and any relevant earlier observed stimuli and
+  responses (*conditional simulation*);
+- every observed response, or the matching event you define, has a positive
+  probability under the model.
+  For IBS to be practical, these probabilities must also be large enough
+  at the parameters of interest: a response of probability `p` takes
+  `1 / p` samples on average ([1], Section 4.2).
 
-For each trial, IBS draws responses from the simulator until one matches the
-observed response, and turns the number of draws into an estimate of the
-trial's log-likelihood. Summed over the trials, these give an unbiased
-estimate of the log-likelihood of the data, with a calibrated estimate of its
-variance ([1], Sections 2.4, 4.3 and 4.6). That makes a simulator usable with
-likelihood-based methods: maximum-likelihood or maximum-a-posteriori
-estimation with [PyBADS](https://acerbilab.github.io/pybads/), the posterior
-and the model evidence with [PyVBMC](https://acerbilab.org/pyvbmc/),
-both among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
-and model comparison.
+For each trial, IBS simulates responses until one matches the observation.
+For discrete responses, the number of draws gives an unbiased estimate of
+the trial's log-likelihood. Summing these estimates gives an unbiased
+estimate of the data's log-likelihood. IBS also gives an unbiased estimate
+of its variance ([1], Sections 2.4, 4.3 and 4.6). With continuous responses,
+the same guarantee applies to the log-probability of the matching event,
+with approximation error from discretization. The
+[answer on checking estimates](#faq-how-do-i-check-that-the-estimates-are-right-for-my-model)
+explains how to assess the uncertainty and its limitations.
 
-If you can compute the likelihood, in closed form or with a numerical
-approximation, do so: an exact or accurate log-likelihood beats any estimate
-by simulation, and IBS then serves to check its implementation ([1],
-Section 6.4).
+These estimates let you use likelihood-based methods for fitting and model
+comparison. [PyBADS](https://acerbilab.github.io/pybads/) supports
+maximum-likelihood and maximum-a-posteriori estimation;
+[PyVBMC](https://acerbilab.org/pyvbmc/) approximates the posterior and
+model evidence. Both accept noisy targets and are among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
+
+Use a closed-form likelihood or an accurate analytical or numerical
+approximation when one is tractable. IBS can then help check its
+implementation and accuracy ([1], Section 6.4).
 
 (faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference)=
 ### When should I use IBS rather than amortized simulation-based inference?
 
-Both fit models that can be simulated but whose likelihood cannot be
-computed, and each is the better tool for a different kind of problem.
+Both approaches can fit models with an intractable likelihood. The better
+choice depends on the simulator, the trial contexts, how many datasets you
+will fit, and the accuracy you need.
 
-**What IBS gives.** IBS estimates the log-likelihood of one data set at one
-parameter vector, by simulating each trial in its own context. The estimate
-is unbiased, for every data set and every parameter vector, and comes with an
-estimate of its variance, which [1] shows to be calibrated (Sections 2.4, 4.3
-and 4.6). It needs
-no training and no summary statistics of the data. Any method that takes a
-noisy log-likelihood can then use it: maximum-likelihood or
-maximum-a-posteriori estimation with PyBADS, the posterior and the model
-evidence with PyVBMC, and model comparison.
+**What IBS gives.** IBS estimates the log-likelihood of one dataset at one
+parameter vector by simulating each trial in its own context. For discrete
+responses, the estimator is unbiased for each dataset and parameter vector,
+provided the observed responses have positive probabilities and the draws
+are neither truncated nor selected. It also estimates the variance ([1], Sections 2.4, 4.3 and
+4.6). IBS requires no training or summary statistics. Its estimates can
+serve as a target for methods that support noisy log-likelihoods, including
+PyBADS for optimization and PyVBMC for posterior and evidence inference,
+both among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
-**When amortized inference is the better choice.** Amortized methods train a
-neural network on simulations once. In neural posterior estimation, the
-network then gives the posterior of a new data set in near-instant time, so
-that the cost of the training is shared among all the data sets it serves ([Li et al., 2026](https://openreview.net/forum?id=osV7adJlKD),
-Section 1). When one model is fitted to many data sets and its simulations
-are cheap, this is often the better choice: IBS draws new simulations for
-every data set, at every parameter vector that an optimizer or an inference
-method evaluates, and a fit takes many such evaluations: in the
+**When amortized inference is the better choice.** Amortized methods train
+a neural network on simulations, then reuse it across datasets. In neural
+posterior estimation, a trained network can produce a posterior
+approximation for a new dataset almost immediately
+([Li et al., 2026](https://openreview.net/forum?id=osV7adJlKD), Section 1).
+The training cost is shared across all the datasets it serves. This is
+often the better choice when you fit one model to many datasets and its
+simulations are cheap.
+
+IBS, by contrast, needs new simulations for every dataset and every
+parameter vector evaluated during a fit. A fit can require hundreds of
+evaluations: in the
 [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
-392 for PyBADS and 115 for PyVBMC on a model of three parameters. Libraries
+the three-parameter example required 392 for PyBADS and 115 for PyVBMC. Libraries
 such as [sbi](https://github.com/sbi-dev/sbi) and
 [BayesFlow](https://github.com/bayesflow-org/bayesflow) implement amortized
 inference (Li et al., 2026, Section 2.3).
@@ -157,59 +175,59 @@ inference (Li et al., 2026, Section 2.3).
 **Where IBS remains the method of choice.**
 
 - *The trials' contexts are many and richly structured.* An amortized
-  estimator has to learn the model's behaviour across every context it may
-  meet, while IBS only simulates the model in the contexts of the data. For
-  example, a model of how people play a board game chooses each move from
-  the current position on the board, and a position may occur only once in
-  the data ([1],
+  estimator must learn the model's behavior across the contexts it may
+  encounter. IBS simulates only the contexts in the observed data. For
+  example, a model of human board-game play chooses a move given the
+  current board position, which may occur only once in the dataset ([1],
   Section 5.4; B. van Opheusden et al., 2023, "Expertise increases planning
   depth in human gameplay", *Nature* 618: 1000–1005,
   <https://doi.org/10.1038/s41586-023-06124-2>). In the four-in-a-row
-  game of [1], Section 5.4, whose data sets drew their positions from 5,482
-  positions of human play, the model's distribution over moves cannot be
-  computed, even numerically, and IBS estimates its log-likelihood from
-  simulations alone.
+  game studied in [1], Section 5.4, the datasets used positions drawn from
+  5,482 positions recorded in human play. The model's distribution over
+  moves could not be computed even numerically, so IBS estimated its
+  log-likelihood from simulations.
 - *Guarantees on each data set matter.* "A given pre-trained amortized
   neural estimator may be perfectly suitable for some real datasets while it
   is utterly untrustworthy for others" (C. Li, A. Vehtari, P.-C. Bürkner,
   S. T. Radev, L. Acerbi and M. Schmitt, 2026, "Amortized Bayesian
   Workflow", *Transactions on Machine Learning Research*,
   <https://openreview.net/forum?id=osV7adJlKD>, Section 2.2). Their workflow
-  therefore checks the amortized results of each data set with diagnostics,
-  and falls back to slower methods with stronger guarantees, importance
-  sampling and then MCMC, where the diagnostics fail. IBS's estimates are
-  unbiased on every data set, without training, and come with an estimate
-  of their variance. The optimizer or the inference method that uses them still has errors of
-  its own, which you check as for any fit, for instance by comparing runs.
+  checks each dataset's results with diagnostics, then uses importance
+  sampling and MCMC when the checks fail. IBS provides unbiased
+  log-likelihood estimates for each dataset without training, together with
+  variance estimates. These guarantees concern the likelihood estimator.
+  The optimizer or inference method can still make errors, so assess the
+  fit itself, for example by comparing independent runs.
 
-**Its costs.** A trial takes about `1 / p` samples for an observed response
-of probability `p` ([1], Section 4.2), so responses that the model finds
-improbable are expensive, and the cost of an estimate grows exponentially as
-the log-likelihood falls ([1], Appendix C.1). A lapse rate in the model
-bounds the cost of each trial, and the
+**Its costs and requirements.** A response of probability `p` takes
+`1 / p` samples on average ([1], Section 4.2). Since this is
+`exp(-log p)`, an improbable response can be very expensive to match.
+A lapse rate can put a lower bound on response probabilities, and a
 [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
-the cost at poor parameters ([1], Section 6.4 and Appendix C.1). The
-responses must be discrete, or binned ([1], Section 6.3), and the simulator
-must simulate each trial given its context: a model with latent dynamics that
-can generate whole sequences of responses, but not one response conditioned
-on a given sequence of earlier ones, does not qualify ([1], Section 2.2).
+can stop sampling at poor parameters ([1], Section 6.4 and Appendix C.1).
+
+Responses must be discrete or have a matching event defined by binning or
+an approximate matching rule ([1], Section 6.3). The
+simulator must also generate an individual trial's response conditioned on
+its observed context. A model with latent dynamics that can generate whole
+sequences, but cannot simulate one response conditional on an observed
+history, does not meet this requirement ([1], Section 2.2).
 
 (faq-how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood)=
 ### How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?
 
-These common approaches to likelihood-free inference compare summary
-statistics of the data with summary statistics of simulated data ([1],
-Section 1, which cites Beaumont et al., 2002, for ABC and Wood, 2010, for
-synthetic likelihood). IBS estimates the likelihood of the full data, trial
-by trial, without summary statistics; summary statistics need not be
-sufficient, and so need not capture all aspects of the data ([1],
-Sections 1 and 6.3). ABC also needs dedicated algorithms for estimation and
-inference, whereas an IBS estimate is a noisy log-likelihood that any
-likelihood-based method taking noisy targets can use ([1], Section 6.3).
+ABC and synthetic likelihood commonly compare summary statistics of
+observed and simulated data ([1], Section 1, citing Beaumont et al., 2002,
+for ABC and Wood, 2010, for synthetic likelihood). Such statistics may
+discard information relevant to inference. IBS instead estimates the
+log-likelihood of the full data, trial by trial ([1], Sections 1 and 6.3).
+Its output can be used by likelihood-based methods that support noisy
+targets; ABC uses dedicated inference algorithms ([1], Section 6.3).
 
-A synthetic likelihood also gives a noisy estimate of a log-likelihood, that
-of its summary statistics, and the PyVBMC FAQ notes that it could serve as
-PyVBMC's target too
+A synthetic likelihood gives a noisy estimate of the log-likelihood of
+the summary statistics. It can also serve as a target for PyVBMC, one of
+the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
+as its FAQ explains
 ([Can I use *any* technique to estimate a noisy log-likelihood?](https://acerbilab.org/pyvbmc/faq.html#faq-can-i-use-any-technique-to-estimate-a-noisy-log-likelihood)).
 For continuous responses, [1] proposes approximate IBS, which borrows ABC's
 tolerance but compares the full responses (see
@@ -218,12 +236,12 @@ tolerance but compares the full responses (see
 (faq-what-is-ibs_basic-for)=
 ### What is `ibs_basic` for?
 
-Teaching. [`ibs_basic`](api/functions/ibs_basic.rst) is a bare-bone
-implementation of IBS, after `ibs_basic.m` of MATLAB IBS: it samples one
-trial at a time, one response per simulator call, and returns one estimate of
-the log-likelihood (not its negative), without repeats, a variance estimate,
-a cap or a likelihood threshold. Its loop is the algorithm of [1],
-Section 4.1. Use `IBS` for real work.
+[`ibs_basic`](api/functions/ibs_basic.rst) is a minimal implementation for
+teaching and reading the algorithm. It follows `ibs_basic.m` of MATLAB IBS
+and the loop in [1], Section 4.1: sample one trial at a time, one response
+per simulator call, until it matches. The function returns one
+log-likelihood estimate. It has no averaging over repeats, variance
+estimate, sampling cap or likelihood threshold. Use `IBS` for analyses.
 
 (faq-installation)=
 ## Installing PyIBS
@@ -243,15 +261,15 @@ Or install with Conda:
 conda install --channel=conda-forge pyibs
 ```
 
-PyIBS 1.5 requires NumPy 2.0 or newer. In an environment that holds NumPy
-1.x, or a package that requires it, conda can install PyIBS 0.1.0 instead,
-without a warning. Ask it for the latest release:
+PyIBS 1.5 requires NumPy 2.0 or newer. If your environment contains NumPy
+1.x or a package that requires it, conda may select PyIBS 0.1.0 without
+warning. Require version 1.5 or newer explicitly:
 
 ```console
 conda install --channel=conda-forge "pyibs>=1.5"
 ```
 
-Conda then upgrades NumPy, or says which package holds it back.
+Conda will then upgrade NumPy or report a dependency conflict.
 
 See the [installation instructions](installation.rst) for more details, and
 the [GitHub repository](https://github.com/acerbilab/pyibs) for the source
@@ -260,17 +278,16 @@ code.
 (faq-which-external-packages-does-pyibs-require)=
 ### Which external packages does PyIBS require?
 
-PyIBS requires NumPy 2.0 and SciPy 1.13 or newer, and no other package;
-`pip` and `conda` install them together with PyIBS. PyIBS does not require
-MATLAB.
+PyIBS requires NumPy 2.0 or newer and SciPy 1.13 or newer. These are its
+only runtime dependencies, and `pip` or `conda` installs them with PyIBS.
+MATLAB is not required.
 
-To fit models with PyIBS's estimates, install
-[PyBADS](https://acerbilab.github.io/pybads/) (1.5.1 or newer) or
-[PyVBMC](https://acerbilab.org/pyvbmc/) (1.5 or newer) as well: both
-take PyIBS's output as it comes, and both are among the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/). To run the
-[example notebooks](examples.rst) you also need Jupyter (see the
-[installation instructions](installation.rst)).
+For fitting, install [PyBADS](https://acerbilab.github.io/pybads/) 1.5.1 or
+newer, or [PyVBMC](https://acerbilab.org/pyvbmc/) 1.5 or newer. Both accept
+PyIBS's estimate and estimated SD as a noisy target, and are among the
+lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+Running the [example notebooks](examples.rst) also requires Jupyter; see
+the [installation instructions](installation.rst).
 
 (faq-which-version-of-python-do-i-need)=
 ### Which version of Python do I need?
@@ -280,42 +297,42 @@ PyIBS requires Python 3.10 or newer.
 (faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists)=
 ### How do I know whether a newer version of PyIBS exists?
 
-Run `pyibs.check_for_updates()`. It asks PyPI for the latest release and
-prints one message; if your release is older, the message gives the command
-that updates it, `python -m pip install --upgrade pyibs`, or
-`conda update --channel=conda-forge pyibs` for an installation by conda (the
-conda-forge package can follow PyPI by a few days). It also returns the
-installed version, the latest release and whether an update is available.
+Run `pyibs.check_for_updates()`. It queries PyPI and prints a message. If a
+newer release is available, the message includes an update command:
+`python -m pip install --upgrade pyibs` for pip, or
+`conda update --channel=conda-forge pyibs` for conda. The conda-forge
+package can appear a few days after the PyPI release. The function also
+returns the installed version, the latest release and whether an update
+is available.
 
-The function is PyIBS's only access to the network, made only when you call
-it; PyIBS prints nothing of its own accord. `pyibs.__version__` gives the
-installed version. The
-[`check_for_updates` API](api/functions/check_for_updates.rst) has the
-details.
+This function is PyIBS's only network access, and it runs only when you
+call it. PyIBS prints no automatic messages. Use `pyibs.__version__` to
+read the installed version
+without a network request. See the
+[`check_for_updates` API](api/functions/check_for_updates.rst) for details.
 
 (faq-how-do-i-check-that-pyibs-works-on-my-computer)=
 ### How do I check that PyIBS works on my computer?
 
-Run its test suite, which is installed with the package. Install PyIBS with
-its `test` extra, which adds pytest, then run the tests:
+The test suite ships with PyIBS. Install the `test` extra to add pytest,
+then run the tests:
 
 ```console
 python -m pip install --upgrade "pyibs[test]"
 python -m pytest --pyargs pyibs
 ```
 
-When PyBADS 1.5.1 or newer, or PyVBMC 1.5 or newer, is installed, the suite
-also fits the example model with each of them, which takes a few minutes;
-`python -m pytest --pyargs pyibs -m "not integration"` leaves those fits out.
+If PyBADS 1.5.1 or newer or PyVBMC 1.5 or newer is installed, the suite
+also fits the example model with the available package. These integration
+tests take a few minutes. To omit them, run
+`python -m pytest --pyargs pyibs -m "not integration"`.
 
 (faq-i-am-having-trouble-installing-pyibs-can-you-help)=
 ### I am having trouble installing PyIBS. Can you help?
 
-Sure. The PyIBS installation should be pretty straightforward, so tell us in
-detail which problem you are having in the
-[Discussions forum](https://github.com/orgs/acerbilab/discussions). Include
-your operating system, Python version, installation command and the full
-error message.
+Ask in the [Discussions forum](https://github.com/orgs/acerbilab/discussions).
+Include your operating system, Python version, installation command and
+the full error message so that we can reproduce the problem.
 
 (faq-the-simulator-and-the-data)=
 ## The simulator and the data
@@ -323,28 +340,29 @@ error message.
 (faq-how-do-i-write-the-simulator)=
 ### How do I write the simulator?
 
-`IBS` calls the simulator as `sample_from_model(theta, design_rows)`, or as
-`sample_from_model(theta, design_rows, rng=rng)` when the simulator has a
-parameter named `rng`, which then receives the generator of the `IBS` object
-(see [How do I make a run reproducible?](#faq-how-do-i-make-a-run-reproducible)).
-`theta` is the parameter vector, as given to the call. `design_rows` holds
-the rows of `design_matrix` of the trials that `IBS` requests, or their
-0-based indices when `design_matrix` is None. The simulator returns one
-simulated response for each row:
+Write a function `sample_from_model(theta, design_rows)`. If it also has a
+parameter named `rng` that accepts a keyword, `IBS` calls it as
+`sample_from_model(theta, design_rows, rng=rng)` and supplies the object's
+random number generator. Use that generator for
+[reproducible runs](#faq-how-do-i-make-a-run-reproducible).
 
-- for `r` rows requested, an array of shape `(r,)` or `(r, 1)` when the
-  responses have one column, and of shape `(r, C)` when they have `C`
-  columns; a simulated response matches the observed one only when every
-  column agrees;
-- one independent draw per row: a call can request the same trial several
-  times, so draw the randomness of each row separately, and never share a
-  random number among rows;
-- responses of the kind of the observed ones, since NumPy never finds
-  numbers (or booleans), text and bytes equal to one another.
+`theta` is the parameter vector passed to `ibs`. `design_rows` contains
+the design rows for the trials requested in this simulator call. If
+`design_matrix=None`, it contains their 0-based trial indices instead.
+Return one simulated response per requested row:
 
-For example, an observer who reports whether a stimulus `S` lies to the
-right (1) or to the left (-1) of a bias, from a noisy measurement, and
-responds at random on a fraction `lapse` of the trials:
+- For `r` requested rows, return an array of shape `(r,)` or `(r, 1)` for
+  single-column responses, or `(r, C)` for `C` response columns. A response
+  matches only when all its columns match the observation.
+- Generate each row independently. A trial may be requested more than
+  once, so each occurrence needs a fresh draw. Sharing random draws
+  across rows violates the sampling assumptions.
+- Use compatible response types. Numbers and booleans can match each
+  other, but NumPy does not equate them with text or bytes.
+
+For example, this observer makes a noisy measurement of stimulus `S`,
+reports right (1) when the measurement is at least a bias and left (-1)
+otherwise, and responds at random on a fraction `lapse` of trials:
 
 ```python
 def sample_from_model(theta, S, rng):
@@ -360,28 +378,29 @@ ibs = IBS(sample_from_model, R, S, random_seed=1)
 neg_logl = ibs(theta)
 ```
 
-The example model of the [notebooks](examples.rst),
-`pyibs.examples.psycho_model.psycho_generator`, is this simulator; PyIBS
-installs it together with its exact negative log-likelihood,
-`psycho_neg_logl`. The [`IBS` API](api/classes/ibs.rst) describes the
-simulator and every setting.
+This is the model used in the [notebooks](examples.rst). PyIBS installs
+its simulator as `pyibs.examples.psycho_model.psycho_generator` and its
+closed-form negative log-likelihood as `psycho_neg_logl`. The
+[`IBS` API](api/classes/ibs.rst) describes the simulator interface and all
+settings.
 
 (faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs)=
 ### My simulator needs additional data or inputs. How do I pass them to `IBS`?
 
-`IBS` passes the simulator only the parameter vector, the design rows and,
-if it asks for it, the generator; it has no argument for further inputs,
-such as the `varargin` of MATLAB `ibslike`. Bind them to the simulator
-instead.
-Suppose that your simulator takes them as `simulator(theta, design_rows, rng,
-data)`. The first solution consists of defining a new function
+`IBS` passes the parameter vector, the requested design rows and, if the
+simulator accepts it, the random generator. Bind additional inputs to a
+wrapper function or use `functools.partial`. Unlike MATLAB `ibslike`,
+`IBS` has no `varargin` argument.
+
+For a simulator with signature `simulator(theta, design_rows, rng, data)`,
+you can write:
 
 ```python
 def sample_from_model(theta, design_rows, rng):
     return simulator(theta, design_rows, rng, data)
 ```
 
-where `data` has been defined before in the code. Alternatively, you can use
+Define `data` before calling this wrapper. Alternatively, bind it with
 `functools.partial`:
 
 ```python
@@ -390,29 +409,29 @@ from functools import partial
 ibs = IBS(partial(simulator, data=data), R, S)
 ```
 
-Either way, the function that `IBS` receives keeps the parameter `rng`, so
-it still receives the generator.
+Both approaches retain a parameter named `rng`, so `IBS` still passes its
+generator to the simulator.
 
 (faq-the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs)=
 ### The responses of my model depend both on the current trial and on responses or stimuli from previous trials. How can I tell this to `IBS`?
 
-IBS needs a simulator that draws the response of any trial given its
-context, here the stimuli and the *observed* responses of the trials before
-it: IBS estimates the probability of each observed response given what
-actually happened before ([1], Section 2.2). If your simulator depends on
-data that go beyond the current stimulus and the current response of a
-trial, you should:
+IBS estimates each response's probability conditional on the observed
+history ([1], Section 2.2). Your simulator must therefore generate the
+requested trial's response given the earlier stimuli and *observed*
+responses. It must not replace that history with newly simulated trials.
 
-- leave `design_matrix` as None: `IBS` then calls the simulator with the
+To give the simulator access to the full history:
+
+- Leave `design_matrix=None`: `IBS` then calls the simulator with the
   0-based indices of the requested trials;
-- give the simulator the full arrays of stimuli and responses, and any
-  further data, by binding them to it (see the
+- Bind the full stimulus and response arrays, and any
+  other data, to the simulator (see the
   [previous question](#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs));
-- inside the simulator, for each requested trial index, generate a synthetic
-  response from the information of that trial and of the trials before it.
+- For each requested index, generate a response using that trial's
+  stimulus and the relevant observed history.
 
-For example, a model in which the observed response of the previous trial
-pulls the decision towards itself:
+For example, this model shifts the decision towards the previous observed
+response. Here `S` and `R` are one-dimensional arrays:
 
 ```python
 def make_simulator(S, R):
@@ -429,44 +448,44 @@ def make_simulator(S, R):
 ibs = IBS(make_simulator(S, R), R, random_seed=1)  # no design: trial indices
 ```
 
-When what the simulator needs of each trial fits in a row, it can also be
-given as the design: here, with `r_prev` the array of the previous trial's
-observed response of every trial,
-`IBS(sample_from_model, R, np.column_stack([S, r_prev]))` and a simulator
-that reads both columns of its design rows.
+You can also include the history in the design when each trial's inputs
+fit in one row. If `r_prev` contains the previous observed response for
+each trial, use
+`IBS(sample_from_model, R, np.column_stack([S, r_prev]))` and write the
+simulator to read the two columns.
 
 (faq-my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs)=
 ### My model uses data structures which are not easily converted to numerical arrays. Can I still use `IBS`?
 
-Yes, absolutely.
+Yes. The responses must support comparison, but the simulator's other
+inputs can be arbitrary Python objects.
 
-- The *responses* of your model must be discrete, and `IBS` compares them
-  with `==`: numbers, booleans, text (such as `"left"` and `"right"`) or
-  bytes. Map any other kind of response to a finite set of such values, for
-  instance a move in a board game to the index of its square. Responses that
-  mix numbers and text are given as an object array (`dtype=object`), and
-  the simulator returns them as one too.
-- Any other data used to compute such responses need not be a numerical
-  array. Bind them to the simulator and call it with trial indices, as
+- Encode discrete *responses* as numbers, booleans, text (such as
+  `"left"` and `"right"`) or bytes; `IBS` compares them with `==`. For
+  example, encode a board-game move as the index of its square. If a
+  response combines numbers and text, give both the observed and simulated
+  responses as object arrays (`dtype=object`).
+- Other inputs need not be numerical arrays. Bind them to the simulator
+  and request trials by index, as
   explained in the
   [question above](#faq-the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs).
-  Or give them as the design: `design_matrix` can be any array with one row
-  per trial, an object array with one Python object per trial included, such
-  as a board position, and the simulator then receives the objects of the
-  requested trials. A list of Python objects, such as dictionaries, becomes
-  such an array; for objects that NumPy reads as sequences of numbers, such
-  as lists of different lengths, create the array with
-  `np.empty(N, dtype=object)` and fill it element by element.
+  Alternatively, pass them as `design_matrix`, which accepts an array with
+  one row per trial, including an object array of board positions or other
+  Python objects. The simulator receives the requested entries. A list of
+  dictionaries becomes an object array directly. For objects that NumPy
+  may interpret as sequences, such as lists of different lengths, create
+  an array with `np.empty(N, dtype=object)` and fill it element by element.
 
 (faq-can-i-use-ibs-with-continuous-responses)=
 ### Can I use IBS with continuous responses?
 
-Not as they are: a simulated continuous response almost never equals the
-observed one, so IBS would never end ([1], Section 6.3). There are two ways
-to make them discrete.
+A simulated continuous response has probability zero of matching the
+observed value exactly, so ordinary IBS cannot estimate its density
+([1], Section 6.3). You can instead define discrete matching events in
+either of two ways.
 
-The simplest is to bin the responses: map the observed and the simulated
-responses to bins with the same edges, for example
+The simplest approach is binning. Map both observed and simulated
+responses to bins with the same edges:
 
 ```python
 edges = np.arange(-10, 10.5, 0.5)  # bins 0.5 wide
@@ -479,13 +498,16 @@ def sample_from_model(theta, S, rng):
 
 where `simulate` draws continuous responses of the model.
 
-The other is *approximate IBS* ([1], Section 6.3), inspired by approximate
-Bayesian computation: a simulated response matches when it lies within a
-tolerance `eps` of the observed one, and the log-likelihood of trial `i` is
-estimated as the log of the probability of a match divided by the volume of
-responses within `eps` of the observed one, `2 * eps` for one-dimensional
-responses. With `IBS`, the simulator reports whether each sample matches,
-and every observed "response" is `True`:
+The second approach is *approximate IBS* ([1], Section 6.3), inspired by
+approximate Bayesian computation. Define a match as a simulated response
+within `eps` of the observation. For a one-dimensional response, the
+approximate density is `p_match / (2 * eps)`, where `p_match` is the
+probability of this event. IBS estimates `log(p_match)`; subtract
+`log(2 * eps)` to estimate the log density. In more dimensions, replace
+`2 * eps` by the volume of the matching region.
+
+Implement this by returning a boolean for each requested trial, with
+every observed "response" set to `True`:
 
 ```python
 eps = 0.25
@@ -500,45 +522,62 @@ neg_logl, sd = ibs(theta, num_reps=10, additional_output="std")
 neg_logl += len(y) * np.log(2 * eps)  # the volume term
 ```
 
-The volume term is the same at every parameter vector, so it moves neither
-the optimum nor the posterior; it matters when the value is compared with a
-log-likelihood computed otherwise.
+For a fixed tolerance, the volume correction is constant across parameter
+vectors. It therefore changes neither the optimum nor the posterior, but
+it matters for model evidence or a comparison with another calculation of
+the log-likelihood.
 
-While approximate IBS is a slightly better approach statistically, for most
-problems it would not make a big difference if one simply bins the
-responses. Approximate IBS, or binning, is roughly equivalent to adding
-localized uniform noise to the responses of the model being fit, with radius
-equal to `eps` (or to half the width of a bin). So, as a rule of thumb, you
-want this added noise to be (much) less than the magnitude of the noise
-present in the data. Narrower bins cost more samples: the expected number of
-samples grows without bound as `eps` goes to 0 ([1], Section 6.3).
+Approximate IBS centers the matching region on each observation and avoids
+the choice of bin boundaries. Binning is often adequate if the bins are
+narrow compared with the noise in the data. Both approaches introduce a
+discretization approximation; roughly, they smooth the model's responses
+on the scale of `eps` or half the bin width. Make this scale much smaller
+than the noise you wish to model. Narrower regions take more samples to
+match, and the expected sample count diverges as `eps` tends to zero
+([1], Section 6.3).
 
 (faq-what-does-a-call-of-ibs-return)=
 ### What does a call of `IBS` return?
 
-`ibs(theta)` returns an estimate of the *negative* log-likelihood of the data
-at `theta`, as a Python float: the average of `num_reps` independent IBS
-estimates, 10 by default. `additional_output` adds to it:
+`ibs(theta)` returns a Python float estimating the *negative*
+log-likelihood at `theta`. It averages `num_reps` independent IBS repeats,
+10 by default. Set `additional_output` to request more information:
 
-- `"var"`: the tuple `(neg_logl, neg_logl_var)`, with the variance estimate;
-- `"std"`: the tuple `(neg_logl, neg_logl_std)`, with its square root, the
-  form that PyBADS and PyVBMC take from a noisy target;
+- `"var"`: the tuple `(neg_logl, neg_logl_var)`, containing the estimate
+  and its estimated variance;
+- `"std"`: the tuple `(neg_logl, neg_logl_std)`, containing the estimate
+  and the square root of the variance estimate;
 - `"full"`: an [`EstimateResult`](api/classes/estimate_result.rst), a
-  dictionary whose entries you also read as attributes: `neg_logl`,
+  dictionary whose entries can also be read as attributes: `neg_logl`,
   `neg_logl_var`, `neg_logl_std`, `exit_flag` and its `message`,
-  `elapsed_time`, `num_samples_per_trial`, `fun_count` (the simulator calls),
+  `elapsed_time`, `num_samples_per_trial` (the average sample count per
+  trial), `fun_count` (the number of simulator calls),
   and the per-trial estimates `neg_logl_trials` and `neg_logl_var_trials`.
 
-`return_positive=True` returns the log-likelihood instead, the variance
-estimate and the per-trial arrays unchanged. `trial_weights` weighs each
-trial's log-likelihood.
+PyBADS and PyVBMC use the `"std"` tuple for their noisy targets; both are
+among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/).
+`return_positive=True` changes the returned value to the log-likelihood.
+The variance estimate and the per-trial arrays keep their values and signs.
+`trial_weights` weights the trials' log-likelihoods. A zero-weight trial is
+still sampled; remove a trial from the data if you want to exclude it from
+sampling.
 
-The exit flag is 0 when every repeat was sampled to completion, and the
-estimate is then unbiased (unless a finite
-[`max_time`](#faq-what-does-max_time-do) is set); 1 when the
-[likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
-ended a repeat, which biases the estimate, and leaves the per-trial arrays
-NaN; and 2 when `max_time` stopped the sampling, with a warning.
+With `"full"`, `exit_flag` reports how sampling ended:
+
+- **0:** every repeat completed without reaching the likelihood threshold;
+- **1:** the
+  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+  ended at least one repeat. The estimate is clipped and biased, and all
+  per-trial estimates are NaN;
+- **2:** [`max_time`](#faq-what-does-max_time-do) stopped sampling. The call
+  returns a potentially biased estimate and issues a warning.
+
+Flag 0 describes the work completed by this call. It does not establish
+unbiasedness after filtering calls by their exit status or discarding
+sampling errors. A finite time limit also affects which draws finish in
+time. See the answers on
+[sampling errors](#faq-a-call-raises-ibssamplingerror-what-do-i-do) and
+[`max_time`](#faq-what-does-max_time-do).
 
 (faq-pybads-and-pyvbmc)=
 ## PyBADS and PyVBMC
@@ -546,11 +585,11 @@ NaN; and 2 when `max_time` stopped the sampling, with a warning.
 (faq-how-do-i-use-pyibs-with-pybads)=
 ### How do I use PyIBS with PyBADS?
 
-[PyBADS](https://acerbilab.github.io/pybads/), one of the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/),
-finds the maximum-likelihood or maximum-a-posteriori parameters. It
-minimizes, so its target returns the *negative* log-likelihood, and its SD as
-the second element of a tuple, with `options={"specify_target_noise": True}`:
+[PyBADS](https://acerbilab.github.io/pybads/) minimizes the target function,
+so return the *negative* log-likelihood estimate and its estimated SD as
+a tuple. Set `options={"specify_target_noise": True}` to tell PyBADS that
+the target supplies its noise level. PyBADS is among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 ```python
 from pybads import BADS
@@ -566,13 +605,13 @@ bads = BADS(target, x0, lb, ub, plb, pub, options={"specify_target_noise": True}
 optimize_result = bads.optimize()
 ```
 
-- Return the tuple as `IBS` gives it. PyBADS takes only a Python `tuple` of
-  two elements: a list or an array raises `ValueError`.
+- Return the tuple directly from `IBS`. PyBADS requires a Python `tuple`
+  of length two; returning a list or array raises `ValueError`.
 - For maximum-a-posteriori estimation, return
   `neg_logl - log_prior(theta)` with the same SD, since the log prior adds no
   noise.
-- PyBADS calls the target with one parameter vector, one-dimensional, in the
-  coordinates of your bounds.
+- PyBADS calls the target with one one-dimensional parameter vector in
+  the original parameter space, using the same coordinates as your bounds.
 - Choose `num_reps` for an SD of about 1 near the optimum (see
   [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)), and
   re-evaluate the solution with more repeats
@@ -584,13 +623,13 @@ optimize_result = bads.optimize()
 (faq-how-do-i-use-pyibs-with-pyvbmc)=
 ### How do I use PyIBS with PyVBMC?
 
-[PyVBMC](https://acerbilab.org/pyvbmc/), one of the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/),
-computes an approximate posterior over the parameters and an estimate of the
-model evidence. Its target is a log density, so it returns the log-likelihood
-(`return_positive=True`), and its SD as the second element of the pair, with
-`options={"specify_target_noise": True}`. Given a prior, PyVBMC adds the log
-prior itself:
+[PyVBMC](https://acerbilab.org/pyvbmc/) approximates the parameter
+posterior and estimates the model evidence. When you give it a prior, its
+target should return the log-likelihood estimate (`return_positive=True`)
+and its estimated SD. PyVBMC adds the log prior itself. Set
+`options={"specify_target_noise": True}` so it uses the supplied noise
+level. PyVBMC is among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 ```python
 from pyvbmc import VBMC
@@ -606,169 +645,175 @@ vbmc = VBMC(log_likelihood, x0, lb, ub, plb, pub, prior=prior, options={"specify
 vp, results = vbmc.optimize()
 ```
 
-Here `prior` is a prior of PyVBMC's, such as
-`pyvbmc.priors.Trapezoidal(lb, plb, pub, ub)`; `log_prior=` takes a function
-instead. Without either, the target returns the log joint,
-`log_likelihood + log_prior(theta)`, with the same SD. PyVBMC calls the target
-with one parameter vector, one-dimensional, in the coordinates of your
-bounds. `results["elbo"]`, a lower bound on the log model evidence, is
-PyVBMC's estimate of it. PyVBMC handles
-an SD of about 1 best, "and probably not larger than ~3" where the posterior
-has most of its mass (the PyVBMC FAQ,
+Here `prior` is a PyVBMC prior object, such as
+`pyvbmc.priors.Trapezoidal(lb, plb, pub, ub)`. You can instead pass a
+function with `log_prior=`. Without either argument, return the log joint
+yourself: add `log_prior(theta)` to the log-likelihood estimate and keep
+the same SD. PyVBMC calls the target with one one-dimensional parameter
+vector in the original parameter space, using your bounds' coordinates.
+
+`results["elbo"]` estimates the evidence lower bound (ELBO), which PyVBMC
+uses as an approximation to the log model evidence. `results["elbo_sd"]`
+reports uncertainty in that estimate. Aim for target noise with an SD of
+about 1, "and probably not larger than ~3" in the region containing most
+posterior mass (the PyVBMC FAQ,
 [How large can the noise be?](https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc)).
 
 (faq-why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance)=
 ### Why does the target return the SD of the estimate, and not its variance?
 
-Because PyBADS and PyVBMC read the second element of the pair as the
-standard deviation (SD) of the value. `additional_output="std"` returns it;
-`"var"` returns the variance, which they would take as an SD without an
-error, reading a variance of 4 (an SD of 2) as an SD of 4, for instance. MATLAB
-`ibslike` returns the variance unless `ReturnStd` is set, so check this in
-code ported from MATLAB.
+PyBADS and PyVBMC interpret the second element as a standard deviation
+(SD). Use `additional_output="std"`. With `"var"`, they would silently
+interpret the variance as an SD: a variance of 4 means an SD of 2, but
+they would read it as an SD of 4. MATLAB `ibslike` returns the variance
+unless `ReturnStd` is set, so check this when porting code.
 
 (faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it)=
 ### Why is the SD of the estimate zero, and why do PyBADS and PyVBMC refuse it?
 
-**Why it is zero.** IBS estimates a trial's log-likelihood from the number of
-samples `K` that the trial took to match, and estimates its variance as
-`ψ₁(1) − ψ₁(K)`, where `ψ₁` is the trigamma function ([1], Sections 2.4 and
-4.3). A trial that matched at its first sample, `K = 1`, has the estimate 0
-and the variance estimate 0. When every trial of positive weight matches at
-its first sample in every repeat of a call, the call returns 0 for the
-negative log-likelihood and 0 for its variance. That is the correct output of
-the estimator, and `IBS` returns it as it is, with a `UserWarning` that links
+**Why it is zero.** For a trial that first matches at sample `K`, IBS
+estimates the variance as `ψ₁(1) − ψ₁(K)`, where `ψ₁` is the trigamma
+function ([1], Sections 2.4 and 4.3). At `K = 1`, both the log-likelihood
+estimate and the variance estimate are zero. If every positive-weight
+trial matches immediately in every repeat, the whole call returns zero
+for both quantities.
+
+This is a valid outcome of the estimator. When you request a variance,
+SD or full result, `IBS` returns it and issues a `UserWarning` linking
 this answer:
 
 ```text
 The IBS variance estimate is 0, as it is when every trial of positive weight matched its response at its first sample. PyBADS and PyVBMC refuse an SD of 0 for a noisy target: see https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it
 ```
 
-It happens where the model predicts the observed responses with probability
-near 1. On 100 trials that the model matches each with probability 0.999, a
-call returns a variance of 0 with probability 0.37 at `num_reps=10`, and
-0.000045 at `num_reps=100`, and the calls of the
+It is common when the model predicts every observed response with
+probability close to one. For 100 trials with matching probability 0.999,
+the probability of a zero variance estimate is 0.37 at `num_reps=10` and
+0.000045 at `num_reps=100`. The
 [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)
-on such a model agree.
+confirms these probabilities.
 
-**Why PyBADS and PyVBMC refuse it.** They take the SD as the noise of that
-evaluation in their Gaussian-process models of the target, and an SD of 0
-would declare the value exact. An IBS estimate is exact only when every trial
-matches with probability exactly 1; otherwise counts that are all 1 are a
-likely outcome when the true SD of the estimate is small, and no sign that it
-is 0. Both raise a
-`ValueError` on an SD that is not finite and strictly positive: PyBADS's
-message begins `The target function returned the noise SD 0.0`, and PyVBMC's
-says that the returned estimated SD `must be a finite, positive real-valued
-scalar`.
+**Why PyBADS and PyVBMC refuse it.** Their Gaussian-process models use
+the supplied SD as the noise level of the evaluation. Zero would declare
+the value exact, although immediate matches do not establish that it is.
+With positive trial weights, IBS has zero true variance only when every
+observed response has probability one. Otherwise a zero *estimated*
+variance is a possible sampling outcome.
+
+Both packages require a finite, strictly positive SD for a noisy target.
+PyBADS raises `ValueError` with a message beginning
+`The target function returned the noise SD 0.0`. PyVBMC's `ValueError`
+says the estimated SD `must be a finite, positive real-valued scalar`.
 
 **What to do.**
 
-- *More repeats* make a zero less likely, exponentially so in `num_reps`
-  (0.37 at 10 repeats and 0.000045 at 100, in the example above), but
-  never impossible, and a run of PyBADS or PyVBMC makes a hundred
-  evaluations or more (see
+- *More repeats* make zero variance estimates exponentially less likely
+  as `num_reps` increases. They do not rule them out. A fit can make
+  hundreds of evaluations, so account for the chance of encountering a
+  zero over the whole run (see
   [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)).
-- *A lapse rate in the model* bounds every trial's probability below 1: with
-  a lapse rate of at least `lapse` among `k` equally likely responses, each
-  `p ≤ 1 − lapse * (k − 1) / k`, and a call over `N` trials returns a zero
-  with probability at most `(1 − lapse * (k − 1) / k) ** (N * num_reps)`,
-  below `1e-13` for 600 binary trials, a lapse rate of 0.01 and 10 repeats.
-  [1] recommends a lapse rate for IBS in any case (Section 6.4).
+- *A lapse rate in the model* puts an upper bound below one on matching
+  probabilities. If the lapse rate is at least `lapse` and a lapse chooses
+  uniformly among `k` responses, then
+  `p ≤ 1 − lapse * (k − 1) / k`. For `N` positive-weight trials, the
+  probability of zero estimated variance is at most
+  `(1 − lapse * (k − 1) / k) ** (N * num_reps)`. This is below `1e-13`
+  for 600 binary trials, a lapse rate of 0.01 and ten repeats. The IBS
+  paper also recommends a positive lapse rate to control sampling cost
+  ([1], Section 6.4).
 
 (faq-do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate)=
 ### Do I need to give PyBADS or PyVBMC the SD of every estimate?
 
-It depends:
+Supplying the SD is recommended for both packages, but neither strictly
+requires it:
 
-- If you are *optimizing* the log-likelihood (e.g., for maximum-likelihood or
-  maximum-a-posteriori estimation) with PyBADS, it helps but it is not
-  necessary, because the variance of the IBS estimate, somewhat surprisingly,
-  changes little across the parameter space (see
-  [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)). Without it,
-  `options={"uncertainty_handling": True}` tells PyBADS that the target is
-  noisy, and PyBADS estimates the noise itself. Since PyIBS gives the SD at
-  no extra cost, give it: the PyBADS FAQ says so too
+- For *optimization* with PyBADS, you can return the value alone and set
+  `options={"uncertainty_handling": True}`. PyBADS then estimates the
+  noise. IBS variance often changes moderately over the useful part of
+  parameter space, so this can work (see
+  [How do I choose `num_reps`?](#faq-how-do-i-choose-num_reps)). Still,
+  PyIBS computes its SD without additional simulations, and supplying it
+  gives PyBADS more information. The PyBADS FAQ recommends this too
   ([Should I provide an estimate of the noise associated with each evaluation?](https://acerbilab.github.io/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation)).
-- If you are performing *Bayesian inference* with PyVBMC, give it. Bayesian
-  inference is very sensitive to noisy estimates of the log-likelihood (or of
-  the log posterior), so it matters to provide the inference algorithm with
-  all available information about the magnitude of the noise. PyVBMC can
-  also infer a noise level itself, with `options={"uncertainty_handling": True}`
-  and a target that returns the estimate alone, but its FAQ recommends a
-  target that returns the SD of each evaluation
+- For *Bayesian inference* with PyVBMC, the evaluation noise affects both
+  the posterior approximation and the evidence estimate. PyVBMC can
+  infer a noise level from a scalar-valued target with
+  `options={"uncertainty_handling": True}`, but supplying the SD of each
+  evaluation is preferable. Its FAQ recommends this
   ([Does VBMC automatically detect that the target function is noisy?](https://acerbilab.org/pyvbmc/faq.html#faq-does-vbmc-automatically-detect-that-the-target-function-is-noisy)),
-  which PyIBS gives at no extra cost.
+  and PyIBS provides it without additional simulations.
 
 (faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help)=
 ### I have several questions about using PyBADS to optimize the log-likelihood. Can you help?
 
-[PyBADS](https://acerbilab.github.io/pybads/), one of the lab's
-[tools for fitting models to data](https://acerbilab.org/model-fitting/), is
-a robust optimizer that works well with stochastic target functions, and in
-particular with the noisy estimates produced by IBS. Many questions on its
-use are answered in the [PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html).
-In particular, you might want to start with its section on
+The [PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html) covers
+optimization settings, bounds, starting points and interpretation of
+results. Start with its section on
 [noisy objective functions](https://acerbilab.github.io/pybads/faq.html#faq-noisy-objective-function)
-(but do not stop there: all sections of the FAQ are relevant).
+for IBS targets. PyBADS is among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 (faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference)=
 ### What if I want to use IBS to perform Bayesian posterior or model inference?
 
-If you are interested in Bayesian inference, that is in the posterior
-distribution of the model parameters or in the marginal likelihood (model
-evidence), we recommend [Variational Bayesian Monte Carlo (PyVBMC)](https://acerbilab.org/pyvbmc/),
-one of the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/),
-which supports noisy estimates of the log-likelihood such as those produced by
-IBS (see its FAQ on [noisy target functions](https://acerbilab.org/pyvbmc/faq.html#faq-noisy-target-function)).
-In a large empirical benchmark, VBMC has been shown to work very well in
-combination with IBS ([Acerbi, 2020](https://arxiv.org/abs/2006.08655)).
-[How do I use PyIBS with PyVBMC?](#faq-how-do-i-use-pyibs-with-pyvbmc) gives
-the settings.
+We recommend [Variational Bayesian Monte Carlo (PyVBMC)](https://acerbilab.org/pyvbmc/)
+for approximating the posterior over model parameters and estimating the
+marginal likelihood, or model evidence. It supports noisy log-likelihood
+estimates such as IBS; see its FAQ on
+[noisy target functions](https://acerbilab.org/pyvbmc/faq.html#faq-noisy-target-function).
+VBMC performed well with IBS in the empirical benchmark of
+[Acerbi, 2020](https://arxiv.org/abs/2006.08655).
+
+The [integration answer](#faq-how-do-i-use-pyibs-with-pyvbmc) gives the
+target and settings. PyVBMC is among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 (faq-precision-and-ibs-repeats)=
 ## Precision and IBS repeats
 
-IBS affords a simple way to change the precision of its estimates, by using
-multiple "repeats", each amounting to an independent run of the estimator
-([1], Section 4.4). In PyIBS, a call averages `num_reps` repeats, 10 by
-default. In this section, we answer questions on the precision of the IBS
-estimate, related to the number of repeats.
+A *repeat* is an independent run of IBS ([1], Section 4.4). A PyIBS call
+averages `num_reps` repeats, ten by default. Increasing this number makes
+the estimate more precise at the cost of more simulations.
 
 (faq-how-do-i-choose-num_reps)=
 ### How do I choose `num_reps`?
 
-Aim for an SD of the estimate of about 1 near the optimum, the noise that
-PyBADS and PyVBMC handle best: "a standard deviation of order 1 or less should
-work" for PyBADS (the PyBADS FAQ,
-[Can PyBADS handle any arbitrary amount of noise in the objective?](https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective)),
-and for PyVBMC "ideally you want the SD of the noise in the log-likelihood to
-be around 1, and probably not larger than ~3" (the PyVBMC FAQ,
-[How large can the noise be?](https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc)).
+For fitting, aim for an estimated SD of about 1 in the region that matters:
+near the optimum for PyBADS, or where most posterior mass lies for PyVBMC.
+The PyBADS FAQ says "a standard deviation of order 1 or less should work"
+([Can PyBADS handle any arbitrary amount of noise in the objective?](https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective)).
+The PyVBMC FAQ says "ideally you want the SD of the noise in the
+log-likelihood to be around 1, and probably not larger than ~3"
+([How large can the noise be?](https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc)).
 
-The variance of the estimate falls as `1 / num_reps`, so the SD falls as
-`1 / sqrt(num_reps)`, while the cost grows linearly with `num_reps`. One call
-at a parameter vector near where you expect the optimum, such as the result
-of a first, rough fit, tells you how many repeats you need:
+For ordinary IBS, variance falls as `1 / num_reps` and SD as
+`1 / sqrt(num_reps)`. The expected sample count grows in proportion to
+`num_reps`. A pilot evaluation near the expected solution, perhaps from
+a preliminary fit, gives a starting choice:
 
 ```python
 _, sd = ibs(theta, num_reps=10, additional_output="std")
 num_reps = max(1, int(np.ceil(10 * sd**2)))  # for an SD of about 1
 ```
 
-The SD of a single call is itself an estimate; a call with more repeats gives
-a steadier guide.
+This uses the pilot's variance estimate to target an SD of about 1. That
+estimate is noisy: use more pilot repeats, or average variance estimates
+from several independent calls, for a steadier guide. A pilot SD of zero
+does not establish that the target is deterministic; see the
+[zero-SD answer](#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
 
-The SD changes little across the parameter space, so one choice serves the
-whole fit. On the 600 trials of the example model, for instance, 100 repeats
-give an SD of 1.1 at the parameters that generated the data, and 1.2 and 1.4
-at two other parameter vectors, whose negative log-likelihoods are higher by
-49 and 55 (the [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)).
-Farther from the optimum the SD can be larger, which is usually fine (the
-PyBADS FAQ says so of noise in general), and it is bounded: each trial
-adds at most `π²/6 ≈ 1.645` to the variance of one repeat ([1],
-Section 4.3), so with unit trial weights the SD is at most
-`sqrt(π²/6 * N / num_reps)` for `N` trials.
+One fixed `num_reps` often works across a fit because IBS variance changes
+moderately over the relevant parameter region. In the
+[validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
+100 repeats on the example model's 600 trials gave an SD of 1.1 at the
+generating parameters and 1.2 and 1.4 at two other vectors. Their negative
+log-likelihoods were higher by 49 and 55. Noise can be larger farther from
+the solution, which is usually acceptable during optimization.
+
+The true variance contributed by one trial to one repeat is bounded by
+`π²/6 ≈ 1.645` ([1], Section 4.3). With unit weights, the true SD is
+therefore at most `sqrt(π²/6 * N / num_reps)` for `N` trials.
 
 If you cannot bring the SD down to about 1 within your computational budget,
 be as precise as you can afford.
@@ -776,12 +821,9 @@ be as precise as you can afford.
 (faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)=
 ### Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?
 
-Yes, absolutely. It should be considered standard practice, regardless of
-IBS. Whenever optimizing a noisy target function, after obtaining a candidate
-solution from an optimization method, one should evaluate the target function
-at the solution with higher precision. The value that the optimizer reports
-at its solution is biased, since the solution was chosen for its low value
-among the points evaluated ([1], Section 4.1). With PyBADS:
+Yes. Re-evaluate the candidate solution with an independent, more precise
+estimate. Selecting a point because its noisy value was low can make the
+reported minimum too optimistic ([1], Section 4.1). With PyBADS:
 
 ```python
 x_best = optimize_result["x"]
@@ -790,63 +832,60 @@ neg_logl, sd = ibs(x_best, num_reps=1000, additional_output="std")
 
 Use an `IBS` object without a
 [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
-for this estimate, and use this estimate, with its SD, to compare models.
+for this evaluation. Compare models using these independent estimates
+and their SDs.
 
 (faq-in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum)=
 ### In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?
 
-Yes, this form of adaptive precision is a good idea and a topic of research.
-`num_reps` is an argument of each call, so a target can change it from call
-to call, as long as it returns the SD of each estimate; but PyBADS and PyVBMC
-call the target with the parameters alone and do not choose the precision of
-their evaluations.
+Adaptive precision can be useful and is a topic of research. PyIBS accepts
+`num_reps` separately for each call, so your target can choose a precision
+and return the corresponding estimated SD. PyBADS and PyVBMC call the
+target with the parameters alone; they do not choose its repeat count.
+Choose the count before drawing that evaluation's samples. Changing the
+count in response to those same samples can introduce selection bias.
 
 (faq-as-i-increase-num_reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal)=
 ### As I increase `num_reps`, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?
 
-Well, think about it. `num_reps` is literally the number of times the IBS
-estimator is run, so the number of samples, and with it the computational
-time, has to be linear in `num_reps`. On the other hand, `num_reps` is the
-number of independent estimates you are averaging over, and the standard
-error of the mean decreases with the *square root* of the number of
-independent estimates: to halve the SD, you need four times as many repeats.
+Yes. The expected sample count grows in proportion to `num_reps`, while
+the SD falls as `1 / sqrt(num_reps)`. Halving the SD therefore takes four
+times as many repeats.
 
-The number of simulator *calls* grows much more slowly: with
-`vectorized=True`, a call of `IBS` asks the simulator for more samples per
-call as it goes, and in the validation of PyIBS the example model took 9 to
-12 simulator calls per estimate at both 10 and 100 repeats. A simulator whose
-time is mostly a fixed cost per call thus takes little more time for more
-repeats (see [Should I set `vectorized`?](#faq-should-i-set-vectorized)).
+Elapsed time also depends on batching and simulator overhead. With
+`vectorized=True`, IBS requests larger batches as sampling proceeds, so
+the number of simulator calls can grow much more slowly than the sample
+count. In the validation, the example model took 9 to 12 calls per
+estimate at both ten and 100 repeats. If most time is spent on a fixed
+cost per call, additional repeats may therefore cost little extra time
+(see [Should I set `vectorized`?](#faq-should-i-set-vectorized)).
 
 (faq-what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs)=
 ### What are trial-dependent repeats, and can I use them with PyIBS?
 
-With trial-dependent repeats, each trial gets its own number of repeats,
-chosen to minimize the variance of the estimate for a given budget of
-samples ([1], Appendix C.2). The estimate stays unbiased whatever the
-allocation, as long as every trial gets at least one repeat. The optimal
-allocation favours the trials whose probability is near 1/2, and spends
-little on those near 0, which cost many samples, and near 1, whose estimates
-are already precise. It depends on the trials' probabilities, which are
-unknown, so [1] recommends computing it once, from an estimate with many
-repeats at a representative parameter vector, and keeping it for the whole
-fit.
+Trial-dependent repeats assign a separate repeat count to each trial to
+minimize variance for a fixed expected sample budget ([1], Appendix C.2).
+A fixed allocation preserves unbiasedness as long as every trial gets at
+least one repeat. The optimal allocation favors probabilities near 1/2.
+It allocates fewer repeats to responses near probability zero, which
+are expensive to match, and near probability one, whose estimates are
+already precise.
 
-The main assumption for this to work *well* is roughly that the trial
-likelihoods are correlated across (reasonable) regions of parameter space,
-so that an allocation computed at one parameter vector remains beneficial at
-the others that the optimization or inference algorithm evaluates. This
-seems to hold often in practice, since the improbable trials are often those
-where something unexpected occurred, such as a lapse; however, more empirical
-studies are needed. For trials whose probabilities are uniform between 0 and
-1, the optimal allocation gives a median gain in precision of about 1.6 over
-equal repeats, for the same budget, on 500 trials ([1], Appendix C.2).
+The allocation depends on unknown trial probabilities. The paper
+recommends computing it from a pilot estimate with many repeats at a
+representative parameter vector, and retaining it for the fit.
 
-PyIBS does not offer it directly: a call takes one `num_reps` for every
-trial. You can build it from groups of trials that share a number of repeats,
-one `IBS` object per group, since the groups' estimates are independent and
-their sums, and the sums of their variances, are the estimate and the
-variance of the whole data set:
+For this to improve efficiency across a fit, the relatively improbable
+trials should remain so across the relevant parameter region. Unexpected
+responses, such as lapses, can make this plausible, but the benefit needs
+assessment for the model. In the paper's example of 500 trials with
+probabilities drawn uniformly between zero and one, the optimal allocation
+gave a median precision gain of about 1.6 over equal repeats at the same
+budget ([1], Appendix C.2).
+
+PyIBS takes one `num_reps` for all trials in a call. To use different
+counts, group trials with the same count and create an `IBS` object for
+each group. Sum the independent groups' estimates and variance estimates:
 
 ```python
 # reps: the number of repeats of each trial, from the allocation of [1]
@@ -863,11 +902,15 @@ def target(theta):
     return neg_logl, float(np.sqrt(var))
 ```
 
-A simulator that receives trial indices gets those of its group, from 0;
-give it the original indices as the design, `IBS(sample_from_model, R[g], g)`.
-A group of trials that nearly always match can return a variance of 0, with
-[its warning](#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it),
-which is harmless as long as the total is positive.
+Without a design, each group's simulator receives indices local to that
+group, starting at zero. To preserve the original trial indices, pass them
+as the design: `IBS(sample_from_model, R[g], g)`.
+
+A group whose responses nearly always match can return zero estimated
+variance, with the
+[zero-SD warning](#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
+An individual group's zero is harmless for the fitting interface when the
+sum of the groups' variances is positive.
 
 (faq-cost-limits-and-the-likelihood-threshold)=
 ## Cost, limits and the likelihood threshold
@@ -875,135 +918,163 @@ which is harmless as long as the total is positive.
 (faq-how-many-samples-does-an-estimate-take)=
 ### How many samples does an estimate take?
 
-A trial whose observed response the model produces with probability `p`
-takes on average `1 / p` samples per repeat ([1], Section 4.2), so a call
-takes about `num_reps * sum(1 / p_i)` samples over the trials. With
-`vectorized=True`, a call also draws some samples of a trial after its last
-match, which it discards: in the validation of PyIBS, 1.01 to 1.56 times as
-many samples in all. `additional_output="full"` reports the cost of a call:
-`num_samples_per_trial`, the simulated responses per trial, `fun_count`, the
-simulator calls, and `elapsed_time`.
+If trial `i` has matching probability `p_i`, it takes `1 / p_i` samples
+per repeat on average ([1], Section 4.2). With no early stopping, a call
+therefore needs an expected `num_reps * sum(1 / p_i)` samples. Batching
+with `vectorized=True` also generates surplus samples after a trial's
+last needed match. These are discarded; the validation observed total
+sample counts 1.01 to 1.56 times the theoretical requirement.
 
-Since `1 / p = exp(-log p)`, the cost grows exponentially as the
-log-likelihood falls, so poor parameter vectors are expensive ([1],
-Appendix C.1). The
+Use `additional_output="full"` to inspect the cost:
+`num_samples_per_trial` is the total number of simulated responses divided
+by the number of trials, including surplus samples; `fun_count` counts
+simulator calls; and `elapsed_time` gives the call's duration.
+
+Since `1 / p = exp(-log p)`, the cost of matching an individual response
+can grow rapidly as its log-probability falls ([1], Appendix C.1).
+A positive lapse rate can bound this expected cost, and a
 [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
-bounds that cost, and a lapse rate in the model bounds `1 / p` on every
-trial ([1], Section 6.4). The cap, `max_iter`, stops a call whose simulator
-cannot produce an observed response (see
+can stop sampling at poor parameters ([1], Section 6.4).
+The sampling cap `max_iter` raises an error when a trial takes too many
+samples, including when its response is impossible (see
 [A call raises `IBSSamplingError`](#faq-a-call-raises-ibssamplingerror-what-do-i-do)).
 
 (faq-should-i-set-vectorized)=
 ### Should I set `vectorized`?
 
-Often yes. `vectorized` sets how `IBS` calls the simulator:
+An explicit choice can improve speed and makes seeded runs more reliable.
+`vectorized` controls how `IBS` batches simulator requests:
 
-- `True` asks, in each call, for several samples of every trial that still
-  needs a match, a number that grows by `acceleration` (1.5) from call to
-  call: few calls, at the price of some samples that a trial draws after its
-  last match;
-- `False` asks for one sample of every trial that still needs one: no
-  surplus, but a call for each sample of the slowest trial;
-- `None`, the default, decides once per `IBS` object, at its first call with
-  `num_reps > 1`, by timing one simulation of all trials: `False` if it takes
-  `vectorized_threshold` (0.1 s) or more, `True` otherwise. The decision is
-  kept for the object's later calls, and `ibs.vectorized` reads it. A call
-  with `num_reps=1` always takes one sample per trial and call.
+- `True` requests several samples of each trial that still needs matches.
+  The batch size grows by the `acceleration` factor, 1.5 by default,
+  subject to the batch limits. This reduces simulator calls but can
+  generate samples beyond the last match needed.
+- `False` requests one sample per unfinished trial per call. It generates
+  no surplus, but can require many calls while waiting for rare responses.
+- `None`, the default, times one simulation of all trials at the object's
+  first call with `num_reps > 1`. It selects `False` if that simulation
+  takes at least `vectorized_threshold` seconds (0.1 by default), and
+  `True` otherwise. The object retains the choice, readable as
+  `ibs.vectorized`.
 
-The rule of `None` fits a simulator whose time grows with the number of
-responses it simulates: there `False` is the right choice, since the
-accelerated schedule simulated 1.2 to 1.5 times as many responses per trial in
-the validation of PyIBS. It does not fit a simulator whose time is mostly a
-fixed cost per call, such as one that starts a process, loads a model or
-moves data to a GPU at every call: there a simulation of all trials takes
-long, `None` decides `False`, and the many calls are slow. In the
-[validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
-on 100 to 10,000 trials of the example model with 0.2 s per call, an
-estimate of 100 repeats took 15.5 to 27 minutes with `False`, and about 2 s
-with `vectorized=True`, for its 9 to 12 calls.
+A call with `num_reps=1` always requests one sample per trial per simulator
+call. It warns if you explicitly set `vectorized=True`.
 
-So give `vectorized=True` for a simulator dominated by a fixed cost per call,
-and `vectorized=False` for one whose time is proportional to the responses
-it simulates and that takes 0.1 s or more for all trials. A simulator that is
-slow only at its first call, such as one compiled just in time, can make the
-decision `False` for good: give it `True`, or call it once before the
-object's first call. Giving `vectorized` also keeps the timing out of the
-sampling (see [How do I make a run reproducible?](#faq-how-do-i-make-a-run-reproducible)).
+To choose explicitly, consider where your simulator spends its time:
+
+- **Expensive individual responses:** `False` avoids surplus samples and
+  is often preferable when runtime is proportional to sample count. In
+  the validation, batching generated 1.2 to 1.5 times as many responses
+  for the example model.
+- **Expensive calls:** choose `True` when most cost is incurred once per
+  call, for example when starting a process, loading a model or moving
+  data to a GPU. A slow initial simulation would make `None` choose
+  `False`, although fewer, larger calls would be faster.
+
+The difference can be large. For the example model with 100 to 10,000
+trials and a fixed cost of 0.2 s per call, the
+[validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)
+found that 100 repeats took 15.5 to 27 minutes with `False`. Requesting
+batches with `True` required only 9 to 12 calls, corresponding to about
+2 s of simulator overhead.
+
+For a cheap simulator, batching can also save Python and sampler overhead.
+If both call overhead and per-response cost matter, time both schedules
+at representative parameters.
+
+A simulator that is slow only on its first call, such as one compiled
+just in time, can distort the automatic decision. Warm it up before the
+first IBS call, or set `vectorized` explicitly. An explicit choice also
+removes this timing decision from
+[reproducibility](#faq-how-do-i-make-a-run-reproducible).
 
 (faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)=
 ### What does the likelihood threshold `neg_logl_threshold` do, and how do I choose it?
 
-It saves the samples of poor parameter vectors. With a threshold `T`, a
-repeat is ended as soon as its sampling shows that its negative
-log-likelihood exceeds `T`, and counts as exactly `T`; the call then has exit
-flag 1 ([1], Appendix C.1). `T` applies to the weighted negative
-log-likelihood, the scale of the returned estimate.
+The threshold saves simulations at poor parameter vectors. During each
+repeat, IBS maintains a running lower bound on the repeat's final negative
+log-likelihood *estimate*. Once the bound exceeds `T`, the repeat stops
+and contributes exactly `T` to the negative log-likelihood estimate. If
+any repeat stops this way, the call reports exit flag 1, unless a time
+limit subsequently stops the call with exit flag 2 ([1], Appendix C.1).
 
-The usual choice is the chance level, the negative log-likelihood of
-responding at random: `sum_i w_i log(k_i)` for `k_i` possible responses and
-weight `w_i` on trial `i`, or `N log(2)` for `N` binary choices of weight 1.
-For example:
+`T` applies to the weighted negative log-likelihood. With
+`return_positive=True`, the same rule applies, but the stopped repeat
+contributes `-T` to the returned log-likelihood estimate.
+
+A usual choice during optimization is the chance level: the negative
+log-likelihood of choosing uniformly among each trial's possible
+responses. It is `sum_i w_i log(k_i)` for `k_i` responses and weight `w_i`
+on trial `i`, or `N log(2)` for `N` binary trials with unit weights:
 
 ```python
 ibs_fit = IBS(sample_from_model, R, S, neg_logl_threshold=len(R) * np.log(2))
 ```
 
-The threshold has a price, where it acts:
+Clipping changes the estimator:
 
-- it biases the estimate: the log-likelihood upwards, and the negative
-  log-likelihood downwards. The bias is negligible at parameter vectors whose
-  log-likelihood lies well above `-T` ([1], Appendix C.1), and the threshold
-  is meant for those that lie below it, which an optimizer only needs to know
-  are poor. In the validation of PyIBS, on models whose exact negative
-  log-likelihood lay at or near the chance level, the expected estimate lay
-  3.0 to 6.6 below the exact negative log-likelihood;
-- its variance estimate overstates the variance, about 2 to 3 times in the
-  validation, since the variance estimate of an ended repeat describes the
-  counts it had when it ended;
-- the per-trial arrays of `additional_output="full"` are NaN when the
-  threshold ended a repeat: an ended repeat is valued as a whole.
+- It biases log-likelihood estimates upwards and negative log-likelihood
+  estimates downwards. The bias becomes negligible when the true
+  log-likelihood is sufficiently above `-T` ([1], Appendix C.1). The
+  threshold is intended to identify poor parameters during optimization.
+  In the validation, models at or near chance level had expected negative
+  log-likelihood estimates 3.0 to 6.6 below the true value.
+- The variance estimate for a stopped repeat uses its counts at stopping,
+  rather than estimating the variance of the clipped value. In the tested
+  cases where the threshold acted, reported variances were about two to
+  three times the actual variance.
+- All per-trial arrays returned by `additional_output="full"` are NaN if
+  any repeat was thresholded. The clipped contribution belongs to the
+  repeat as a whole and has no per-trial decomposition.
 
-So use the threshold while optimizing, and not for the final estimate:
-evaluate the solution with an `IBS` object that has no threshold, the
-default `neg_logl_threshold=np.inf`
+You can use the threshold during optimization, but evaluate the final
+solution with an object that has no threshold:
+`neg_logl_threshold=np.inf`, the default
 ([see above](#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)).
-With PyVBMC, the threshold acts at parameter vectors whose log-likelihood
-lies near or below `-T`. When the model's best log-likelihood lies far above
-`-T`, as it does for a model that explains the data much better than chance,
-those vectors carry a negligible share of the posterior and of the evidence,
-so that the threshold saves their cost and changes either little; when that
-is in doubt, leave the threshold off.
-When the number of possible responses is hard to count for each trial, an
-average serves: for its four-in-a-row game, whose number of possible moves
-depends on the board, [1] took `N log(20)` (Appendix C.1).
+
+For Bayesian posterior or evidence inference, leave the threshold off
+unless you have assessed its effect on the regions contributing to the
+posterior and evidence. A high maximum likelihood alone does not establish
+that clipping elsewhere is harmless: those regions' prior mass and volume
+also matter. Compare results with a higher `neg_logl_threshold` or no
+threshold if you intend to use one.
+
+If each trial's number of possible responses is hard to count, an average
+can provide a practical optimization threshold. For the four-in-a-row
+game, where the number of legal moves depends on the board, [1] used
+`N log(20)` (Appendix C.1).
 
 (faq-is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-eg-20)=
 ### Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?
 
-No, this is not okay, in the sense that by doing it one would essentially
-revert IBS to a fixed-sampling method, with all the associated problems
-discussed in the paper ([1], Section 3). A more principled way is to put an
-early-stopping threshold on the log-likelihood of the whole data set, as
-described in the paper ([1], Appendix C.1), which `IBS` implements as its
+No. Returning a value from a trial that has not matched truncates its
+sampling distribution and introduces bias, losing the benefit of IBS
+over fixed sampling ([1], Section 3). For optimization, the paper instead
+proposes an early-stopping threshold on the whole dataset's estimate
+([1], Appendix C.1), implemented by the
 [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it).
-For the same reason, the cap `max_iter` of `IBS` raises an error rather than
-return an estimate from truncated counts (see
+The sampling cap `max_iter` therefore raises an error instead of
+returning an estimate from incomplete counts (see
 [A call raises `IBSSamplingError`](#faq-a-call-raises-ibssamplingerror-what-do-i-do)).
 
 (faq-what-does-max_time-do)=
 ### What does `max_time` do?
 
-It sets a time limit on each call, in seconds, checked after every simulator
-call. Once the limit is reached, the sampling stops, and each trial's value
-averages the repeats it completed; the call has exit flag 2 and issues a
-warning, and raises `IBSSamplingError` for a trial without a completed
-repeat. A finite limit biases the estimates, also those of the calls that
-complete in time, since completing in time favours few samples, which give
-high log-likelihoods. Leave it at its default, `np.inf`, for estimates that
-you will use. The cap bounds the cost without adding a bias, and the
-likelihood threshold biases only the estimates at parameter vectors whose
-log-likelihood lies near or below `-T`. A finite limit also makes the
-sampling depend on timing, so that a seed no longer reproduces a run.
+`max_time` limits each call's duration in seconds. The limit is checked
+after every simulator call, so a simulator call can run past it. If the
+limit is reached while sampling is unfinished, each trial's estimate
+averages the repeats it completed. The result has exit flag 2 and a
+warning. A trial without a completed repeat causes `IBSSamplingError`.
+If some repeats were thresholded, they retain their clipped contributions.
+
+A finite time limit can bias estimates because draws needing fewer
+samples are more likely to finish. Even the distribution of calls that
+finish in time can be biased. Keep `max_time=np.inf`, its default, for
+ordinary estimation and fitting. Use the sampling cap to raise an error
+on excessive cost, or consider the likelihood threshold for optimization;
+see their respective answers for the statistical consequences. A finite
+time limit also makes the result depend on timing, so a seed alone no
+longer reproduces the run.
 
 (faq-troubleshooting)=
 ## Troubleshooting
@@ -1011,79 +1082,86 @@ sampling depend on timing, so that a seed no longer reproduces a run.
 (faq-a-call-raises-ibssamplingerror-what-do-i-do)=
 ### A call raises `IBSSamplingError`. What do I do?
 
-[`IBSSamplingError`](api/classes/ibs_sampling_error.rst) means that a trial
-drew more samples than the cap allows, `max_iter * num_reps` in a call of
-`num_reps` repeats (`max_iter` is 10**5 by default), and `IBS` returns no
-estimate from counts that the cap cut short. The message names the trials,
-by their 0-based indices, and their samples:
+[`IBSSamplingError`](api/classes/ibs_sampling_error.rst) usually means a
+trial exceeded the sampling cap. A call allows `max_iter * num_reps`
+samples for each trial, with `max_iter=10**5` by default. It returns no
+estimate from an incomplete draw. The message gives the affected trials'
+0-based indices and sample counts:
 
 ```text
 In a draw of 10 repeats, trial 1 drew 1135 samples, more than max_iter * num_reps = 1000. 1 of 3 trials still need matches, and IBS returns no estimate for an incomplete repeat. Check that the simulator can produce every observed response at this parameter vector, or raise max_iter.
 ```
 
-The usual cause is an observed response that the simulator never, or almost
-never, produces at that parameter vector:
+The simulator may be unable to produce an observed response, or that
+response may be extremely improbable at the current parameters:
 
-- check that the simulator codes the responses as the data do, such as 1 and
-  -1 rather than 1 and 0, and returns them in the order of its design rows;
-- add a lapse rate to the model, with a small positive lower bound (e.g.,
-  0.005), so that every response has a positive probability ([1],
-  Section 6.4);
-- set a [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it),
-  which ends the repeats of a poor parameter vector before the cap.
+- Check the response coding and order. For example, a simulator returning
+  0 and 1 cannot match data encoded as -1 and 1. Return responses in the
+  order of the requested design rows.
+- A lapse component with a small positive lower bound, such as 0.005,
+  can make every response possible and bound the expected cost ([1],
+  Section 6.4). It should be part of the model you intend to fit.
+- For optimization, consider a
+  [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg_logl_threshold-do-and-how-do-i-choose-it)
+  to stop sampling poor parameter vectors before they reach the cap.
 
-Raise `max_iter` only when the responses are truly that improbable, and the
-cost of about `1 / p` samples each is acceptable. `IBSSamplingError` is also
-raised when [`max_time`](#faq-what-does-max_time-do) stops a call before a
-trial has completed a repeat.
+Raise `max_iter` when the response probabilities justify the sample cost
+and that cost is acceptable. Do not discard failed draws and retry until
+one succeeds: finishing below a finite cap favors shorter draws, which
+give higher log-likelihood estimates. Keeping only successful calls can
+therefore introduce selection bias, even though each retained call has
+exit flag 0. Filtering calls by their exit flags can likewise select a
+biased subset. Investigate failures and revise the simulator or sampling
+settings instead.
+
+`IBSSamplingError` is also raised if
+[`max_time`](#faq-what-does-max_time-do) stops a call before a trial has
+completed a repeat.
 
 (faq-ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator)=
 ### `IBS` calls my simulator with different subsets of trials. What does this mean for my simulator?
 
-`IBS` calls the simulator multiple times with different subsets of trials,
-that is with different rows of the design (or trial indices), possibly with
-a trial repeated. This means that your simulator should work "row-wise", and
-not depend on the order of the rows, nor on any information that depends on
-the other rows. For example, assuming that `S[:, 0]` contains for each trial
-the contrast of the stimulus presented in the trial, be very careful that
-`np.min(design_rows[:, 0])` inside the simulator will *not* be the minimum
-contrast across all trials. Instead, it will be the minimum contrast of the
-trials that IBS requests in that call, which changes from call to call (likely
-*not* what your model needs). If your simulator needs global information,
-give it separately, by binding it to the simulator (see
-[this question](#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs)).
+Each requested row must have the same response distribution regardless
+of which other rows are requested or their order. Requests may contain a
+subset of trials and may repeat a trial several times.
 
-Likewise, each row must be an independent draw: a simulator that draws one
-random number per call and uses it for all the rows of that call makes the
-samples of a call dependent, which breaks the assumptions of IBS, so that its
-estimate or its variance estimate can be wrong.
+For example, if `S[:, 0]` holds stimulus contrast, then
+`np.min(design_rows[:, 0])` is the minimum over the current request. It is
+not the dataset's minimum and may change on every call. If the model needs
+the dataset's minimum or other global information, compute it from the
+full data and
+[bind it to the simulator](#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs).
+
+Generate each requested response independently. Drawing one random
+number and sharing it across all rows makes samples dependent and can
+invalidate the likelihood estimate or its estimated variance.
 
 (faq-a-call-raises-a-valueerror-or-a-typeerror-about-the-simulators-output-what-is-wrong)=
 ### A call raises a `ValueError` or a `TypeError` about the simulator's output. What is wrong?
 
 - `ValueError: The simulator was asked for ... and returned an array of shape
-  ...`: the simulator must return one response per requested row, of shape
-  `(r,)` or `(r, 1)` for `r` rows when the responses have one column, and
-  `(r, C)` when they have `C` columns. A common cause is a simulator that
-  returns one response per trial of the data set rather than per requested
-  row, or that ignores the requested rows.
+  ...`: return one response per requested row. For `r` rows, the array
+  must have shape `(r,)` or `(r, 1)` for one response column, or `(r, C)`
+  for `C` columns. Check that you use the requested rows, rather than
+  returning a response for every trial in the full dataset.
 - `TypeError: The simulator returned responses of dtype ..., which NumPy
   never finds equal to the ... among the observed responses`: the simulator
-  returns text where the observed responses are numbers, or the reverse, so
-  no sample could ever match. Return responses of the observed kind; for
-  responses that mix numbers and text, use object arrays (`dtype=object`) for
-  both.
+  returned a type that cannot match the observed responses, such as text
+  for numerical observations. Use compatible types. For responses mixing
+  numbers and text, use object arrays (`dtype=object`) for both the data
+  and simulator output.
 
-When `IBS` is created, `ValueError: response_matrix holds a NaN` names the
-trials whose observed response is NaN, which no simulated response equals:
-recode such a response as a value that the simulator returns, or remove the
-trial.
+`ValueError: response_matrix holds a NaN` occurs during construction and
+names the affected trials. NaN is unequal to itself, so it cannot match.
+If it denotes a response category, encode that category with a value the
+simulator can return. If it denotes missing data, handle the missingness
+in your analysis or remove the trial.
 
 (faq-how-do-i-make-a-run-reproducible)=
 ### How do I make a run reproducible?
 
-Pass a seed when you create the `IBS` object, and have the simulator draw
-from the generator it receives:
+Seed the `IBS` object and draw all simulator randomness from its supplied
+generator:
 
 ```python
 def sample_from_model(theta, S, rng):
@@ -1093,29 +1171,33 @@ def sample_from_model(theta, S, rng):
 ibs = IBS(sample_from_model, R, S, vectorized=True, random_seed=1)
 ```
 
-`random_seed` works as PyBADS's does: an integer or a
-`numpy.random.SeedSequence` seeds a new generator, a `numpy.random.Generator`
-is used as given, and None, the default, derives the generator from NumPy's
-global random state, so that `np.random.seed` before creating the object also
-fixes it. The object keeps the generator as `ibs.rng`, and passes it to a
-simulator that has a parameter named `rng`.
+`random_seed` follows PyBADS's convention:
 
-Two objects created with the same seed then give the same estimates from the
-same sequence of calls, provided that no timing decides the sampling:
+- An integer or `numpy.random.SeedSequence` seeds a new generator.
+- A `numpy.random.Generator` is used directly.
+- `None`, the default, derives a new generator from NumPy's global random
+  state. Calling `np.random.seed` before constructing the object therefore
+  also fixes its seed.
 
-- `vectorized` is given as `True` or `False`, or `None` decides alike in both
-  (it decides by timing the simulator, see
-  [Should I set `vectorized`?](#faq-should-i-set-vectorized));
-- `acceleration_threshold` and `max_time` keep their defaults, `None` and
-  `np.inf`, under which the sampling does not depend on how long the
-  simulator calls take.
+The object stores its generator as `ibs.rng` and passes it to simulators
+with a keyword-compatible parameter named `rng`.
 
-A simulator that draws from NumPy's global functions, such as
-`np.random.normal`, escapes the seed of `IBS`. On another computer, or with
-other versions of Python, NumPy or SciPy, the same seed can give different
-results.
+Two objects with the same seed reproduce the same sequence of estimates
+when given the same calls and simulator, provided timing does not change
+the sampling:
 
-With PyBADS or PyVBMC, seed both, each with a seed of its own:
+- Set `vectorized=True` or `False`. Automatic `None` also reproduces draws
+  if it makes the same decision in both runs, but that decision depends on
+  timing (see [Should I set `vectorized`?](#faq-should-i-set-vectorized)).
+- Keep `acceleration_threshold=None` and `max_time=np.inf`, their
+  defaults. Neither then uses simulator runtime to alter sampling.
+
+A simulator using global functions such as `np.random.normal` is not
+controlled by the seed passed to `IBS`. Reproducibility across computers
+or different Python, NumPy and SciPy versions is also not guaranteed.
+
+For fitting, give separate seeds to PyIBS and the optimizer or inference
+method:
 
 ```python
 ibs = IBS(sample_from_model, R, S, vectorized=True, random_seed=1)
@@ -1123,30 +1205,45 @@ bads = BADS(target, x0, lb, ub, plb, pub, options={"specify_target_noise": True,
 vbmc = VBMC(log_likelihood, x0, lb, ub, plb, pub, prior=prior, options={"specify_target_noise": True}, seed=2)
 ```
 
-Seed the `IBS` object once, for the whole run. Creating a new `IBS` object
-with the same seed at every evaluation would *freeze* the noise rather than
-remove it, which can bias a fit (the PyBADS FAQ,
+Create and seed the `IBS` object once for the whole fit. Recreating it with
+the same seed at every evaluation reuses the random stream and freezes
+the noise, which can bias fitting (the PyBADS FAQ,
 [Can I make a noisy objective function deterministic by fixing the noise process?](https://acerbilab.github.io/pybads/faq.html#faq-can-i-make-a-noisy-objective-function-deterministic-by-fixing-the-noise-process)).
 
 (faq-how-do-i-check-that-the-estimates-are-right-for-my-model)=
 ### How do I check that the estimates are right for my model?
 
-PyIBS's own estimates are validated against exact log-likelihoods across
-models and settings (the [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md));
-what remains to check is your simulator. [1] recommends comparing IBS
-estimates with a log-likelihood computed otherwise, on well-chosen test
-trials and parameters (Section 6.4): where your model, or a simplified
-version of it, has a closed-form or numerical likelihood, compare the two.
-If the estimates are
-unbiased and their variance estimates calibrated, the z-scores
-`(neg_logl - exact) / sd` of many calls, of 10 repeats or more each, have a
-mean close to 0 and an SD close to 1. The example model,
-`pyibs.examples.psycho_model`, has both a simulator and its exact negative
-log-likelihood, `psycho_neg_logl`, for such comparisons, and the
-[first example notebook](examples.rst) makes one.
+Check the simulator against a likelihood computed independently wherever
+possible ([1], Section 6.4). This may be a closed-form or accurate numerical
+likelihood for the full model, a simplified model, or a few carefully
+chosen trials and parameter vectors. PyIBS itself has been
+[validated across models and settings](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md),
+but that does not check your simulator.
 
-Then check the fit as for any fit: compare several runs of PyBADS or PyVBMC
-from different starting points.
+Draw many independent IBS estimates at a fixed parameter vector, without
+a likelihood threshold or time limit. Compare their mean with the
+reference value, allowing for the mean's sampling error. Also compare
+their empirical variance with the mean of the reported variance
+estimates. Ordinary IBS gives unbiased estimates of both log-likelihood
+and variance when its draws are completed and not selected.
+
+If the estimates are approximately normal and the reported SDs are stable
+and positive, inspect the z-scores `(neg_logl - exact) / sd`. They should
+be approximately centered on zero with SD near one. This is an
+approximation, not a guarantee from unbiasedness alone or from using ten
+repeats. If nearly all trials match on their first samples, estimated
+variances can be zero and z-scores can behave poorly even with many
+repeats; see the
+[zero-SD answer](#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
+
+The installed example model, `pyibs.examples.psycho_model`, provides a
+simulator and the closed-form negative log-likelihood `psycho_neg_logl`.
+The [first example notebook](examples.rst) shows this comparison on 600
+trials, where the standardized errors are close to normal.
+
+Check the fit separately, for example by comparing independent runs of
+PyBADS or PyVBMC from different starting points. These are among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 (faq-miscellanea)=
 ## Miscellanea
@@ -1154,57 +1251,77 @@ from different starting points.
 (faq-i-used-ibslike-in-matlab-what-is-different-in-pyibs)=
 ### I used `ibslike` in MATLAB. What is different in PyIBS?
 
-PyIBS implements IBS as `ibslike.m` 0.96 of
-[MATLAB IBS](https://github.com/acerbilab/ibs) does, with a Python interface:
+PyIBS implements the same IBS estimator as `ibslike.m` 0.96 of
+[MATLAB IBS](https://github.com/acerbilab/ibs), with a Python interface:
 
-- You create an `IBS` object with the simulator, the responses and the design,
-  `ibs = IBS(sample_from_model, response_matrix, design_matrix, ...)`, and call
-  it, `ibs(params, num_reps, trial_weights, additional_output, return_positive)`,
-  where MATLAB calls `ibslike(fun, params, respMat, designMat, options,
-  varargin)`. Extra arguments of the simulator are
+- Create an `IBS` object with the simulator, responses and design:
+  `ibs = IBS(sample_from_model, response_matrix, design_matrix, ...)`.
+  Evaluate it with
+  `ibs(params, num_reps, trial_weights, additional_output, return_positive)`.
+  The corresponding MATLAB call is
+  `ibslike(fun, params, respMat, designMat, options, varargin)`.
+  Extra simulator arguments are
   [bound to it](#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs)
   rather than passed as `varargin`.
-- `Nreps`, `TrialWeights` and `ReturnPositive` are arguments of the call,
-  `num_reps`, `trial_weights` and `return_positive`. `ReturnStd` is
-  `additional_output="std"`, and `additional_output="full"` returns the
-  exit flag and the output structure of `ibslike` together (`funcCount` is
-  `fun_count`, `NsamplesPerTrial` is `num_samples_per_trial`, `nlogL_trials`
-  and `nlogLvar_trials` are `neg_logl_trials` and `neg_logl_var_trials`).
-- The other options are settings of the object, with snake_case names:
-  `Vectorized` (`'auto'` is `None`), `Acceleration`, `NsamplesPerCall`
-  (`num_samples_per_call`), `MaxIter`, `MaxTime` and `NegLogLikeThreshold`
-  (`neg_logl_threshold`, `np.inf` for none). `ibslike`'s hard-coded
-  `MaxSamples`, `AccelerationThreshold`, `VectorizedThreshold` and `MaxMem`
-  are settings too, `max_samples`, `acceleration_threshold`,
-  `vectorized_threshold` and `max_mem`.
+- MATLAB's `Nreps`, `TrialWeights` and `ReturnPositive` become the call
+  arguments `num_reps`, `trial_weights` and `return_positive`.
+  `ReturnStd` becomes `additional_output="std"`.
+  `additional_output="full"` combines the exit flag and output structure
+  in one result. Its fields use Python names: `funcCount` becomes
+  `fun_count`, `NsamplesPerTrial` becomes `num_samples_per_trial`, and
+  `nlogL_trials` and `nlogLvar_trials` become `neg_logl_trials` and
+  `neg_logl_var_trials`.
+- Other options become object settings: `Vectorized` becomes
+  `vectorized` (`'auto'` becomes `None`), `Acceleration` becomes
+  `acceleration`, `NsamplesPerCall` becomes `num_samples_per_call`,
+  `MaxIter` becomes `max_iter`, `MaxTime` becomes `max_time`, and
+  `NegLogLikeThreshold` becomes `neg_logl_threshold` (`np.inf` turns it
+  off). MATLAB's hard-coded `MaxSamples`, `AccelerationThreshold`,
+  `VectorizedThreshold` and `MaxMem` are also settings:
+  `max_samples`, `acceleration_threshold`, `vectorized_threshold` and
+  `max_mem`.
 - With no design, the simulator receives 0-based trial indices.
 - The simulator can take the object's random generator, `rng`, for
   [reproducible runs](#faq-how-do-i-make-a-run-reproducible).
 
-Some behaviours differ on purpose. Among them: `vectorized=None` decides once
-per object; the samples per call grow after every call unless
-`acceleration_threshold=0.1` restores `ibslike`'s time rule; the likelihood
-threshold checks every repeat and values an ended repeat at exactly the
-threshold, as in [1], Appendix C.1; the cap counts the samples of each trial
-and raises `IBSSamplingError`; `max_time` averages each trial's completed
-repeats, with a warning; and `ibslike('test')` is the test suite,
+The sampling and stopping rules also have deliberate differences:
+
+- `vectorized=None` makes its decision once per object.
+- The number of samples per call grows after every call by default.
+  Set `acceleration_threshold=0.1` to use `ibslike`'s timing rule.
+- The likelihood threshold checks each repeat separately and assigns
+  a stopped repeat exactly the threshold value ([1], Appendix C.1).
+- The sample cap counts samples separately for each trial and raises
+  `IBSSamplingError` when exceeded.
+- A time-limited estimate averages each trial's completed repeats and
+  issues a warning.
+
+For the tests corresponding to `ibslike('test')`, run
 `pytest --pyargs pyibs`. The
 [catalogue of deliberate differences](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md)
-lists each difference between PyIBS and `ibslike.m`, and the didactic
-`ibs_basic.m`, with its reason. Runs of PyIBS and of `ibslike` do not match
-draw for draw, even with the same simulator: they draw their random numbers
-differently.
+lists all differences from `ibslike.m` and the didactic `ibs_basic.m`,
+with their reasons. The two implementations draw random numbers
+differently, so runs do not match draw for draw even with the same
+simulator. MATLAB IBS is among the lab's
+[tools for fitting models to data](https://acerbilab.org/model-fitting/).
 
 (faq-i-used-pyibs-010-what-do-i-need-to-change)=
 ### I used PyIBS 0.1.0. What do I need to change?
 
-Usually little: PyIBS 1.5 keeps the calling convention of 0.1.0, `IBS(...)`
-and `ibs(params, num_reps, ...)` with the same names and outputs. Its results
-differ from 0.1.0's, also after `np.random.seed`: PyIBS 1.5 is rebuilt on a
-new sampler, and fixes defects of 0.1.0, among them its default `max_iter`,
-15, which biased the estimates of improbable responses. PyIBS 1.5 checks its settings and raises
-for values that 0.1.0 accepted, raises `IBSSamplingError` where 0.1.0
-returned exit flag 3, and moves the example model to
-`pyibs.examples.psycho_model`. The list "Upgrading from 0.1.0" of the
-[changelog](https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md) says
-what to check in an existing script.
+PyIBS 1.5 keeps the main calling convention: construct `IBS(...)` and
+evaluate it with `ibs(params, num_reps, ...)`. Check an existing script
+for the following changes:
+
+- Results differ because of the new sampler and fixes to 0.1.0, including
+  its default `max_iter=15`, which biased estimates for improbable
+  responses. Calling `np.random.seed` does not reproduce 0.1.0's results.
+- Settings are checked more strictly. Values accepted by 0.1.0 may raise
+  an exception.
+- Exceeding the sample cap raises `IBSSamplingError` instead of returning
+  exit flag 3.
+- The example model is imported from `pyibs.examples.psycho_model`.
+
+The "Upgrading from 0.1.0" list in the
+[changelog](https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md)
+gives the full set of checks, including changes to returned values and
+object settings.

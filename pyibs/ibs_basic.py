@@ -1,8 +1,8 @@
-"""A bare-bone implementation of inverse binomial sampling, for teaching.
+"""A minimal implementation of inverse binomial sampling, for teaching.
 
 :func:`ibs_basic` follows ``ibs_basic.m`` of MATLAB IBS
 (https://github.com/acerbilab/ibs). :class:`pyibs.IBS` is the
-implementation to use.
+implementation for fitting models.
 """
 
 import numpy as np
@@ -15,37 +15,38 @@ def ibs_basic(sample_from_model, theta, R, S=None, *, random_seed=None):
     """Estimate a log-likelihood by inverse binomial sampling, one trial at
     a time.
 
-    A slow, bare-bone implementation of IBS ([1]), which should be used
-    only for didactic purposes: for every trial in turn, it simulates
-    responses one at a time until one matches the observed response, and
-    adds the trial's IBS estimate. :class:`pyibs.IBS` is the implementation
-    to use.
+    This teaching implementation of IBS ([1]_) processes trials in order.
+    For each trial, it simulates one response at a time until a response
+    matches the observation, then adds that trial's log-likelihood
+    estimate to the total. Use :class:`pyibs.IBS` for fitting models: it
+    supports batching, variance estimates and stopping limits.
 
     Parameters
     ----------
     sample_from_model : callable
-        The simulator, ``sample_from_model(theta, s)``, or
-        ``sample_from_model(theta, s, rng=rng)`` when it has a parameter
-        named ``rng``, which then receives the generator of the call. It
-        returns one simulated response: a row of ``R``. ``s`` is the row
-        ``S[i]`` of trial i, or the trial's 0-based index i when ``S`` is
-        None.
+        Called as ``sample_from_model(theta, s)``. If it has a parameter
+        named ``rng`` that accepts a keyword, the call also supplies its
+        random generator as ``rng=rng``. Here ``s`` is ``S[i]``, or the
+        0-based trial index i when ``S`` is None.
+
+        Return one independent simulated response with shape (C,) or
+        (1, C), where C is the number of response columns. A scalar is
+        also accepted for a single-column response.
     theta : array_like
         The parameter vector, passed to the simulator as given.
     R : array_like of shape (N,) or (N, C)
-        The observed responses, one row per trial. A simulated response
-        matches a trial's only when every column agrees. Responses that mix
-        numbers and text are given as an object array (``dtype=object``),
-        and the simulator returns each as one: an array that NumPy makes of
-        such a mix holds text, which never equals a number, and raises
-        ``TypeError``.
+        Observed responses, one row per trial; a scalar represents one
+        trial. A simulated response matches only if every column agrees.
+        For responses that mix numbers and text, use ``dtype=object`` for
+        both observed and simulated arrays. Otherwise NumPy converts the
+        numbers to text, and the mismatch raises ``TypeError``.
     S : array_like of shape (N, ...), optional
-        The design of each trial, one row per trial. None, the default,
-        passes the trial index instead.
+        Experimental conditions or other simulator inputs, one row per
+        trial. None (the default) passes the trial index instead.
     random_seed : None, int, numpy.random.SeedSequence or \
 numpy.random.Generator, optional
-        The seed of the generator passed to the simulator, as
-        ``random_seed`` of :class:`pyibs.IBS`.
+        Seed for the generator passed to the simulator. Accepts the same
+        values as ``random_seed`` of :class:`pyibs.IBS`.
 
     Returns
     -------
@@ -55,12 +56,17 @@ numpy.random.Generator, optional
     Raises
     ------
     ValueError
-        If ``R`` is not a non-empty array of shape (N,) or (N, C), or holds
-        a NaN, which no simulated response equals; or if ``S`` does not
-        have N rows.
+        If ``R`` is empty, has more than two dimensions, or contains a
+        NaN; if ``S`` does not have N rows; or if the simulator returns
+        the wrong shape. NaNs cannot match a simulated response.
     TypeError
-        If the simulator returns a response of a kind that NumPy never
-        finds equal to ``R``, such as text for numeric responses.
+        If the simulator returns a response of a kind that cannot match
+        ``R``, such as text for numeric responses.
+
+    Notes
+    -----
+    There is no sample cap or time limit. Sampling continues indefinitely
+    if the simulator cannot produce an observed response.
 
     References
     ----------
@@ -84,9 +90,25 @@ numpy.random.Generator, optional
             return sample_from_model(theta, s)
 
     object_kinds = _sampler._object_kinds(R)
+    columns = 1 if R.ndim == 1 else R.shape[1]
+    valid_shapes = {(columns,), (1, columns)}
+    if columns == 1:
+        valid_shapes.add(())
 
     def simulate(i, s):
         r = np.asarray(draw(s))
+        if r.shape not in valid_shapes:
+            raise ValueError(
+                "sample_from_model must return one response with shape "
+                f"({columns},) or (1, {columns})"
+                + (
+                    ", or a scalar for one response column"
+                    if columns == 1
+                    else ""
+                )
+                + f"; got shape {r.shape}."
+            )
+        r = r.reshape(columns)
         # A response of a kind that NumPy never finds equal to R, such as
         # text for numbers, could never match.
         _sampler._check_kinds(

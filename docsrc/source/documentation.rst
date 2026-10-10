@@ -2,10 +2,12 @@
 Documentation
 *************
 
-The main entry points of PyIBS are documented below: the ``IBS`` class,
-which estimates the log-likelihood, and the ``EstimateResult`` that a call
-returns with ``additional_output="full"``. All the public classes and
-functions follow.
+Use ``IBS`` to create a log-likelihood estimator from your simulator and
+data. Its calls return a negative log-likelihood estimate by default; with
+``additional_output="full"``, they return an ``EstimateResult`` containing
+the estimate, uncertainty estimates, and sampling diagnostics. The pages
+below document these entry points and all other public classes and
+functions.
 
 .. toctree::
    :maxdepth: 1

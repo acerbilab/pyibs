@@ -2,12 +2,15 @@
 Examples
 ********
 
-The example notebooks below make a short tutorial: the basic use of PyIBS
-and the calibration of its estimates; maximum-likelihood estimation with
-PyBADS; and the posterior and the model evidence with PyVBMC. The
-corresponding Jupyter notebooks are available :mainbranch:`here <examples/>`,
-and as plain scripts :mainbranch:`here <examples/scripts>`. They are also
-installed with PyIBS (see :doc:`installation`).
+These notebooks form a short tutorial: basic use and checks of the
+uncertainty estimates, maximum-likelihood fitting with PyBADS, and posterior
+and model-evidence estimation with PyVBMC.
+
+Read their saved outputs below, download the
+:mainbranch:`Jupyter notebooks <examples/>`, or use the
+:mainbranch:`Python scripts <examples/scripts>`. Both are included with
+PyIBS; :doc:`Installation <installation>` shows how to find them and install
+the packages needed to run the notebooks.
 
 .. toctree::
    :maxdepth: 1

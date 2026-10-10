@@ -20,13 +20,13 @@ it and gives the command that installs it, for example:
 
    PyIBS 1.6.0 is available; you have 1.5.0. Update with: python -m pip install --upgrade pyibs
 
-The command follows the installer recorded with your installation:
+The command uses the installer recorded in the package metadata:
 ``python -m pip install --upgrade pyibs`` for pip,
 ``conda update --channel=conda-forge pyibs`` for conda (the conda-forge
 package can follow PyPI by a few days), and both when the installer is
-another or unknown. The other messages are listed below, with the returned
-named tuple, which gives a script the same answer. A network failure raises
-no error.
+another or unknown. The reference below describes all outcomes and the
+returned named tuple, which scripts can inspect. Network failures are
+reported without raising an exception.
 
 Network access
 --------------

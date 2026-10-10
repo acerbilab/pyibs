@@ -72,22 +72,16 @@ class UpdateCheck(NamedTuple):
 def check_for_updates(*, timeout: float = 5.0) -> UpdateCheck:
     """Ask PyPI for the latest release of PyIBS and say how to update.
 
-    Sends one HTTPS GET request to ``https://pypi.org/pypi/pyibs/json``,
-    with the ``User-Agent`` header ``pyibs/<installed version>
-    (check_for_updates)``; the request carries nothing else about the
-    installation or the user. This is the only network access in PyIBS,
-    and it happens only when this function is called. The proxy environment
-    variables (``HTTPS_PROXY`` and its kin) are honored. Nothing is written
-    to disk.
+    Prints one message comparing the installed version with PyPI's latest
+    release: an update is available, the versions match, or the installed
+    version is newer. For a development or unknown installed version, it
+    reports the latest release without a comparison. If the request fails,
+    the message explains why.
 
-    Prints one message: that a newer release is available, with the command
-    that installs it; that the installed version is the latest release; that
-    it is newer than the latest release on PyPI; that it is a development
-    version, with the latest release; that it is unknown, with the latest
-    release; or that PyPI could not be reached, with the reason. The update
-    command follows the installer recorded with the installed package:
-    pip's, conda's (the conda-forge package can follow PyPI by a few days),
-    or both when the installer is another or unknown.
+    When an update is available, the message includes an installation
+    command for pip or conda, based on the installer recorded in the
+    package metadata. It gives both commands for other or unknown
+    installers. The conda-forge package may follow PyPI by a few days.
 
     The latest release is the highest final release (``X.Y.Z``) on PyPI;
     pre-releases, development releases and yanked releases are ignored. An
@@ -98,25 +92,38 @@ def check_for_updates(*, timeout: float = 5.0) -> UpdateCheck:
     ----------
     timeout : float, optional
         Timeout in seconds for connecting to PyPI and for each read of its
-        reply, at most 3600. By default ``5.0``.
+        reply. Must be > 0 and <= 3600. Default ``5.0``.
 
     Returns
     -------
     UpdateCheck
-        A named tuple of ``installed``, the installed version (``None`` when
-        the package metadata cannot be found); ``latest``, the latest
-        release on PyPI (``None`` when PyPI could not be reached or its
-        reply could not be read); and ``update_available``, whether
-        ``latest`` is newer than ``installed`` (``None`` when either is
-        unknown or the installed version is a development version).
+        A named tuple with three fields:
+
+        - ``installed``: installed version, or None if its metadata is
+          unavailable.
+        - ``latest``: latest PyPI release, or None if the request or parsing
+          failed.
+        - ``update_available``: whether ``latest`` is newer than
+          ``installed``. None if either is unknown or the installed
+          version is a development version.
 
     Raises
     ------
     ValueError
-        If ``timeout`` is not a positive number of seconds of at most 3600.
-        A network, HTTP or parse failure raises nothing: the printed
-        message gives its reason, and the returned tuple holds
-        ``latest=None``.
+        If ``timeout`` is not a positive number of seconds at most 3600.
+
+    Notes
+    -----
+    Network, HTTP and parsing failures are reported in the printed message
+    and return ``latest=None``; they do not raise an exception.
+
+    This function sends an HTTPS GET request to
+    ``https://pypi.org/pypi/pyibs/json`` with the ``User-Agent`` header
+    ``pyibs/<installed version> (check_for_updates)``. It sends no other
+    information about the installation or user. Proxy environment
+    variables such as ``HTTPS_PROXY`` are honored. This is PyIBS's only
+    network access, occurs only when the function is called, and writes
+    nothing to disk.
     """
     if not _is_valid_timeout(timeout):
         raise ValueError(

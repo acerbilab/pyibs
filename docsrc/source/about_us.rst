@@ -2,8 +2,8 @@
 About us
 ********
 
-PyIBS is an open-source Python software for estimating the log-likelihood of
-models that can be simulated, by inverse binomial sampling.
+PyIBS is open-source Python software for estimating the log-likelihood of
+models from simulated responses using inverse binomial sampling.
 
 Work on the PyIBS package is supported by the Research Council of Finland
 (grants 356498 and 358980 to Luigi Acerbi) and its Flagship programme:
@@ -13,11 +13,10 @@ The method
 **********
 
 Bas van Opheusden, Luigi Acerbi and Wei Ji Ma introduced inverse binomial
-sampling as a technique for estimating the log-likelihood of simulator-based
-models
+sampling for estimating the log-likelihood of models with a simulator
 (`van Opheusden, Acerbi and Ma, 2020 <https://doi.org/10.1371/journal.pcbi.1008483>`__),
-building on the mid-20th-century theory of inverse sampling.
-Luigi Acerbi and Bas van Opheusden wrote ``ibslike.m`` of
+building on the mid-20th-century theory of inverse sampling. Luigi Acerbi
+and Bas van Opheusden wrote ``ibslike.m`` in
 :labrepos:`MATLAB IBS <ibs>`, the reference implementation that PyIBS
 follows.
 
@@ -36,10 +35,9 @@ coding agents, including Anthropic's `Claude <https://www.anthropic.com/claude>`
 Join the team
 -------------
 
-If you are interested in contributing to PyIBS please see the
-:doc:`instructions for developers and contributors <development>` for
-general development guidelines. We welcome pull requests, bug reports,
-feature requests, etc. For other opportunities to work with us please see
-the homepage for the
+We welcome pull requests, bug reports, and feature requests. For code
+contributions, follow the
+:doc:`instructions for developers and contributors <development>`. For
+other opportunities to work with us, visit the
 `Machine and Human Intelligence Group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__,
-or contact the lab's Principal Investigator at luigi.acerbi@helsinki.fi.
+or email the lab's principal investigator at luigi.acerbi@helsinki.fi.

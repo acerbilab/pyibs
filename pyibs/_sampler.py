@@ -47,14 +47,15 @@ from pyibs import _estimates
 class IBSSamplingError(RuntimeError):
     """IBS sampling ended without an estimate.
 
-    A draw raises it once a trial has drawn more samples than its cap
-    allows, after the simulator call that crossed the cap, even when that
-    call completed the draw: IBS gives no estimate for a repeat in which
-    some trial has not matched, since its partial count would bias the
-    estimate. The usual cause is an observed response that the simulator
-    never, or almost never, produces at the parameter vector. A draw that
-    its time limit stops raises it when a trial has no completed count to
-    average.
+    Raised when a trial draws more samples than the configured cap. The
+    cap is checked after each simulator call, including all samples in
+    that call, even if the call also completes the requested repeats.
+    An observed response with very low or zero probability at the given
+    parameter vector is a common cause.
+
+    Also raised when the time limit stops sampling and at least one
+    trial has no completed count to average. Unfinished counts cannot be
+    substituted for completed ones in an IBS estimate.
     """
 
 

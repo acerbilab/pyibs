@@ -38,8 +38,8 @@ _ZERO_VARIANCE = (
 # exit flags.
 _EXIT_MESSAGES = {
     0: (
-        "Correct run of IBS; the estimate is unbiased unless max_time is "
-        "finite."
+        "All requested IBS repeats completed without reaching the "
+        "likelihood threshold."
     ),
     1: (
         "The negative log-likelihood threshold ended a repeat; the estimate "
@@ -65,36 +65,36 @@ class EstimateResult(dict):
         The negative log-likelihood estimate, or the log-likelihood
         estimate with ``return_positive=True``.
     neg_logl_var : float
-        The variance estimate of the estimate.
+        Estimated variance of ``neg_logl``.
     neg_logl_std : float
-        Its square root.
+        Estimated standard deviation of ``neg_logl``: the square root of
+        ``neg_logl_var``.
     exit_flag : int
-        0 when every repeat was sampled to completion (the estimate is
-        unbiased when ``max_time`` is infinite: see ``max_time`` of
-        :class:`IBS`), 1 when the likelihood threshold ended a repeat (the
-        log-likelihood estimate is biased upwards, and the negative
-        log-likelihood estimate downwards), 2 when ``max_time`` stopped the
-        sampling (the estimate can be arbitrarily biased).
+        0 if all requested repeats completed without reaching the
+        likelihood threshold; 1 if the threshold ended at least one
+        repeat; 2 if ``max_time`` stopped the sampling. Flag 2 takes
+        precedence when both stopping rules apply. These flags describe
+        how the call ended; see the stopping settings of :class:`IBS`
+        for their statistical consequences.
     message : str
         The exit flag's meaning.
     elapsed_time : float
         Seconds spent in the call.
     num_samples_per_trial : float
-        Simulated responses per trial: every row that the simulator
-        returned in the call, the samples drawn after a trial's last
-        match included, divided by the number of trials.
+        Total simulated responses divided by the number of trials.
+        Includes samples drawn after a trial's last required match.
     fun_count : int
-        Calls of ``sample_from_model`` in the call.
+        Number of simulator calls used to produce this estimate.
     neg_logl_trials : ndarray of shape (N,)
-        Each trial's unweighted negative log-likelihood estimate, the
-        average of its completed repeats; NaN when the likelihood threshold
-        ended a repeat. Weighted by the trial weights, they add up to
-        ``neg_logl`` (to rounding, and with the opposite sign under
-        ``return_positive=True``).
+        Unweighted negative log-likelihood estimate for each trial,
+        averaged over its completed repeats. All entries are NaN if the
+        likelihood threshold ended any repeat. Otherwise, their weighted
+        sum equals ``neg_logl`` up to rounding, with the opposite sign
+        when ``return_positive=True``.
     neg_logl_var_trials : ndarray of shape (N,)
-        Their variance estimates; NaN when the threshold ended a repeat.
-        Weighted by the squared trial weights, they add up to
-        ``neg_logl_var``.
+        Estimated variance for each entry of ``neg_logl_trials``. All
+        entries are NaN if the threshold ended any repeat. Otherwise,
+        summing them with squared trial weights gives ``neg_logl_var``.
     """
 
     _ORDER = (
@@ -195,160 +195,171 @@ class _Simulator:
 
 
 class IBS:
-    """Inverse binomial sampling estimates of a model's log-likelihood.
+    """Estimate a model's log-likelihood by inverse binomial sampling.
 
-    An ``IBS`` object holds a simulator of the model's responses, the
-    observed responses and the sampling settings. Called with a parameter
-    vector, it returns an unbiased estimate of the negative log-likelihood
-    of the data, and optionally an estimate of the estimate's variance,
-    computed by inverse binomial sampling ([1]): for every trial it
-    simulates responses until one matches the observed response.
+    An ``IBS`` object holds a simulator, the observed responses and the
+    sampling settings. Call it with a parameter vector to estimate the
+    negative log-likelihood of the data and, optionally, its variance.
+    IBS simulates each trial until a response matches the observation
+    ([1]_). The estimator is unbiased when sampling is allowed to complete;
+    a likelihood threshold or time limit can introduce bias.
 
     Parameters
     ----------
     sample_from_model : callable
-        The simulator, ``sample_from_model(params, design_rows)``, or
-        ``sample_from_model(params, design_rows, rng=rng)`` when it has a
-        parameter named ``rng``, which then receives the object's
-        generator, ``rng``. It returns one simulated response per row of
-        ``design_rows``, which holds the rows of ``design_matrix`` of the
-        requested trials, or their 0-based indices when ``design_matrix``
-        is None; a trial can be requested several times in one call, and
-        every requested row must be an independent draw. For r requested
-        rows, it returns an array of shape (r,) or (r, 1) when the
-        responses have one column, and of shape (r, C) when they have C > 1
-        columns.
+        Called as ``sample_from_model(params, design_rows)``. If it has a
+        parameter named ``rng`` that accepts a keyword, IBS also passes
+        its random generator as ``rng=rng``.
+
+        ``design_rows`` contains the requested rows of ``design_matrix``,
+        or their 0-based trial indices when no design is supplied. A trial
+        can appear more than once in a call. Return an independent draw
+        for every requested row: an array of shape (r,) or (r, 1) for
+        single-column responses, or (r, C) for C > 1 response columns,
+        where r is the number of requested rows.
     response_matrix : array_like of shape (N,) or (N, C)
-        The observed responses of the N trials, one row per trial; a
-        scalar is one trial. A simulated response matches a trial's only
-        when every column agrees. The responses must be discrete: numbers,
-        booleans, text, bytes, or objects compared by ``==``. A simulator
-        must return them of the same kind, since NumPy never finds text or
-        bytes equal to numbers. Responses that mix numbers and text are
-        given as an object array (``dtype=object``), and the simulator
-        returns them as one: an array that NumPy makes of such a mix holds
-        text, which never equals a number, and raises ``TypeError``.
+        Observed responses, one row per trial; a scalar represents one
+        trial. A simulated response matches only if every column agrees.
+        Responses must be discrete and comparable with ``==``: numbers,
+        booleans, text, bytes, or objects. The simulator must return the
+        same kind of response: text and bytes do not match numbers.
+        For responses that mix numbers and text, use ``dtype=object`` for
+        both observed and simulated arrays. Otherwise NumPy converts the
+        numbers to text, and IBS raises ``TypeError`` for the mismatch.
     design_matrix : array_like of shape (N, ...), optional
-        The design of each trial, one row per trial, which the simulator
-        receives for the requested trials. None, the default, passes the
-        trial indices instead.
+        Experimental conditions or other simulator inputs, one row per
+        trial. With None (the default), the simulator receives trial
+        indices instead.
     vectorized : bool or None, optional
-        The sampling schedule. True requests several samples of every trial
-        per simulator call, a number that grows from call to call
-        (``acceleration``); False requests one sample of every trial that
-        still needs one. None, the default, decides at the object's first
-        call with ``num_reps > 1``, by timing one simulation of all trials:
-        False if it takes ``vectorized_threshold`` seconds or more, True
-        otherwise. The decision is kept for the object's later calls and
-        read as the attribute ``vectorized``. A simulator that is slow only
-        at its first call, such as one compiled just in time, can make the
-        decision False for good: give it True, or call it once before the
-        object's first call. A call with ``num_reps=1`` samples as with
-        False, with a warning when True was given.
+        The sampling schedule. True requests several samples per open
+        trial in each simulator call; ``acceleration`` controls how this
+        number grows. False requests one sample per open trial per call.
+        None (the default) chooses a schedule on the first call with
+        ``num_reps > 1`` by timing one simulation of all trials. It chooses
+        False if that simulation takes at least ``vectorized_threshold``
+        seconds, and True otherwise. The choice is retained for later
+        calls and exposed through the ``vectorized`` attribute.
+
+        This timing cannot distinguish a fixed cost per simulator call
+        from a cost per response. It can choose False even when batching
+        would be faster. Set True for a simulator that benefits from
+        batching. If its first call compiles code or performs other setup,
+        warm it up before IBS times it. With ``num_reps=1``, IBS uses the
+        False schedule and warns if True was explicitly requested.
     acceleration : float, optional
-        The factor, finite and >= 1, by which the samples requested per
-        trial grow from one call to the next. Default 1.5.
+        Factor by which the requested samples per trial grow between
+        simulator calls. Must be finite and >= 1. Default 1.5.
     num_samples_per_call : int, optional
-        The level at which the samples per trial and simulator call start,
-        bounded by ``max_samples`` and ``max_mem``, which ``acceleration``
-        then grows; 0, the default, starts at ``num_reps``. It is unused
-        with ``vectorized=False``.
+        Initial number of samples per trial per simulator call, subject to
+        ``max_samples`` and ``max_mem``. The default, 0, starts at
+        ``num_reps`` samples. Unused with ``vectorized=False``.
     max_iter : int, optional
-        The cap on the samples of one trial, per repeat: a call of
-        ``num_reps`` repeats raises :class:`IBSSamplingError` once a trial
-        has drawn more than ``max_iter * num_reps`` samples. Default 10**5.
-        A very large value, such as 10**18, sets a cap that no call
-        reaches; a call whose simulator cannot produce an observed response
-        then never ends.
+        Sample cap per trial, expressed per repeat. A call requesting
+        ``num_reps`` repeats raises :class:`IBSSamplingError` if any trial
+        draws more than ``max_iter * num_reps`` samples. Default 10**5.
+        A very large value, such as 10**18, effectively removes the cap;
+        sampling can then continue indefinitely if an observed response
+        has zero probability under the model.
     max_time : float, optional
-        The time limit of a call, in seconds, > 0, checked after every
-        simulator call. Once it is reached, the sampling stops, and each
-        trial's value averages its completed repeats, while a repeat that
-        the likelihood threshold ended counts -T; the result has exit flag
-        2, with a warning, and a trial with no completed repeat raises
-        :class:`IBSSamplingError`. The default, ``np.inf``, sets none. A
-        finite limit biases the estimates, also those of the calls that
-        complete in time: completing in time favours few samples, which
-        give high log-likelihoods.
+        Time limit in seconds, > 0. Checked after each simulator call.
+        The default, ``np.inf``, imposes no limit. If the limit stops
+        sampling, IBS averages each trial's completed repeats, returns
+        exit flag 2 and warns. A trial with no completed repeat raises
+        :class:`IBSSamplingError`. Repeats ended by the likelihood
+        threshold contribute ``neg_logl_threshold`` to the negative
+        log-likelihood before averaging.
+
+        A finite limit can bias the returned estimates. Selecting only
+        calls that finish in time can also introduce bias, since runs
+        requiring fewer samples tend to have higher log-likelihoods.
     max_samples : int, optional
-        The bound on the samples of one trial in one simulator call.
-        Default 10**4.
+        Maximum samples per trial in one simulator call. Default 10**4.
     acceleration_threshold : float or None, optional
-        None, the default, grows the samples per call after every call. A
-        time in seconds > 0 grows them only after calls that took less;
-        the samples drawn then depend on the wall-clock time, and a seed
-        no longer reproduces a run.
+        None (the default) grows the requested samples after every
+        simulator call. A positive time in seconds grows them only after
+        calls faster than that time. With a finite threshold, wall-clock
+        timing affects the draws, so a seed alone cannot reproduce a run.
     vectorized_threshold : float, optional
-        The time in seconds, > 0, of one simulation of all trials at or
-        above which ``vectorized=None`` decides False. Default 0.1.
+        Time in seconds at or above which ``vectorized=None`` selects
+        False. Must be > 0. Default 0.1.
     max_mem : int or None, optional
-        The bound on the samples of one simulator call, which a call
-        exceeds by less than its number of trials: each trial gets at most
-        ``ceil(max_mem / n_open)`` samples, with ``n_open`` trials still
-        sampled. None, the default, sets ``max(min(N, 10**4), 10) * 100``.
+        Approximate limit on samples in one simulator call. Each open
+        trial receives at most ``ceil(max_mem / n_open)`` samples, where
+        ``n_open`` is the number of trials still being sampled. Rounding
+        can exceed the limit by fewer than ``n_open`` samples. None (the
+        default) sets ``max(min(N, 10**4), 10) * 100``.
     neg_logl_threshold : float, optional
-        The likelihood threshold T, > 0. A repeat whose sampling shows
-        that its negative log-likelihood exceeds T is ended and counts -T,
-        which saves the samples of poor parameter vectors at the price of
-        an upward bias of the log-likelihood estimate ([1], Appendix C.1).
-        T applies to the weighted negative log-likelihood. The usual choice
-        is the chance level, the negative log-likelihood of responding at
-        random: ``sum_i w_i log(k_i)`` for k_i possible responses and
-        weight w_i on trial i, or ``N log 2`` for N binary choices of
-        weight 1. The default, ``np.inf``, sets none.
+        Threshold T > 0 for the weighted negative log-likelihood. A repeat
+        stops once its accumulating estimate exceeds T and contributes
+        T to the negative log-likelihood (or -T to the log-likelihood).
+        This saves simulations at poor parameter vectors but biases the
+        log-likelihood estimate upwards ([1]_, Appendix C.1).
+
+        For optimization, a common choice is the chance-level negative
+        log-likelihood: ``sum_i w_i log(k_i)`` for k_i equally likely
+        responses and trial weight w_i, or ``N log 2`` for N binary trials
+        with unit weights. For Bayesian inference, leave the threshold
+        disabled unless its effect on the posterior and model evidence
+        has been assessed. The default, ``np.inf``, disables it.
     random_seed : None, int, numpy.random.SeedSequence or \
 numpy.random.Generator, optional
-        The seed of ``rng``, keyword only. None, the default, derives the
-        generator from NumPy's global random state, so that
-        ``np.random.seed`` before creating the object fixes it; an integer
-        or a ``SeedSequence`` seeds a new generator; a ``Generator`` is
-        used as given.
+        Seed for ``rng``; keyword only. None (the default) derives a new
+        generator from NumPy's global random state, so calling
+        ``np.random.seed`` before construction fixes its initial state.
+        An integer or ``SeedSequence`` seeds a new generator. An existing
+        ``Generator`` is used directly.
 
     Attributes
     ----------
     rng : numpy.random.Generator
-        The generator of every random draw of the object's calls, passed
-        to ``sample_from_model`` as ``rng`` when it has that parameter.
+        Random generator passed to ``sample_from_model`` when it accepts
+        an ``rng`` keyword.
     vectorized : bool or None
-        The sampling schedule: as given, or the decision of
-        ``vectorized=None``, which is None until the object's first call
-        with ``num_reps > 1``.
+        Selected sampling schedule. With automatic selection, remains
+        None until the first call with ``num_reps > 1``.
 
     Raises
     ------
     TypeError
-        If ``sample_from_model`` is not callable, or a setting is of a type
-        that it does not take: a count or a time that is a boolean or not a
-        number, for instance.
+        If ``sample_from_model`` is not callable or a setting has the
+        wrong type, such as a boolean for a count or a time.
     ValueError
-        If ``response_matrix`` is not a non-empty array of shape (N,) or
-        (N, C), or holds a NaN, an element not equal to itself, which no
-        simulated response equals; if ``design_matrix`` does not have N
-        rows; or if a setting is out of range.
+        If ``response_matrix`` is empty, has more than two dimensions, or
+        contains a NaN; if ``design_matrix`` does not have N rows; or if a
+        setting is out of range. NaNs are rejected because they cannot
+        match a simulated response.
 
     Notes
     -----
-    **Settings.** Each parameter but ``random_seed`` is a read-only
-    attribute of the same name. ``response_matrix`` and ``design_matrix``
-    hold read-only copies, ``max_mem`` the bound in use, ``vectorized`` the
-    schedule as described under Attributes, and the other settings the
-    values given, the counts as integers and the other numbers as floats.
+    **Settings.** Constructor parameters other than ``random_seed`` are
+    available as read-only attributes. The response and design arrays are
+    read-only copies. ``max_mem`` contains the resolved sample limit;
+    ``vectorized`` contains the selected schedule. Counts are stored as
+    integers and other numeric settings as floats.
 
-    **Reproducibility.** Every random draw of a call comes from ``rng``,
-    when the simulator draws from the ``rng`` it receives. Two objects
-    created with the same ``random_seed`` then give the same estimates
-    from the same sequence of calls, provided that no timing decides the
-    sampling: ``vectorized`` given as True or False, or decided alike, and
+    **Reproducibility.** The simulator must draw from the ``rng`` it
+    receives. Two objects created with the same seed then reproduce the
+    same sequence of estimates when timing does not affect the sampling:
+    set ``vectorized`` explicitly to True or False, and keep
     ``acceleration_threshold`` and ``max_time`` at their defaults.
+    Automatic schedule selection also reproduces the draws if it makes
+    the same choice in both runs.
 
-    **The cost.** A trial whose observed response the simulator produces
-    with probability p takes about ``1 / p`` samples per repeat. The cap,
-    ``max_iter``, stops a call whose simulator cannot produce an observed
-    response at the parameter vector; the likelihood threshold bounds the
-    cost at poor parameter vectors.
+    **Cost.** If the observed response has probability p, its trial takes
+    ``1 / p`` samples per repeat on average, before any stopping rule.
+    The sample cap stops runs with exceptionally rare or impossible
+    responses. A likelihood threshold can reduce the cost at poor
+    parameter vectors.
 
-    **Differences from ibslike.m.** ``pyibs/README.md`` catalogues where
-    PyIBS differs from MATLAB ``ibslike.m`` on purpose, with the reasons.
+    **MATLAB reference.** ``pyibs/README.md`` catalogues deliberate
+    differences from MATLAB ``ibslike.m`` and explains their reasons.
+
+    References
+    ----------
+    .. [1] van Opheusden, B., Acerbi, L. & Ma, W. J. (2020). Unbiased and
+       efficient log-likelihood estimation with inverse binomial sampling.
+       PLOS Computational Biology 16(12): e1008483.
+       https://doi.org/10.1371/journal.pcbi.1008483
     """
 
     def __init__(
@@ -446,25 +457,23 @@ numpy.random.Generator, optional
 
     @property
     def design_matrix(self):
-        """The design, a read-only array, or None."""
+        """Simulator inputs per trial as a read-only array, or None."""
         return self._settings.design
 
     @property
     def vectorized(self):
-        """The sampling schedule: as given, or the decision of
-        ``vectorized=None``, which is None until the object's first call
-        with ``num_reps > 1``."""
+        """Selected sampling schedule. With automatic selection, remains
+        None until the first call with ``num_reps > 1``."""
         return self._vectorized
 
     @property
     def acceleration(self):
-        """The growth factor of the samples per call."""
+        """Growth factor for samples requested per trial per simulator call."""
         return self._settings.acceleration
 
     @property
     def num_samples_per_call(self):
-        """The level at which the samples per call start; 0 for
-        ``num_reps``."""
+        """Initial samples per trial per simulator call; 0 uses ``num_reps``."""
         return self._num_samples_per_call
 
     @property
@@ -479,27 +488,31 @@ numpy.random.Generator, optional
 
     @property
     def max_samples(self):
-        """The bound on the samples of one trial in one call."""
+        """Maximum samples per trial in one simulator call."""
         return self._settings.max_samples
 
     @property
     def acceleration_threshold(self):
-        """The time under which a call grows the samples, or None."""
+        """Simulator-call time in seconds below which sample requests grow.
+
+        None grows the requests after every call.
+        """
         return self._settings.acceleration_threshold
 
     @property
     def vectorized_threshold(self):
-        """The time of one simulation at which ``None`` decides False."""
+        """Time in seconds at or above which automatic scheduling selects
+        ``vectorized=False``."""
         return self._vectorized_threshold
 
     @property
     def max_mem(self):
-        """The bound in use on the samples of one simulator call."""
+        """Resolved sample limit per simulator call, subject to rounding."""
         return self._settings.max_mem
 
     @property
     def neg_logl_threshold(self):
-        """The likelihood threshold, ``inf`` for none."""
+        """Weighted negative log-likelihood threshold; ``inf`` disables it."""
         return self._neg_logl_threshold
 
     def __call__(
@@ -517,21 +530,19 @@ numpy.random.Generator, optional
         params : array_like
             The parameter vector, passed to the simulator as given.
         num_reps : int, optional
-            The number of independent IBS repeats that the estimate
-            averages, at least 1; a whole-number float is taken as the
-            integer it equals. Default 10.
+            Number of independent IBS repeats to average, at least 1.
+            Whole-number floats are accepted as integers. Default 10.
         trial_weights : None, float or array_like of shape (N,), optional
-            Weights of the trials' log-likelihoods, finite and >= 0, real
-            numbers and not booleans or strings; a scalar weighs every
-            trial alike. None, the default, gives unit weights. A trial of
-            weight 0 adds nothing to the estimate but is still sampled, and
-            can reach the cap or the time limit: a trial to leave out is
-            better removed from the data.
+            Non-negative, finite real weights for the trials. Booleans and
+            strings are rejected. A scalar applies the same weight to
+            every trial; None (the default) uses unit weights. Zero-weight
+            trials are still sampled and can reach the sample cap or time
+            limit. Remove trials from the data to exclude them entirely.
         additional_output : None or str, optional
-            What the call returns besides the estimate: None or ``"none"``,
-            nothing; ``"var"``, its variance estimate; ``"std"``, the square
-            root of the variance estimate; ``"full"``, an
-            :class:`EstimateResult`.
+            None or ``"none"`` returns only the estimate. ``"var"`` adds
+            its estimated variance; ``"std"`` adds the square root of that
+            variance. ``"full"`` returns an :class:`EstimateResult` with
+            diagnostics and per-trial estimates.
         return_positive : bool, optional
             Whether to return the log-likelihood rather than the negative
             log-likelihood; the variance estimate and the per-trial arrays
@@ -543,12 +554,12 @@ numpy.random.Generator, optional
             The negative log-likelihood estimate (the log-likelihood with
             ``return_positive=True``), when ``additional_output`` is None.
         (neg_logl, neg_logl_var) : tuple of two floats
-            With ``"var"``.
+            Estimate and estimated variance, with ``"var"``.
         (neg_logl, neg_logl_std) : tuple of two floats
-            With ``"std"``, the form that PyBADS and PyVBMC take from a
-            noisy target.
+            Estimate and estimated standard deviation, with ``"std"``.
+            PyBADS and PyVBMC accept this pair from a noisy target.
         result : EstimateResult
-            With ``"full"``.
+            Estimate and diagnostics, with ``"full"``.
 
         Raises
         ------
@@ -558,23 +569,28 @@ numpy.random.Generator, optional
             repeat.
         ValueError
             If ``num_reps``, ``trial_weights`` or ``additional_output`` is
-            invalid, or the simulator returns an array of a shape that the
-            responses do not take.
+            invalid, or the simulator returns an array with the wrong
+            shape.
         TypeError
-            If ``num_reps`` or ``trial_weights`` is of a type that it does
-            not take, or the simulator returns responses of a kind that
-            NumPy never finds equal to the observed ones.
+            If ``num_reps``, ``trial_weights`` or ``return_positive`` has
+            the wrong type, or the simulator returns responses of a kind
+            that cannot match the observations, such as text for numbers.
 
         Warns
         -----
         UserWarning
             When ``max_time`` stops the sampling (exit flag 2); when a call
-            returns a variance estimate of 0, which PyBADS and PyVBMC
-            refuse as an SD; and when ``vectorized=True`` meets
-            ``num_reps=1``.
+            returns a variance estimate of 0, which gives an SD that
+            PyBADS and PyVBMC refuse; or when ``vectorized=True`` is used
+            with ``num_reps=1``.
         """
         t0 = time.perf_counter()
         num_reps = _sampler._check_count(num_reps, "num_reps")
+        if not isinstance(return_positive, (bool, np.bool_)):
+            raise TypeError(
+                "return_positive must be True or False, got "
+                f"{return_positive!r}."
+            )
         if additional_output is not None and not (
             isinstance(additional_output, str)
             and additional_output in _ADDITIONAL_OUTPUTS
@@ -622,10 +638,16 @@ numpy.random.Generator, optional
                 "be arbitrarily biased (exit flag 2)."
             )
             if draw.n_thresholded:
+                threshold_value = (
+                    -self.neg_logl_threshold
+                    if return_positive
+                    else self.neg_logl_threshold
+                )
                 message += (
                     f" The likelihood threshold ended {draw.n_thresholded} "
-                    f"of the {num_reps} repeats, which count "
-                    f"-{self.neg_logl_threshold:g} each."
+                    f"of the {num_reps} repeats; each contributes "
+                    f"{threshold_value:g} "
+                    "to the returned estimate before averaging."
                 )
             warnings.warn(message, UserWarning, stacklevel=2)
         elif draw.n_thresholded:

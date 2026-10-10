@@ -22,12 +22,13 @@ says where PyIBS differs from it, and why.
   calls; its default is 10**5 (0.1.0's, written `10 ^ 5`, was 15).
 - `max_mem` defaults to `max(min(N, 10**4), 10) * 100` samples per
   simulator call, instead of 1e6.
-- The samples per simulator call grow after every call by default, so that
-  a seed reproduces a run; `acceleration_threshold=0.1` restores 0.1.0's
-  rule, which grows them only after calls faster than 0.1 s.
-- Under `neg_logl_threshold`, a repeat counts exactly `-neg_logl_threshold`
-  once its negative log-likelihood exceeds the threshold ("Likelihood
-  threshold" under Changed).
+- The samples per simulator call grow after every call by default.
+  With an explicit `vectorized` setting and no time limit, a seed
+  reproduces a run. `acceleration_threshold=0.1` restores 0.1.0's timing
+  rule, which grows the requests only after calls faster than 0.1 s.
+- A repeat stopped by `neg_logl_threshold` contributes exactly
+  `neg_logl_threshold` to the negative log-likelihood before averaging
+  ("Likelihood threshold" under Changed).
 - When `max_time` stops the sampling, each trial's value averages its
   completed repeats, and a trial with none raises `IBSSamplingError` ("Time
   limit" under Changed).
@@ -37,8 +38,9 @@ says where PyIBS differs from it, and why.
   with a warning when `vectorized=True` was given.
 - A NaN in `response_matrix` raises `ValueError` when `IBS` is created,
   where 0.1.0 sampled its trial until the iteration limit, with exit flag 3.
-- `IBS` checks its settings, and `num_reps`, `trial_weights` and
-  `additional_output` at each call, and raises `ValueError` or `TypeError`
+- `IBS` checks its settings at construction and checks `num_reps`,
+  `trial_weights`, `additional_output` and `return_positive` at each call.
+  It raises `ValueError` or `TypeError`
   for values that 0.1.0 accepted ("Checks of the settings" under Changed).
   The settings are read-only attributes: create a new `IBS` object to
   change one.
@@ -56,16 +58,18 @@ says where PyIBS differs from it, and why.
 - `pyibs.ibs_basic` is the function `ibs_basic`, which `pyibs` exports:
   `from pyibs.ibs_basic import ibs_basic` works as in 0.1.0, but
   `import pyibs.ibs_basic as m` gives the function rather than its module.
+- `ibs_basic` validates observed data and simulated response types and
+  shapes, raising an error for inputs that could previously produce a
+  false match or sample indefinitely ("ibs_basic" under Fixed).
 
 ### Added
 
-- **Reproducible runs.** `IBS(..., random_seed=...)` creates the
-  generator of the object's calls, `rng`, from a seed, as PyBADS's
-  `random_seed` does, and a simulator that has a parameter named `rng`
-  receives it. Two objects with the same seed give the same estimates when
-  `vectorized` is given and `max_time` and `acceleration_threshold` keep
-  their defaults, since timing decides those. `ibs_basic` takes
-  `random_seed` likewise.
+- **Reproducible runs.** `IBS(..., random_seed=...)` seeds the object's
+  random generator and passes it to simulators that accept an `rng`
+  keyword, following PyBADS's `random_seed` interface; `ibs_basic` accepts
+  the same argument. Two objects with the same seed reproduce the same
+  sequence of estimates when `vectorized` is explicit and `max_time` and
+  `acceleration_threshold` retain their defaults.
 - **Per-trial estimates.** `additional_output="full"` returns each trial's
   negative log-likelihood estimate and its variance estimate,
   `neg_logl_trials` and `neg_logl_var_trials`; they are NaN when the
@@ -95,28 +99,27 @@ says where PyIBS differs from it, and why.
   schedules: `vectorized=True` requests several samples per trial and
   simulator call, a number that grows from call to call, and
   `vectorized=False` one sample per trial and call.
-- **Likelihood threshold.** Every repeat is checked against
-  `neg_logl_threshold`, on the scale of the weighted negative
-  log-likelihood, and a repeat that exceeds it counts exactly
-  `-neg_logl_threshold`, as in the IBS paper (Appendix C.1), whatever the
-  sampling schedule. The result has exit flag 1 when a repeat was ended.
+- **Likelihood threshold.** Both sampling schedules check each repeat
+  against `neg_logl_threshold`; a stopped repeat contributes that threshold
+  to the weighted negative log-likelihood, or its negative with
+  `return_positive=True`, before averaging. This follows Appendix C.1 of
+  the IBS paper and produces exit flag 1 when a repeat is stopped.
 - **Time limit.** When `max_time` stops the sampling, each trial's value
-  averages its completed repeats, a repeat that the likelihood threshold
-  ended counts `-neg_logl_threshold`, and the call warns, with exit flag 2;
-  a trial with no completed repeat raises `IBSSamplingError`.
+  averages its completed repeats that were not thresholded; thresholded
+  repeats contribute to the total as described above. The call warns with
+  exit flag 2, or raises `IBSSamplingError` if a trial has no completed repeat.
 - **The simulator's output.** For r requested rows, a simulator returns
-  shape (r,) or (r, 1) when `response_matrix` has one column, of shape
-  (N,) or (N, 1), as a model ported from MATLAB does, and shape (r, C) for
-  C > 1 columns. Another shape raises `ValueError`, and responses of a kind
-  that NumPy never finds equal to the observed ones, such as text for
-  numbers, raise `TypeError`.
+  an array of shape (r,) or (r, 1) for single-column observations, or
+  (r, C) for C > 1 columns. Other shapes raise `ValueError`; incompatible
+  response types, such as text for numeric observations, raise `TypeError`.
 - **Checks of the settings.** `IBS` raises `ValueError` or `TypeError`,
   naming the setting, for a value out of range or of the wrong type, such
   as a negative `acceleration`, a boolean for a count, or a
   non-whole `num_reps` (0.1.0 truncated 2.5 to 2); the counts take
   whole-number floats such as `1e5`. Trial weights must be real numbers,
-  not booleans or strings, and an unknown `additional_output` raises
-  `ValueError` (0.1.0 returned None).
+  not booleans or strings; `return_positive` must be a Python or NumPy
+  boolean, and an unknown `additional_output` raises `ValueError` (0.1.0
+  returned None).
 - **Requirements.** PyIBS needs Python 3.10, NumPy 2.0 and SciPy 1.13 or
   later, the versions that PyBADS 1.5 needs, and no other package.
 - **Speed.** An estimate takes less time: in [timings of the example
@@ -148,7 +151,8 @@ says where PyIBS differs from it, and why.
 #### ibs_basic
 
 - `ibs_basic` works without a design (`S=None`, its default), when the
-  simulator receives the trial index. A NaN response raises `ValueError`,
-  and a simulator that returns responses of a kind that NumPy never finds
-  equal to the observed ones, such as text for numbers, raises
-  `TypeError`, where `ibs_basic` sampled forever.
+  simulator receives the trial index.
+- Invalid or NaN observations and wrongly shaped simulated responses raise
+  `ValueError`; incompatible response types raise `TypeError`. Simulators
+  must return shape (C,) or (1, C), with a scalar also accepted for C = 1;
+  previously, malformed responses could count as matches or sample forever.

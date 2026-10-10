@@ -13,8 +13,8 @@ trials responds at random.
 The parameter vector is ``theta = (log(sigma), bias, lapse)``.
 :func:`psycho_generator` simulates responses, and :func:`psycho_neg_logl`
 gives the exact negative log-likelihood. The model is simple enough to have
-a closed-form likelihood, which one should use whenever there is one; it
-serves to check IBS against it.
+a closed-form likelihood, which provides a reference for checking IBS.
+Use the closed-form likelihood directly when fitting this model.
 
 References
 ----------
@@ -34,12 +34,12 @@ def psycho_generator(theta, S, rng):
     Parameters
     ----------
     theta : array_like of shape (3,)
-        ``(log(sigma), bias, lapse)``: the log of the sensory noise's SD,
-        the bias and the lapse rate.
+        ``(log(sigma), bias, lapse)``: log standard deviation of sensory
+        noise, decision bias in degrees, and lapse probability.
     S : array_like
         The stimulus orientation of each trial, in degrees.
     rng : numpy.random.Generator
-        The generator of the simulation's draws.
+        Random generator used for all simulated draws.
 
     Returns
     -------

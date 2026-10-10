@@ -26,8 +26,8 @@ EXACT = dict(rtol=1e-12, atol=1e-12)
 # The messages of the exit flags.
 EXIT_MESSAGES = {
     0: (
-        "Correct run of IBS; the estimate is unbiased unless max_time is "
-        "finite."
+        "All requested IBS repeats completed without reaching the "
+        "likelihood threshold."
     ),
     1: (
         "The negative log-likelihood threshold ended a repeat; the estimate "
@@ -195,6 +195,21 @@ def test_invalid_additional_output_raises(additional_output):
     ibs = IBS(never_called, np.ones(3))
     with pytest.raises(ValueError, match="additional_output"):
         ibs(THETA, additional_output=additional_output)
+
+
+@pytest.mark.parametrize(
+    "return_positive", ["False", 0, 1, None, [], np.array([True, False])]
+)
+def test_invalid_return_positive_raises_before_sampling(return_positive):
+    ibs = IBS(never_called, np.ones(3))
+    with pytest.raises(TypeError, match="return_positive"):
+        ibs(THETA, return_positive=return_positive)
+
+
+@pytest.mark.parametrize("value", [False, True])
+def test_return_positive_accepts_numpy_bool(value):
+    expected = bernoulli_ibs()(THETA, return_positive=value)
+    assert bernoulli_ibs()(THETA, return_positive=np.bool_(value)) == expected
 
 
 @pytest.mark.parametrize("additional_output", [None, "var", "std", "full"])
@@ -717,8 +732,9 @@ def test_time_limit_under_the_threshold(clock, return_positive):
         )
     assert len(record) == 1
     assert (
-        "The likelihood threshold ended 1 of the 3 repeats, which count -1.7 "
-        "each." in str(record[0].message)
+        "The likelihood threshold ended 1 of the 3 repeats; each contributes "
+        f"{-T if return_positive else T:g} to the returned estimate before "
+        "averaging." in str(record[0].message)
     )
     assert sim.calls == 4
     assert res.exit_flag == 2

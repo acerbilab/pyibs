@@ -34,8 +34,8 @@ exact_fit = minimize(
     bounds=list(zip(LB, UB)),
 )
 theta_ml, neg_logl_min = exact_fit.x, exact_fit.fun
-print(f"Exact maximum-likelihood point: {theta_ml.round(4)}")
-print(f"Exact minimum of the negative log-likelihood: {neg_logl_min:.2f}")
+print(f"Reference maximum-likelihood point: {theta_ml.round(4)}")
+print(f"Reference minimum of the negative log-likelihood: {neg_logl_min:.2f}")
 
 
 ibs = IBS(psycho_generator, R, S, vectorized=True, random_seed=seed_ibs)
@@ -73,7 +73,7 @@ print()
 print(f"{'':17}{'eta':>8}{'bias':>8}{'lapse':>8}")
 for name, theta in [
     ("Generating", theta_true),
-    ("Exact ML point", theta_ml),
+    ("Reference ML", theta_ml),
     ("PyBADS solution", theta_bads),
 ]:
     print(f"{name:17}" + "".join(f"{x:8.4f}" for x in theta))
@@ -86,5 +86,5 @@ print(
     f"{neg_logl:.2f} +/- {neg_logl_sd:.2f}"
 )
 print(f"Exact value at the solution:  {neg_logl_exact:.2f}")
-print(f"Exact minimum:                {neg_logl_min:.2f}")
+print(f"Reference minimum:                {neg_logl_min:.2f}")
 print(f"Difference:                   {neg_logl_exact - neg_logl_min:.2f}")

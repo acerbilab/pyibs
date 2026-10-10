@@ -2,132 +2,130 @@
 Instructions for developers and contributors
 ********************************************
 
-PyIBS is the Python implementation of inverse binomial sampling (it requires
-Python 3.10 or later). Its reference implementation is ``ibslike.m`` of
+PyIBS implements inverse binomial sampling in Python. It requires Python
+3.10 or later, NumPy 2.0 or later, and SciPy 1.13 or later. The reference
+implementation is ``ibslike.m`` in
 :labrepos:`MATLAB IBS <ibs>`; the
 :mainbranch:`catalogue of deliberate differences <pyibs/README.md>` lists
-every place where PyIBS differs from it on purpose, with the reason.
+the intentional differences and explains their reasons.
 
-The documentation is available at: https://acerbilab.github.io/pyibs/
+The published documentation is at https://acerbilab.github.io/pyibs/.
 
 Installation instructions for developers
 ########################################
 
-Release versions of PyIBS are available via ``pip`` and ``conda-forge``, but
-developers will need to work with the latest source code. They should follow
-these steps to install:
+For a source checkout with development dependencies:
 
 1. Clone the PyIBS GitHub repository::
 
      git clone https://github.com/acerbilab/pyibs
      cd pyibs
 
-2. Create a virtual environment in the checkout with
-   `uv <https://docs.astral.sh/uv/>`__, and install PyIBS in it, editable,
-   with its development dependencies::
+2. Create a virtual environment with `uv <https://docs.astral.sh/uv/>`__ and
+   install PyIBS in editable mode, so changes to the source take effect
+   without reinstalling::
 
      uv venv --python 3.12 .venv
      uv pip install -e ".[dev]"
 
-3. Install the pre-commit hooks::
+3. Install the pre-commit hooks, which format and check staged files before
+   a commit::
 
      .venv/bin/python -m pre_commit install
 
-The commands below call the environment's interpreter, ``.venv/bin/python``
-(``.venv\Scripts\python.exe`` on Windows), by its path, so they need no
-activated environment. The version of PyIBS comes from the git tags, through
-``setuptools_scm``.
+Commands on this page use the environment's interpreter,
+``.venv/bin/python``. On Windows, replace this path with
+``.venv\Scripts\python.exe``, including in the hook-installation command
+above. No environment activation is needed. ``setuptools_scm`` derives
+PyIBS's version from the Git tags.
 
-We are using the dependencies listed in ``pyproject.toml``. Please list all
-used dependencies there. Dependencies are separated into basic dependencies,
-the dependencies of the test suite under ``test``, and the development
-dependencies under ``dev``, which include those of ``test``. Every
-dependency of PyIBS and of its ``test`` extra has a lower bound, which a CI
-job tests.
+Declare dependencies in ``pyproject.toml``: runtime requirements under
+``dependencies``, test requirements under the ``test`` extra, and development
+requirements under ``dev``. The development extra also includes the test
+requirements. Every runtime and test dependency needs a lower bound; CI
+tests the lowest permitted versions.
 
 Coding conventions
 ##################
 
-We try to follow common conventions whenever possible. Some useful reading:
+Useful background on Python style:
 
 - `PEP 8 -- Style Guide for Python Code <https://peps.python.org/pep-0008/>`__
 - `Code style in The Hitchhiker's Guide to Python <https://docs.python-guide.org/writing/style/>`__
 
-These basic rules should be followed to ensure coherence and to make it easy
-for third parties to contribute. In the following, we list more detailed
-conventions. Please read carefully if you are contributing to PyIBS.
+The repository conventions below keep contributions consistent with the
+existing code.
 
 Code formatting
 ---------------
 
-The code is formatted with `Black <https://pypi.org/project/black/>`__ at a
+The pre-commit hooks run `Black <https://pypi.org/project/black/>`__ at a
 line length of 79, `isort <https://pycqa.github.io/isort/>`__ with Black's
-profile, and `pycln <https://hadialqattan.github.io/pycln/>`__, with the help
-of the pre-commit hooks installed above. To run them on every file::
+profile, and `pycln <https://hadialqattan.github.io/pycln/>`__. To check every
+file::
 
     .venv/bin/python -m pre_commit run -a
 
-After installation, when you try to commit the staged files, git will
-automatically check the files and modify them for meeting the requirements
-of the hooks in ``.pre-commit-config.yaml``. The settings of the hooks are
-specified in ``pyproject.toml``. You need to restage the file if it gets
-modified by the hooks. No CI job checks the formatting: the hooks are its
-only check.
+Once installed, the hooks check staged files at each commit and may reformat
+them. Restage any modified files before committing again. The hooks are
+defined in ``.pre-commit-config.yaml`` and their formatting settings in
+``pyproject.toml``. CI does not check formatting, so run the hooks locally.
 
 Docstrings
 ----------
 
 The docstrings follow the
 `NumPy format <https://numpydoc.readthedocs.io/en/latest/format.html>`__.
-See an example of a correct docstring from NumPy
-`here <https://numpydoc.readthedocs.io/en/latest/example.html>`__, and the
-docstrings of :mainbranch:`pyibs/ibs.py <pyibs/ibs.py>` for the style of
-PyIBS.
+Use the `numpydoc example <https://numpydoc.readthedocs.io/en/latest/example.html>`__
+and the docstrings in :mainbranch:`pyibs/ibs.py <pyibs/ibs.py>` as guides.
 
 Random numbers
 --------------
 
-Every random draw of the package goes through an explicit
-``numpy.random.Generator``, so that a seed reproduces a run wherever no
-timing decides the sampling.
+Pass an explicit ``numpy.random.Generator`` to code that draws random
+numbers. A fixed seed must reproduce a run when the sampling schedule does
+not depend on timing.
 
 Exceptions
 ----------
 
-Please use standard Python exceptions whenever it is sensible. Here is a
-list of those `exceptions <https://docs.python.org/3/library/exceptions.html>`__.
+Use `standard Python exceptions <https://docs.python.org/3/library/exceptions.html>`__
+where appropriate.
 
 Testing
 -------
 
-The tests live in ``pyibs/testing/`` and use ``pytest``. They ship with the
-package, so they also run from an installed PyIBS, as
-``pytest --pyargs pyibs``. From the checkout::
+The ``pytest`` suite lives in ``pyibs/testing/``. It ships with the package
+and can be run after installing the ``test`` extra with
+``pytest --pyargs pyibs``. From a development checkout, run the full default
+suite or a selected test with::
 
     .venv/bin/python -m pytest
     .venv/bin/python -m pytest pyibs/testing/test_sampler.py::test_cost
 
-A few comments about testing:
+Test requirements:
 
-- Testing is mandatory! The full suite of tests runs on every pull request
-  to ``main`` that changes the package or its tests, on Windows, Linux and
-  macOS, with every supported Python version, and on Python 3.10 with the
-  lowest versions of NumPy, SciPy and pytest that ``pyproject.toml`` allows.
-- Every test that draws random numbers seeds its generator, so that a
-  failure repeats when the test is rerun.
-- Statistical tolerances are stated in standard errors, 4.5 by default, and
-  a failing statistical test is investigated, never reseeded.
-- A test that involves time runs on a fake clock that the simulator
-  advances, or is written so that its expected values hold however slow the
-  machine; never on a margin that a slow machine can miss.
+- Run the relevant tests before submitting a change. CI runs the full
+  matrix on pull requests to ``main`` or ``dev*`` branches that change the
+  package, examples, installation metadata, or test workflows. It covers
+  Windows, Linux, and macOS with Python 3.10–3.14, plus Python 3.10 with the
+  lowest NumPy, SciPy, and pytest versions allowed by ``pyproject.toml``.
+- Seed every test that draws random numbers so its failure can be
+  reproduced.
+- State statistical tolerances in standard errors, 4.5 by default.
+  Investigate a failing statistical test; do not reseed it to make it pass.
+- Use a fake clock advanced by the simulator for timing tests, or make the
+  expected values independent of the machine's speed. Avoid timing margins
+  that a slow runner can miss.
 - Some tests port the self-tests of ``ibslike.m``, the reference
   implementation.
 
-The integration tests, in ``pyibs/testing/integration/``, fit the example
-model with PyBADS and with PyVBMC, an IBS estimate as their noisy target.
-They carry the marker ``integration``, which the default run leaves out, and
-skip when PyBADS 1.5.1 or later, or PyVBMC 1.5 or later, is not installed.
-They take a few minutes; to run them::
+The integration tests in ``pyibs/testing/integration/`` fit the example
+model with PyBADS or PyVBMC, using IBS estimates as the noisy target. The
+default checkout run excludes the ``integration`` marker. Each integration
+test skips when its package is absent or too old: it requires PyBADS 1.5.1
+or later or PyVBMC 1.5 or later, respectively. These tests take a few
+minutes. To run them::
 
     uv pip install "pybads>=1.5.1" "pyvbmc>=1.5.0"
     .venv/bin/python -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v
@@ -136,91 +134,92 @@ They take a few minutes; to run them::
 Code documentation
 ------------------
 
-We build the PyIBS documentation with
+Build the documentation with
 `Sphinx <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_. The
-source of the documentation is in the :mainbranch:`docsrc folder <docsrc>`.
+source is in :mainbranch:`docsrc <docsrc>`.
 From the repository root, with the environment's ``bin`` directory
 (``Scripts`` on Windows) first on the ``PATH``::
 
     PATH="$PWD/.venv/bin:$PATH" make -C docsrc github
 
-This copies the example notebooks into the documentation's source, builds
-the documentation, and copies it to ``docs/`` in the repository root, which
-git ignores; open ``docs/index.html`` to view it. On Windows, run
-``.\make.bat github`` from ``docsrc`` with ``cmd`` instead. The build should
-issue no warnings.
+The target copies the example notebooks into the documentation source,
+builds the site, copies it to the gitignored ``docs/`` directory, and removes
+the temporary notebook copies. Open ``docs/index.html`` to view the result.
+On Windows, use ``.venv/Scripts`` in the ``PATH`` command above, or run
+``.\make.bat github`` from ``docsrc`` in ``cmd`` with that directory on
+``PATH``. The build must produce no warnings.
 
-If it seems that the documentation does not update correctly (e.g., items
-not appearing in the sidebar or table of content), delete the ``docs/``
-folder and the cached folder ``docsrc/_build`` before building the
-documentation again::
+If pages or navigation do not update correctly, clear the generated site
+in ``docs/`` and the cached ``docsrc/_build`` directory, then rebuild::
 
     make -C docsrc clean
 
-(If you are using Windows, run ``.\make.bat clean`` with ``cmd`` instead.)
+On Windows, run ``.\make.bat clean`` from ``docsrc`` in ``cmd`` instead.
 
 General structure
 .................
 
-Nothing generates the pages of the API: each public class or function has
-a hand-written ``.rst`` file under ``docsrc/source/api/``, ``classes`` or
-``functions``, with a short introduction and the ``autoclass`` or
-``autofunction`` directive that renders its docstring, for example::
+Each public class or function needs a hand-written ``.rst`` page in
+``docsrc/source/api/classes/`` or ``docsrc/source/api/functions/``. Give it a
+short introduction and an ``autoclass`` or ``autofunction`` directive to
+render the docstring, for example::
 
     .. autoclass:: pyibs.IBS
        :members:
 
-A new public class or function needs such a file, and an entry in the
-table of contents that owns it: ``documentation.rst`` for a headline page,
-and ``api/classes/classes.rst`` or ``api/functions/functions.rst``.
-Please keep the documentation up to date.
+Add the page to its table of contents: ``documentation.rst`` for a headline
+page, and ``api/classes/classes.rst`` or ``api/functions/functions.rst``.
+Keep the documentation in step with changes to the public API.
 
 Examples
 ........
 
-The example notebooks are in ``examples/``, which is installed as
-``pyibs.examples``, with the example model in ``psycho_model.py``. The
-documentation renders them with their saved outputs, without running them.
+The example notebooks live in ``examples/`` and are installed as
+``pyibs.examples``. Their model is in ``psycho_model.py``. The documentation
+renders saved outputs without executing the notebooks.
 To rerun them in place, with PyBADS, PyVBMC, matplotlib and ipykernel
 installed in the environment::
 
     uv pip install nbconvert ipykernel matplotlib "pybads>=1.5.1" "pyvbmc>=1.5.0"
     PATH="$PWD/.venv/bin:$PATH" make -C examples/scripts run
 
-The scripts in ``examples/scripts/`` hold the code of the notebooks; they
-are generated from them, not edited, with ``make -B -C examples/scripts``,
-which needs nbconvert, IPython, and Black and isort at the versions of the
-pre-commit hooks, with the environment first on the ``PATH``.
+After rerunning the notebooks, regenerate their code in
+``examples/scripts/`` with ``make -B -C examples/scripts``. Keep the
+environment first on ``PATH`` and install nbconvert, IPython, and the Black
+and isort versions specified by the pre-commit hooks. Edit the notebooks;
+the scripts are generated files.
 
 ``git`` commits
 ---------------
 
 Commits follow the
 `conventional commits <https://www.conventionalcommits.org/en/v1.0.0/>`__
-style. This makes it easier to collaborate on the project. A cheat sheet can
-be found `here <https://cheatography.com/albelop/cheat-sheets/conventional-commits/>`__.
+style. See the
+`cheat sheet <https://cheatography.com/albelop/cheat-sheets/conventional-commits/>`__
+for examples.
 
-Please do not submit pull requests with unfinished code or code which does
-not pass all tests. Work on feature branches whenever possible and sensible.
-Changes reach the main branch through pull requests.
-`Read this <https://martinfowler.com/bliki/FeatureBranch.html>`__ ::
+Use a feature branch for a contribution and submit completed changes with
+passing tests through a pull request. For example, replacing
+``<new-feature>`` with your branch name::
 
     git checkout -b <new-feature>
     [... do stuff and commit ...]
     git push -u origin <new-feature>
-    [... when finished created pull request on github ...]
+    [... open a pull request on GitHub when ready ...]
 
-If you switch to an existing branch using ``git checkout``, remember to
-``pull`` before making any change as it is not done automatically.
+See `Feature Branch <https://martinfowler.com/bliki/FeatureBranch.html>`__
+for background on this workflow.
+
+When switching to an existing branch, pull its latest changes before
+starting work; switching branches does not update it from the remote.
 
 Changelog
 ---------
 
-Each change to results, to the interface, or to what a script sees is listed
-in :mainbranch:`CHANGELOG.md <CHANGELOG.md>` under ``Unreleased``, in the
-commit that makes it, in one or two sentences written for users. A change
-that can stop a script written for the last release, or change its results,
-also has a line in the list "Upgrading from" that opens the section. A
-change that adds, removes or alters a deliberate difference from
-``ibslike.m`` also updates its entry in the
-:mainbranch:`catalogue <pyibs/README.md>`.
+In the same commit as a change to results, the interface, or observable
+behavior, add one or two sentences for users under ``Unreleased`` in
+:mainbranch:`CHANGELOG.md <CHANGELOG.md>`. A change that can break a script
+written for the last release or alter its results also needs an entry in
+the opening "Upgrading from" list. When a change adds, removes, or alters an
+intentional difference from ``ibslike.m``, update the corresponding entry in
+the :mainbranch:`catalogue <pyibs/README.md>`.
