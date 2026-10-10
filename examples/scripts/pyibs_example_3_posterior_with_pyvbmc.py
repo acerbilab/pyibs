@@ -126,7 +126,7 @@ for (n, width), (log_z, mean, sd) in zip(configurations, references):
     )
     assert delta_log_z < 0.02, "Refine or widen the evidence grid."
     assert delta_mean < 0.02, "Refine or widen the posterior grid."
-    assert delta_sd < 0.02, "Refine or widen the posterior grid."
+    assert delta_sd < 0.005, "Refine or widen the posterior grid."
 
 print()
 print(f"ELBO (PyVBMC):          {elbo:.2f} +/- {elbo_sd:.2f}")

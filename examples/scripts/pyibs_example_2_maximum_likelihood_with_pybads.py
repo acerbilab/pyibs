@@ -86,5 +86,5 @@ print(
     f"{neg_logl:.2f} +/- {neg_logl_sd:.2f}"
 )
 print(f"Exact value at the solution:  {neg_logl_exact:.2f}")
-print(f"Reference minimum:                {neg_logl_min:.2f}")
+print(f"Reference minimum:            {neg_logl_min:.2f}")
 print(f"Difference:                   {neg_logl_exact - neg_logl_min:.2f}")
