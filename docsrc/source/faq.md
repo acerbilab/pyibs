@@ -175,7 +175,7 @@ such as [sbi](https://github.com/sbi-dev/sbi) and
 [BayesFlow](https://github.com/bayesflow-org/bayesflow) implement amortized
 inference (Li et al., 2026, Section 2.3).
 
-**Where IBS remains the method of choice.**
+**What favors IBS.**
 
 - *The trials' contexts are many and richly structured.* An amortized
   estimator must learn the model's behavior across the contexts it may
@@ -189,7 +189,7 @@ inference (Li et al., 2026, Section 2.3).
   5,482 positions recorded in human play. The model's distribution over
   moves could not be computed even numerically, so IBS estimated its
   log-likelihood from simulations.
-- *Guarantees on each data set matter.* "A given pre-trained amortized
+- *Guarantees on each dataset matter.* "A given pre-trained amortized
   neural estimator may be perfectly suitable for some real datasets while it
   is utterly untrustworthy for others" (C. Li, A. Vehtari, P.-C. Bürkner,
   S. T. Radev, L. Acerbi and M. Schmitt, 2026, "Amortized Bayesian
@@ -207,7 +207,8 @@ inference (Li et al., 2026, Section 2.3).
 `exp(-log p)`, an improbable response can be very expensive to match.
 A lapse rate can put a lower bound on response probabilities, and a
 [likelihood threshold](#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)
-can stop sampling at poor parameters ([1], Section 6.4 and Appendix C.1).
+can stop sampling at poor parameters, at the cost of bias ([1], Section 6.4
+and Appendix C.1).
 
 Responses must be discrete or have a matching event defined by binning or
 an approximate matching rule ([1], Section 6.3). The
@@ -265,15 +266,16 @@ Or install with Conda:
 conda install --channel=conda-forge pyibs
 ```
 
-PyIBS 1.5 requires NumPy 2.0 or newer. If your environment contains NumPy
-1.x or a package that requires it, conda may select PyIBS 0.1.0 without
-warning. Require version 1.5 or newer explicitly:
+PyIBS 1.5 requires NumPy 2.0 or newer, and its conda-forge package requires
+Python 3.11 or newer. In an environment with NumPy 1.x, a package that
+requires it, or Python 3.10, conda may select PyIBS 0.1.0 without warning.
+Require version 1.5 or newer explicitly:
 
 ```console
 conda install --channel=conda-forge "pyibs>=1.5"
 ```
 
-Conda will then upgrade NumPy or report a dependency conflict.
+Conda will then upgrade the environment or report a dependency conflict.
 
 See the [installation instructions](installation.rst) for more details, and
 the [GitHub repository](https://github.com/acerbilab/pyibs) for the source
@@ -296,7 +298,8 @@ the [installation instructions](installation.rst).
 (faq-which-version-of-python-do-i-need)=
 ### Which version of Python do I need?
 
-PyIBS requires Python 3.10 or newer.
+PyIBS requires Python 3.10 or newer, and its conda-forge package Python 3.11
+or newer.
 
 (faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists)=
 ### How do I know whether a newer version of PyIBS exists?
@@ -701,7 +704,7 @@ probability close to one. For 100 trials with matching probability 0.999,
 the probability of a zero variance estimate is 0.37 at `num_reps=10` and
 0.000045 at `num_reps=100`. The
 [validation of PyIBS](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md)
-confirms these probabilities.
+agrees with these probabilities.
 
 **Why PyBADS and PyVBMC refuse it.** Their Gaussian-process models use
 the supplied SD as the noise level of the evaluation. Zero would declare
@@ -720,14 +723,13 @@ says the estimated SD `must be a finite, positive real-valued scalar`.
 - *More repeats* make zero variance estimates exponentially less likely
   as `num_reps` increases. They do not rule them out. A fit can make
   hundreds of evaluations, so account for the chance of encountering a
-  zero over the whole run (see
-  [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)).
+  zero over the whole run.
 - *A lapse rate in the model* puts an upper bound below one on matching
   probabilities. If the lapse rate is at least `lapse` and a lapse chooses
   uniformly among `k` responses, then
   `p ≤ 1 − lapse * (k − 1) / k`. For `N` positive-weight trials, the
   probability of zero estimated variance is at most
-  `(1 − lapse * (k − 1) / k) ** (N * num_reps)`. This is below `1e-13`
+  `(1 - lapse * (k - 1) / k) ** (N * num_reps)`. This is below `1e-13`
   for 600 binary trials, a lapse rate of 0.01 and ten repeats. The IBS
   paper also recommends a positive lapse rate to control sampling cost
   ([1], Section 6.4).
@@ -1003,9 +1005,7 @@ at representative parameters.
 
 A simulator that is slow only on its first call, such as one compiled
 just in time, can distort the automatic decision. Warm it up before the
-first IBS call, or set `vectorized` explicitly. An explicit choice also
-removes this timing decision from
-[reproducibility](#faq-how-do-i-make-a-run-reproducible).
+first IBS call, or set `vectorized` explicitly.
 
 (faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it)=
 ### What does the likelihood threshold `neg_logl_threshold` do, and how do I choose it?
@@ -1335,8 +1335,8 @@ for the following changes:
 - Results differ because of the new sampler and fixes to 0.1.0, including
   its default `max_iter=15`, which biased estimates for improbable
   responses. Calling `np.random.seed` does not reproduce 0.1.0's results.
-- Settings are checked more strictly. Values accepted by 0.1.0 may raise
-  an exception.
+- Settings, data and call arguments are checked more strictly. Values
+  accepted by 0.1.0 may raise an exception.
 - Exceeding the sample cap raises `IBSSamplingError` instead of returning
   exit flag 3.
 - The example model is imported from `pyibs.examples.psycho_model`.

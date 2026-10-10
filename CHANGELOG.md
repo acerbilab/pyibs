@@ -38,12 +38,12 @@ says where PyIBS differs from it, and why.
   with a warning when `vectorized=True` was given.
 - A NaN in `response_matrix` raises `ValueError` when `IBS` is created,
   where 0.1.0 sampled its trial until the iteration limit, with exit flag 3.
-- `IBS` checks its settings at construction and checks `num_reps`,
-  `trial_weights`, `additional_output` and `return_positive` at each call.
-  It raises `ValueError` or `TypeError`
-  for values that 0.1.0 accepted ("Checks of the settings" under Changed).
-  The settings are read-only attributes: create a new `IBS` object to
-  change one.
+- `IBS` checks its settings and data at construction and checks
+  `num_reps`, `trial_weights`, `additional_output` and `return_positive` at
+  each call. It raises `ValueError` or `TypeError` for values that 0.1.0
+  accepted ("Checks of the settings" under Changed). The settings are
+  read-only attributes, and `IBS` keeps copies of the response and design
+  arrays: create a new `IBS` object to change any of them.
 - The estimates are Python floats, also in the tuples of
   `additional_output="var"` and `"std"`. The warning on reaching `max_time`
   is issued through Python's `warnings` module, where 0.1.0 printed it, and
@@ -53,14 +53,16 @@ says where PyIBS differs from it, and why.
   returned, where 0.1.0's vectorized sampling counted one per trial and
   call, and `fun_count` counts every simulator call.
 - The example model is the module `pyibs.examples.psycho_model`, whose
-  `psycho_generator(theta, S, rng)` takes a `numpy.random.Generator`; the
-  modules `pyibs.psycho_generator` and `pyibs.psycho_neg_logl` are removed.
+  `psycho_generator(theta, S, rng)` takes a `numpy.random.Generator`;
+  `pyibs.psycho_generator` and `pyibs.psycho_neg_logl` are removed, as
+  functions and as modules.
 - `pyibs.ibs_basic` is the function `ibs_basic`, which `pyibs` exports:
   `from pyibs.ibs_basic import ibs_basic` works as in 0.1.0, but
   `import pyibs.ibs_basic as m` gives the function rather than its module.
-- `ibs_basic` validates observed data and simulated response types and
-  shapes, raising an error for inputs that could previously produce a
-  false match or sample indefinitely ("ibs_basic" under Fixed).
+- `IBS` and `ibs_basic` validate observed data and simulated response types
+  and shapes, raising an error for inputs that could previously produce a
+  false match or never match ("The simulator's output" under Changed,
+  "ibs_basic" under Fixed).
 
 ### Added
 
@@ -115,10 +117,11 @@ says where PyIBS differs from it, and why.
   response types, such as text for numeric observations, raise `TypeError`.
 - **Checks of the settings.** `IBS` raises `ValueError` or `TypeError`,
   naming the setting, for a value out of range or of the wrong type, such
-  as a negative `acceleration`, a boolean for a count, or a
+  as an `acceleration` below 1, a boolean for a count, or a
   non-whole `num_reps` (0.1.0 truncated 2.5 to 2); the counts take
-  whole-number floats such as `1e5`. Trial weights must be real numbers,
-  not booleans or strings; `return_positive` must be a Python or NumPy
+  whole-number floats such as `1e5`. Trial weights must be finite real
+  numbers of at least 0, not booleans or strings, given as a scalar or as
+  an array of shape (N,); `return_positive` must be a Python or NumPy
   boolean, and an unknown `additional_output` raises `ValueError` (0.1.0
   returned None).
 - **Requirements.** PyIBS needs Python 3.10, NumPy 2.0 and SciPy 1.13 or
@@ -140,8 +143,8 @@ says where PyIBS differs from it, and why.
   biased, or NaN; with `vectorized=False`, `max_iter=1e5` raised
   `TypeError`.
 - A `response_matrix` of several columns raised an error.
-- With the default settings, no seed reproduced a run: the samples
-  requested depended on the timing of the simulator calls, and the
+- With the default settings, a seed did not reliably reproduce a run: the
+  samples requested depended on the timing of the simulator calls, and the
   simulator could only draw from NumPy's global state.
 - With `vectorized=None`, a call discarded the responses of the simulation
   that times the simulator whenever it went on to request several samples

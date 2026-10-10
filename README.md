@@ -59,7 +59,7 @@ Install PyIBS from PyPI or conda-forge. It requires Python 3.10 or later, NumPy 
     ```console
     conda install --channel=conda-forge "pyibs>=1.5"
     ```
-    The minimum version in the Conda command prevents it from silently selecting PyIBS 0.1.0 in an environment with NumPy 1.x.
+    The minimum version in the Conda command prevents it from silently selecting PyIBS 0.1.0 in an environment with NumPy 1.x or Python 3.10: on conda-forge, PyIBS 1.5 requires Python 3.11 or newer.
 
 2. (Optional) To fit models with PyIBS's estimates, as the example notebooks do, install [PyBADS](https://github.com/acerbilab/pybads) and [PyVBMC](https://github.com/acerbilab/pyvbmc), among the lab's [tools for fitting models to data](https://acerbilab.org/model-fitting/), and [Jupyter Notebook](https://jupyter.org/install) to run the notebooks:
    ```console

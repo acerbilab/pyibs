@@ -338,8 +338,9 @@ numpy.random.Generator, optional
     **Settings.** Constructor parameters other than ``random_seed`` are
     available as read-only attributes. The response and design arrays are
     read-only copies. ``max_mem`` contains the resolved sample limit;
-    ``vectorized`` contains the selected schedule. Counts are stored as
-    integers and other numeric settings as floats.
+    ``vectorized`` contains the selected schedule. Counts take integers or
+    whole-number floats, such as ``1e5``, and are stored as integers; other
+    numeric settings are stored as floats.
 
     **Reproducibility.** The simulator must draw from the ``rng`` it
     receives. Two objects created with the same seed then reproduce the

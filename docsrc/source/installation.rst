@@ -15,7 +15,8 @@ runtime dependencies.
      conda install --channel=conda-forge "pyibs>=1.5"
 
    The minimum version in the Conda command prevents it from silently
-   selecting PyIBS 0.1.0 in an environment with NumPy 1.x.
+   selecting PyIBS 0.1.0 in an environment with NumPy 1.x or Python 3.10:
+   on conda-forge, PyIBS 1.5 requires Python 3.11 or newer.
 
    Run ``pyibs.check_for_updates()`` to check for a newer release. See the
    :ref:`FAQ <faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists>`.
