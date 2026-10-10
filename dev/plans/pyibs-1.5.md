@@ -755,9 +755,9 @@ moves, and from then on a change for 1.5.0 goes into the section
 `[1.5.0]`, as `AGENTS.md` ("Changelog") says. PyVBMC 1.5.0 is on
 PyPI, and its documentation published, before step 4: the README and the
 installation pages install `pyvbmc>=1.5` and link that documentation,
-`AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
-release branch, and the notebooks take their Colab cell, Binder's
-configuration and both buttons (D26) before the gate's rerun.
+and `AGENTS.md` ("PyBADS and PyVBMC") drops its install of PyVBMC from the
+release branch. Colab and Binder can be tried from the notebook pages
+(D26) once PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 **Steps**:
 1. Copy `../pybads/.github/workflows/build.yml`, `release.yml` (trusted
@@ -834,11 +834,10 @@ configuration and both buttons (D26) before the gate's rerun.
 2. `../pybads` and `../pyvbmc`, in a pull request of each: where
    `README.md`, `docsrc/source/index.rst`, `docsrc/source/faq.md` and
    `skills/*/SKILL.md` link PyIBS on GitHub, or MATLAB IBS where they
-   address Python users, link the PyIBS documentation; the example
-   notebooks open in Colab and in Binder as D26 has PyIBS's do, each
-   installing what it imports (PyBADS's Binder builds already, from its
-   `environment.yml`); and `AGENTS.md` names the labels of the FAQ that
-   PyIBS links (PyBADS's in its list of linked labels).
+   address Python users, link the PyIBS documentation; PyVBMC's example
+   notebooks open in Colab and in Binder as D26 has PyIBS's and PyBADS's
+   do, each installing what it imports; and `AGENTS.md` names the labels of
+   the FAQ that PyIBS links (PyBADS's in its list of linked labels).
 
 **Verification**:
 - [ ] Each change is merged in its repository, and its links resolve.
@@ -1113,14 +1112,14 @@ from the README, the documentation and the model-fitting page.
   boolean option, which `vectorized` does not take either).
 - **D26. The example notebooks open in Colab and in Binder** (PI,
   2026-10-10) — Colab's runtime has none of PyIBS, PyBADS and PyVBMC, so
-  each notebook opens with a cell that installs
-  `"pyibs>=1.5" "pybads>=1.5.1" "pyvbmc>=1.5"` when it runs in Colab
-  (`"google.colab" in sys.modules`) and does nothing elsewhere; Binder
-  builds from a configuration file of the repository, which installs the
-  repository's PyIBS with PyBADS 1.5.1 and PyVBMC 1.5; and
-  `docsrc/source/conf.py` gives the notebook pages both buttons back. They
-  are added once PyVBMC 1.5.0 is on PyPI, before the notebooks' last rerun
-  (Phase 5, Timing); PyBADS and PyVBMC do the same (Phase 6). Rejected: no
+  each notebook opens with a cell that installs the packages it imports
+  (`"pyibs>=1.5"`, and `"pybads>=1.5.1"` or `"pyvbmc>=1.5"`) when it runs
+  in Colab (`"google.colab" in sys.modules`) and does nothing elsewhere;
+  Binder builds from `binder/requirements.txt`, the repository's PyIBS with
+  PyBADS 1.5.1 and PyVBMC 1.5; and `docsrc/source/conf.py` gives the
+  notebook pages both buttons. PyBADS's notebooks took the same cell in its
+  pull request #122, and its Binder builds from its `environment.yml`;
+  PyVBMC's follow in Phase 6. Rejected: no
   launch buttons (a tutorial that runs without any setup is the easiest
   start, Colab's with a Google account and Binder's without one); a cell
   that installs everywhere (`make -C examples/scripts run` would install
@@ -1749,8 +1748,10 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   3.10 against conda-forge's guidance for noarch recipes; `tests.yml` runs
   the full matrix on `main` twice a month, as PyBADS's does. Decided after
   the review (PI, 2026-10-10): D26, the notebooks of the three packages
-  open in Colab and in Binder, once each installs what it needs there;
-  until then, the notebook pages have neither button. Not taken (PI): an
+  open in Colab and in Binder, once each installs what it needs there:
+  PyBADS's took their cell in its pull request #122, and PyIBS's in
+  `af6df49`, with `binder/requirements.txt` and both buttons, the notebooks
+  rerun and their scripts regenerated and run. Not taken (PI): an
   integration test of PyVBMC against the exact log evidence, which Example
   3 makes; tests of a zero returned as 0.0, of the warnings' `stacklevel`
   and of a zero-weight trial under the time limit; KD-6 citing line 287 of
