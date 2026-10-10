@@ -33,6 +33,8 @@ Results differ from PyIBS 0.1.0 even with a fixed seed, and `IBS` rejects some s
 
 Read the [full documentation](https://acerbilab.github.io/pyibs/) for tutorials, practical guidance, and the API reference.
 
+Its [FAQ](https://acerbilab.github.io/pyibs/faq.html) collects questions and answers on when to use IBS, installing PyIBS, writing the simulator, fitting with PyBADS and PyVBMC, choosing the number of repeats and the likelihood threshold, and calls that go wrong.
+
 To use the [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md), give the file to your coding agent or copy the `skills/pyibs` folder into its skill directory. To update a copied skill, copy the folder again from the PyIBS version you use.
 
 ## When should I use PyIBS?
@@ -177,7 +179,9 @@ See the IBS paper for more details ([van Opheusden, Acerbi and Ma, 2020](#refere
 
 PyIBS is under active development. Its estimates have been checked against exact likelihoods across models and settings, but you should also check the simulator, estimates, and fits for your own model.
 
-For questions, unexpected behavior, or bugs:
+Many questions are answered in the [FAQ](https://acerbilab.github.io/pyibs/faq.html). Its [Troubleshooting](https://acerbilab.github.io/pyibs/faq.html#faq-troubleshooting) section covers the errors a call can raise, how to make a run reproducible, and how to check that the estimates are right for your model.
+
+If the FAQ does not help, or for unexpected behavior or bugs:
 
 - Ask in the lab's [Discussions forum](https://github.com/orgs/acerbilab/discussions), including questions about your model-fitting application.
 - [Open a GitHub issue](https://github.com/acerbilab/pyibs/issues/new).
