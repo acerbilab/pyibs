@@ -2,7 +2,7 @@
 
 The lines, captions and notes come from storyboard/shots.json, which scripts/stills.mjs writes from the shot list of
 film.html, so the page and the renderer cannot disagree. The previous round's lines, kept in
-storyboard/lines-round7.json under that round's line ids, appear struck through under the lines that changed; MOVED
+storyboard/lines-round8.json under that round's line ids, appear struck through under the lines that changed; MOVED
 maps a line that changed its id to its previous one. Run from dev/film/:
 
     python scripts/gen_storyboard.py
@@ -19,7 +19,7 @@ from pathlib import Path
 shots = json.loads(Path("storyboard/shots.json").read_text(encoding="utf-8"))
 assert len(shots) == 28, len(shots)
 previous = json.loads(
-    Path("storyboard/lines-round7.json").read_text(encoding="utf-8")
+    Path("storyboard/lines-round8.json").read_text(encoding="utf-8")
 )
 MOVED = {}  # line id now: its id in the previous round, for a line that moved
 
@@ -78,7 +78,7 @@ for s in shots:
     line = s["caption"] or s["line"] or "(No narration.)"
     was = previous.get(MOVED.get(s["id"], s["id"]), "")
     was_html = (
-        f'<p class="was"><span class="was-label">Round 7</span> <s>{html.escape(was)}</s></p>'
+        f'<p class="was"><span class="was-label">Round 8</span> <s>{html.escape(was)}</s></p>'
         if was and was != s["line"]
         else ""
     )
@@ -162,27 +162,26 @@ page = f"""<title>PyIBS Film Storyboard</title>
 <main class="wrap">
   <header>
     <h1><span>PyIBS</span> film: storyboard</h1>
-    <p class="lede">Round 8, 10 October 2026. Animatic v4: a new score, line 6.1 with a first sentence that sets the four-in-a-row model as one example, and the names of the digamma and trigamma functions under their formulas. Below it, one still per line, drawn as its picture leaves the screen in the film.</p>
+    <p class="lede">Round 9, 10 October 2026. The masters, after a pass on the look of every shot and with the end card held 8 s. Below the film, one still per line, drawn as its picture leaves the screen.</p>
   </header>
 
-  {f'<section class="animatic" aria-label="Animatic"><h2>Animatic v{animatic.split("_v")[1].split(".")[0]}</h2><video controls playsinline preload="metadata" poster="frames/s1.1.jpg" width="1280" height="720"><source src="animatic/{animatic}" type="video/mp4"></video><p>The whole film on the draft voice, Kokoro’s am_michael at speed 1.12, with the draft score. It runs 4:06 with the end card, at −16 LUFS. Line 6.1 is a new take, and the other 26 lines keep their takes. Each mark of a picture comes in on the words that introduce it. Each picture holds still for at least 1.6 s before the next replaces it, except where the next shot carries the same picture on (3.2 into 3.3, and the run of 5.3 into 5.4).</p></section>' if animatic else ""}
+  {f'<section class="animatic" aria-label="The film"><h2>The film, captioned master</h2><video controls playsinline preload="metadata" poster="frames/s1.1.jpg" width="1280" height="720"><source src="animatic/{animatic}" type="video/mp4"></video><p>The master with captions, 1920 x 1080 at 25 fps, 4:07 with the end card, at −16 LUFS. The master without captions, the subtitles and the encodes for the web are made beside it. The voice is Kokoro’s am_michael, kept for the final.</p></section>' if animatic else ""}
 
-  <section class="changes" aria-label="What changed in round 8">
-    <h2>What changed in round 8</h2>
+  <section class="changes" aria-label="What changed in round 9">
+    <h2>What changed in round 9</h2>
     <ul>
-      <li><strong>A new score, in two halves.</strong> While the film explains the problem (scenes 1 to 3), it is scored as the PyVBMC film is, with pads whose harmony changes with the lines, a glassy ping for each mark and clicks for the simulations that miss. From inverse binomial sampling to the end card it is the PyBADS film’s groove, with drums, a pulsing bass, a pad, an arpeggio and a sparse lead, from that film’s synthesizer. The piece is in A minor and ends on A major.</li>
-      <li><strong>The music carries the argument.</strong> At “minus infinity” a swell rises into a low boom, after which the music stops. The bias is a rising inner voice that ends scene 3 on an augmented chord. That chord holds into line 4.1 and resolves as the groove comes in on “turns the obvious approach around”. The terms of 4.3 play as the harmonic series of A over a drone. “This estimate is unbiased” arrives on F major 7, where the lead enters. Line 5.4 holds a dark chord under the voice. A build leads to the name of PyIBS. The bias returns in 6.3 with the flat second. The false conclusion falls into the drone. “With IBS” lifts into the end card.</li>
-      <li><strong>Line 6.1.</strong> It now opens “The four-in-a-row model is only one example.” The board is on screen from the start, labelled four-in-a-row model, and the label becomes a simulator on “any model”.</li>
-      <li><strong>Digamma and trigamma.</strong> Each name now sits just below its formula, at the right of frames 4.3 and 5.1.</li>
-      <li><strong>Under the voice.</strong> The music dips by 45 % and the event sounds by 25 % while the voice speaks. Line by line the voice stands 14 to 29 dB above the score. Whisper hears every line in the mix as in the voice alone, but for two spellings: “matched” for “match” in 2.4 (a flip that came and went with the score’s level in earlier tests) and “100” for “a hundred” in 3.6.</li>
+      <li><strong>The look.</strong> Lines 3.1 to 4.1 sit 50 px lower, in the middle of the frame, where they had crowded its top half. In 1.1 the name <em>likelihood</em> stands beside the trial it names, not across the frame. In 2.3 the faint trees of every search the model could build stay off the board, the formula and the model’s own tree. In 3.4 the key lists the mean under fixed sampling above the true value, as 3.6 and 4.4 do. In 6.3 the label <em>bias</em> moved right of its bracket, clear of an error bar.</li>
+      <li><strong>The end card.</strong> It stands over black, without the faint board that sat off-centre behind its title, and holds 8 s, as the PyVBMC film’s card does. It reads PyIBS 1.5, Inverse Binomial Sampling, pip install --upgrade pyibs, acerbilab.org/model-fitting, the IBS paper, and the lab’s credits with “Voice: Kokoro”.</li>
+      <li><strong>The masters and their checks.</strong> Both masters are recorded from the reviewed 1280 x 720 layout at 1.5 times its pixels, 11.3 MB without captions and 12.0 MB with them. They are frame-aligned (63.2 dB above the captions at offset 0, against 46.1 dB one frame off). Their sound measures −16.09 LUFS and −1.33 dBTP. Whisper on the master’s sound hears every word of the narration, with the names spelled as it hears them.</li>
+      <li><strong>The subtitles.</strong> The .srt and .vtt come from the page’s own captions, so their 53 cues change exactly when the burned-in captions do.</li>
     </ul>
   </section>
 
   <section class="changes" aria-label="Still open">
     <h2>Still open</h2>
     <ul>
-      <li><strong>Length.</strong> The voiced film runs 4:06 with its end card, against 2:48 and 3:00 for the two previous films. The narration has {chars:,} characters. If it has to come down, the candidates in order are line 5.2 (the repeats), merging line 5.3 into 5.4, line 5.3 itself (the package’s rounds), line 6.1 (whose words can go on the end card), and the spoken terms of line 4.3 (which can stay on screen).</li>
-      <li><strong>Then</strong> the look, the final voice (or this one, as PyBADS kept its draft), and the end card.</li>
+      <li><strong>The publication waits for PyIBS 1.5.</strong> PyPI has only 0.1.0, so the end card’s install line would install it, and the documentation’s address answers once the release deploys it. Then come the film’s release on the model-fitting site, the YouTube upload, and the links from the README and the documentation.</li>
+      <li><strong>Length.</strong> The film runs 4:07 with its end card, against 2:48 and 3:00 for the two previous films. The narration has {chars:,} characters.</li>
     </ul>
   </section>
 
@@ -190,7 +189,7 @@ page = f"""<title>PyIBS Film Storyboard</title>
 
   <footer>
     <div>What is data and what is not: the positions, the simulated moves, the counts and the run of scenes 2 to 5 are the recorded PyIBS run’s, on real positions from human-versus-human games. The averages of frame 3.3, the clouds of frames 3.4, 3.6 and 4.4, and the curves and estimates of frames 1.2 to 1.4, 3.5, 4.5 and 6.2 to 6.4 are computed from the paper’s formulas and a toy model, as each scene says. The search tree of frame 2.3 is drawn for the picture.</div>
-    <div>Next: the director’s review of animatic v4 and its score, then the look, the voice and the end card.</div>
+    <div>Next: the director’s review of the masters, then the publication, after the release of PyIBS 1.5.</div>
   </footer>
 </main>
 """
