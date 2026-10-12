@@ -22,7 +22,7 @@ runtime dependencies.
    :ref:`FAQ <faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists>`.
 
 2. (Optional) To fit models with PyIBS's estimates, as the example
-   notebooks do, install `PyBADS <https://acerbilab.github.io/pybads/>`__
+   notebooks do, install `PyBADS <https://acerbilab.org/pybads/>`__
    and `PyVBMC <https://acerbilab.org/pyvbmc/>`__, and
    `Jupyter Notebook <https://jupyter.org/install>`__ to run the
    notebooks::

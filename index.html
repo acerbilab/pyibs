@@ -50,7 +50,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="canonical" href="https://acerbilab.github.io/pyibs/index.html" />
+    <link rel="canonical" href="https://acerbilab.org/pyibs/index.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
@@ -470,11 +470,11 @@
                   
   <section id="pyibs">
 <h1>PyIBS<a class="headerlink" href="#pyibs" title="Link to this heading">#</a></h1>
-<p>PyIBS is one of the open-source <a class="reference external" href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> developed by the <a class="reference external" href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Machine and Human Intelligence Group</a> at the University of Helsinki. It works with <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> for point estimates and <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimates.</p>
+<p>PyIBS is one of the open-source <a class="reference external" href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> developed by the <a class="reference external" href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Machine and Human Intelligence Group</a> at the University of Helsinki. It works with <a class="reference external" href="https://acerbilab.org/pybads/">PyBADS</a> for point estimates and <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimates.</p>
 <section id="what-is-it">
 <h2>What is it?<a class="headerlink" href="#what-is-it" title="Link to this heading">#</a></h2>
 <p>PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [<a class="reference external" href="#references">1</a>]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial’s log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> in <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS</a>.</p>
-<p>Use the estimates with a method that handles noisy objectives: <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> for maximum-likelihood or maximum-a-posteriori estimation, or <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.</p>
+<p>Use the estimates with a method that handles noisy objectives: <a class="reference external" href="https://acerbilab.org/pybads/">PyBADS</a> for maximum-likelihood or maximum-a-posteriori estimation, or <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.</p>
 <section id="what-s-new-in-pyibs-1-5">
 <h3>What’s new in PyIBS 1.5<a class="headerlink" href="#what-s-new-in-pyibs-1-5" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -651,7 +651,7 @@ in more detail.</p>
 <h3>License and source<a class="headerlink" href="#license-and-source" title="Link to this heading">#</a></h3>
 <p>PyIBS is released under the terms of the <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/LICENSE">BSD 3-Clause License</a>.
 The Python source code is on <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/pyibs">GitHub</a>.
-Explore <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a>, <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a>, the original <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS toolbox</a>, and the lab’s other <a class="reference external" href="https://acerbilab.org/model-fitting/">model-fitting tools</a> for related software.</p>
+Explore <a class="reference external" href="https://acerbilab.org/pybads/">PyBADS</a>, <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a>, the original <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS toolbox</a>, and the lab’s other <a class="reference external" href="https://acerbilab.org/model-fitting/">model-fitting tools</a> for related software.</p>
 </section>
 </section>
 <section id="acknowledgments">

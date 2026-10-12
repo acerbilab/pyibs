@@ -50,7 +50,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_examples/pyibs_example_2_maximum_likelihood_with_pybads';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="canonical" href="https://acerbilab.github.io/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html" />
+    <link rel="canonical" href="https://acerbilab.org/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="PyIBS Example 3: Posterior and model evidence with PyVBMC" href="pyibs_example_3_posterior_with_pyvbmc.html" />
@@ -495,7 +495,7 @@
 <h1>PyIBS Example 2: Maximum-likelihood estimation with PyBADS<a class="headerlink" href="#pyibs-example-2-maximum-likelihood-estimation-with-pybads" title="Link to this heading">#</a></h1>
 <p>Fit a model using only its simulator: this notebook passes IBS estimates of a negative log-likelihood to PyBADS, then checks the fitted parameters using a closed-form likelihood.</p>
 <p>We use the orientation discrimination model and data set introduced in the <a class="reference internal" href="pyibs_example_1_basic_usage.html"><span class="std std-doc">first notebook</span></a>. This is the second of three examples; the <a class="reference internal" href="pyibs_example_3_posterior_with_pyvbmc.html"><span class="std std-doc">third</span></a> performs Bayesian inference with PyVBMC. The code is also available as a <a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/examples/scripts/pyibs_example_2_maximum_likelihood_with_pybads.py">Python script</a>.</p>
-<p>See the <a class="reference external" href="https://acerbilab.github.io/pyibs/installation.html">installation guide</a> for PyIBS and the packages needed to run this notebook.</p>
+<p>See the <a class="reference external" href="https://acerbilab.org/pyibs/installation.html">installation guide</a> for PyIBS and the packages needed to run this notebook.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -589,8 +589,8 @@ Reference minimum of the negative log-likelihood: 151.78
 <h2>2. Defining the IBS target<a class="headerlink" href="#defining-the-ibs-target" title="Link to this heading">#</a></h2>
 <p>PyBADS minimizes a target value. We return the <em>negative</em> log-likelihood estimate and its estimated SD as the tuple <code class="docutils literal notranslate"><span class="pre">(value,</span> <span class="pre">sd)</span></code>, using <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">options={&quot;specify_target_noise&quot;:</span> <span class="pre">True}</span></code>.</p>
 <p>The second component is measured in the same units as the target value. For example, variance 9 corresponds to SD 3; passing the variance would give PyBADS the wrong noise scale.</p>
-<p>We use 100 repeats, which give an SD near 1 for this data set. PyBADS works best with noise of about 1 or less near the solution, though larger noise farther away is usually acceptable (see the <a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective">PyBADS FAQ</a>).</p>
-<p>PyBADS requires a finite, positive SD. With the unit weights used here, IBS reports zero when every trial matches on its first sample in every repeat. That is extremely unlikely for this data set, but IBS warns if it happens. The <a class="reference external" href="https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">PyIBS FAQ</a> explains how to handle it.</p>
+<p>We use 100 repeats, which give an SD near 1 for this data set. PyBADS works best with noise of about 1 or less near the solution, though larger noise farther away is usually acceptable (see the <a class="reference external" href="https://acerbilab.org/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective">PyBADS FAQ</a>).</p>
+<p>PyBADS requires a finite, positive SD. With the unit weights used here, IBS reports zero when every trial matches on its first sample in every repeat. That is extremely unlikely for this data set, but IBS warns if it happens. The <a class="reference external" href="https://acerbilab.org/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">PyIBS FAQ</a> explains how to handle it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">psycho_generator</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">seed_ibs</span><span class="p">)</span>
@@ -784,7 +784,7 @@ Difference:                   0.08
 </div>
 <p>The 1,000-repeat estimate lies within two of its SDs of the exact value at the solution, and the fitted negative log-likelihood is close to the reference minimum relative to the roughly unit noise of each search evaluation. This run illustrates that a noisy target can still locate a useful solution; the closed form lets us check the fit independently.</p>
 <p>The reference maximum-likelihood point differs from the generating parameters because a finite data set has sampling variation, which shrinks with more trials. The PyBADS solution also differs from the reference point, since PyBADS searched a noisy target.</p>
-<p>For a model whose likelihood cannot be checked directly, run PyBADS from several starting points and compare the solutions with fresh, more precise evaluations. The <a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-how-do-i-run-pybads-from-several-starting-points">PyBADS FAQ</a> describes this workflow.</p>
+<p>For a model whose likelihood cannot be checked directly, run PyBADS from several starting points and compare the solutions with fresh, more precise evaluations. The <a class="reference external" href="https://acerbilab.org/pybads/faq.html#faq-how-do-i-run-pybads-from-several-starting-points">PyBADS FAQ</a> describes this workflow.</p>
 </section>
 <section id="moving-to-bayesian-inference">
 <h2>5. Moving to Bayesian inference<a class="headerlink" href="#moving-to-bayesian-inference" title="Link to this heading">#</a></h2>
