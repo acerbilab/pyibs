@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
+pyibs/_version.py
 dist/
 downloads/
 eggs/
@@ -68,8 +69,12 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/_build/
+# Sphinx documentation: the build in docsrc/, its copy in docs/,
+# and the copies of the example notebooks that a failed
+# `make github` leaves
+docs/
+docsrc/_build/
+docsrc/source/_examples/
 
 # PyBuilder
 .pybuilder/
@@ -127,6 +132,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.venv-*/
 
 # Spyder project settings
 .spyderproject
@@ -158,3 +164,15 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Raw output of the tooling under dev/scripts/ (dev/README.md)
+dev/scripts/runs/
+# Maintainer notes that are not published (dev/README.md)
+dev/private/
+# The film's media (voice takes, scores, animatics, masters) and the review
+# page made from its sources (dev/film/STORYBOARD.md)
+dev/film/media/
+dev/film/storyboard/animatic/
+dev/film/storyboard/frames/
+dev/film/storyboard/motion/
+dev/film/storyboard/storyboard.html

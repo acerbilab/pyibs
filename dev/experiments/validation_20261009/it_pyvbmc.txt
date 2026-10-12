@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /home/user/pyibs/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/user/pyibs
+configfile: pyproject.toml
+plugins: platformdirs-4.12.4, cov-7.1.0
+collecting ... collected 1 item
+
+pyibs/testing/integration/test_pyvbmc.py::test_pyvbmc_posterior_holds_the_maximum_likelihood PyVBMC is using standard performance settings. You can optionally tune these for your machine by running pyvbmc.calibrate(). Calibration takes tens of seconds and does not evaluate your model.
+PyVBMC 1.0.5.dev1379+g89007a4eb: ELBO -179.9071 +- 0.1496, 115 evaluations; posterior mean [0.0631403  0.23350532 0.04080538], SD [0.1154855  0.10011369 0.01610485]; exact maximum-likelihood point [0.08835244 0.2255073  0.03062305]; distance in SDs [0.21831439 0.07988936 0.63225234]
+PASSED
+
+========================= 1 passed in 70.76s (0:01:10) =========================

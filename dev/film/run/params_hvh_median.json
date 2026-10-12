@@ -1,0 +1,16 @@
+{
+  "what": "Parameters of the four-in-a-row model for the film's run: the medians of the 200 fits of the opponent-scaling model to the human-versus-human experiment (40 participants, five cross-validation groups each) of van Opheusden et al. (2023, Nature), in the order of TreeSearch's parameters. The active scaling constant of those fits has a median of 0.9999; the model's build fixes it at 1.",
+  "source": "https://osf.io/n2xjm/, model_fits_opponent_scaling.csv (https://osf.io/download/byw7f/), rows with experiment == human-vs-human",
+  "params": {
+    "pruning_threshold": 5.0,
+    "stopping_prob": 0.005044,
+    "feature_drop": 0.2,
+    "lapse_rate": 0.02,
+    "opp_scale": 1.024,
+    "center_weight": 0.767,
+    "2IAR_CON": 1.0,
+    "2IAR_DIS": 0.3032,
+    "3IAR": 2.908,
+    "4IAR": 15.0
+  }
+}
