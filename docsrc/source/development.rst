@@ -9,7 +9,7 @@ implementation is ``ibslike.m`` in
 :mainbranch:`catalogue of deliberate differences <pyibs/README.md>` lists
 the intentional differences and explains their reasons.
 
-The published documentation is at https://acerbilab.github.io/pyibs/.
+The published documentation is at https://acerbilab.org/pyibs/.
 
 Installation instructions for developers
 ########################################

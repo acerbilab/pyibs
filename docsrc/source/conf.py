@@ -98,7 +98,7 @@ html_theme_options = {
         "Group</a> at the University of Helsinki.</p>"
     ),
 }
-html_baseurl = "https://acerbilab.github.io/pyibs/"
+html_baseurl = "https://acerbilab.org/pyibs/"
 html_js_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
 ]

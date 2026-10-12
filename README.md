@@ -20,20 +20,20 @@ Use the estimates with a method that handles noisy objectives: [PyBADS](https://
 
 - **Rebuilt and checked against MATLAB IBS.** The sampling code follows `ibslike.m` 0.96 and has been compared with it line by line. The [catalogue of deliberate differences](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md) explains the choices made for the Python implementation.
 - **Validated against exact likelihoods.** Tests on 16 models with exact log-likelihoods detected no bias. The [validation record](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md) lists the models and settings tested, and the limits of the variance estimates.
-- **Ready for PyBADS and PyVBMC.** `additional_output="std"` returns a tuple of Python floats: the estimate and its estimated standard deviation. PyBADS 1.5 and PyVBMC 1.5 accept this format for noisy targets. PyIBS warns when the standard deviation is 0, which both methods refuse, and links to [guidance in the FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
+- **Ready for PyBADS and PyVBMC.** `additional_output="std"` returns a tuple of Python floats: the estimate and its estimated standard deviation. PyBADS 1.5 and PyVBMC 1.5 accept this format for noisy targets. PyIBS warns when the standard deviation is 0, which both methods refuse, and links to [guidance in the FAQ](https://acerbilab.org/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it).
 - **Reproducible runs.** `IBS(..., random_seed=...)` seeds a random number generator that the simulator receives through its `rng` parameter. Set the sampling schedule explicitly to avoid a decision based on timing; see [Quick start](#quick-start).
 - **Fixes.** PyIBS 0.1.0's default `max_iter` was 15, which biased estimates for improbable responses. It also failed on responses with several columns. Version 1.5 fixes these and other defects.
 - **Faster.** In [timings of the example model](https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md), PyIBS 0.1.0 took 1.3 to 2.1 times as long per estimate with a fast simulator, and up to 3.8 times as long when a fixed cost per simulator call dominated the runtime.
 - **Requirements.** PyIBS requires Python 3.10 or later. Its only runtime dependencies are NumPy 2.0 or later and SciPy 1.13 or later.
-- **Documentation and examples.** The [documentation site](https://acerbilab.github.io/pyibs/) includes three example notebooks covering basic use, PyBADS, and PyVBMC, plus a [FAQ](https://acerbilab.github.io/pyibs/faq.html). The [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md) helps coding agents find the relevant documentation (see [Documentation](#documentation)).
+- **Documentation and examples.** The [documentation site](https://acerbilab.org/pyibs/) includes three example notebooks covering basic use, PyBADS, and PyVBMC, plus a [FAQ](https://acerbilab.org/pyibs/faq.html). The [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md) helps coding agents find the relevant documentation (see [Documentation](#documentation)).
 
 Results differ from PyIBS 0.1.0 even with a fixed seed, and `IBS` rejects some settings that the earlier version accepted. Before upgrading an existing analysis, read "Upgrading from 0.1.0" in the [changelog](https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md), which also lists the changes in detail.
 
 ## Documentation
 
-Read the [full documentation](https://acerbilab.github.io/pyibs/) for tutorials, practical guidance, and the API reference.
+Read the [full documentation](https://acerbilab.org/pyibs/) for tutorials, practical guidance, and the API reference.
 
-Its [FAQ](https://acerbilab.github.io/pyibs/faq.html) collects questions and answers on when to use IBS, installing PyIBS, writing the simulator, fitting with PyBADS and PyVBMC, choosing the number of repeats and the likelihood threshold, and calls that go wrong.
+Its [FAQ](https://acerbilab.org/pyibs/faq.html) collects questions and answers on when to use IBS, installing PyIBS, writing the simulator, fitting with PyBADS and PyVBMC, choosing the number of repeats and the likelihood threshold, and calls that go wrong.
 
 To use the [PyIBS skill](https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md), give the file to your coding agent or copy the `skills/pyibs` folder into its skill directory. To update a copied skill, copy the folder again from the PyIBS version you use.
 
@@ -45,9 +45,9 @@ Use PyIBS when you can simulate a model's responses but cannot compute its likel
 - **Amortized simulation-based inference is often better when fitting one model to many datasets with cheap simulations.** A neural network trained once on simulations can share that training cost across datasets. In neural posterior estimation, it then estimates the posterior for each new dataset almost immediately [[3](#references-and-citation)].
 - **IBS remains the method of choice when trial contexts are numerous and richly structured.** An amortized estimator must learn the model's behaviour across the contexts it may encounter; IBS only simulates the contexts present in the data. For example, a model of human board-game play chooses each move from the current board position, which may occur only once in the dataset [[1](#references-and-citation), Section 5.4; [2](#references-and-citation)].
 - **IBS also helps when guarantees for each dataset matter.** An amortized estimator can be accurate on some datasets and unreliable on others, so each dataset needs its own diagnostics [[3](#references-and-citation)]. IBS needs no training, and its log-likelihood and variance estimates are unbiased for any dataset whose observed responses all have positive probability.
-- **Account for the cost of improbable responses.** A trial whose observed response has model probability p takes 1/p samples on average. A lapse component that gives every possible response positive probability limits this cost. The likelihood threshold can save work at poor parameter vectors, at the cost of bias [[1](#references-and-citation), Sections 2.2 and 6.4, Appendix C.1]. Continuous responses require binning or an approximate matching rule [[1](#references-and-citation), Section 6.3]; see the [FAQ](https://acerbilab.github.io/pyibs/faq.html#faq-can-i-use-ibs-with-continuous-responses).
+- **Account for the cost of improbable responses.** A trial whose observed response has model probability p takes 1/p samples on average. A lapse component that gives every possible response positive probability limits this cost. The likelihood threshold can save work at poor parameter vectors, at the cost of bias [[1](#references-and-citation), Sections 2.2 and 6.4, Appendix C.1]. Continuous responses require binning or an approximate matching rule [[1](#references-and-citation), Section 6.3]; see the [FAQ](https://acerbilab.org/pyibs/faq.html#faq-can-i-use-ibs-with-continuous-responses).
 
-The FAQ discusses [IBS and amortized simulation-based inference](https://acerbilab.github.io/pyibs/faq.html#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference) in more detail.
+The FAQ discusses [IBS and amortized simulation-based inference](https://acerbilab.org/pyibs/faq.html#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference) in more detail.
 
 ## Installation
 
@@ -72,7 +72,7 @@ Install PyIBS from PyPI or conda-forge. It requires Python 3.10 or later, NumPy 
    python -c "import os, pyibs.examples; print(os.path.dirname(pyibs.examples.__file__))"
    ```
 
-Run `pyibs.check_for_updates()` to check for a newer release. To install from source, follow the [instructions for developers and contributors](https://acerbilab.github.io/pyibs/development.html).
+Run `pyibs.check_for_updates()` to check for a newer release. To install from source, follow the [instructions for developers and contributors](https://acerbilab.org/pyibs/development.html).
 
 ## Quick start
 
@@ -109,11 +109,11 @@ To use your own model, pass these inputs to `IBS`:
 - `response_matrix`: the observed responses, one row per trial.
 - `design_matrix` (optional): the design of each trial, one row per trial. The simulator receives the rows requested by IBS. When no design is supplied, it receives the trials' 0-based indices instead.
 
-`ibs(params)` returns the *negative* log-likelihood estimate, averaging 10 independent IBS repeats by default. Set `num_reps` to change this number. With `additional_output="std"`, the call also returns an estimated standard deviation, which measures variation between IBS calls at the same parameters; it is not uncertainty in the parameters. With `"full"`, it returns an [`EstimateResult`](https://acerbilab.github.io/pyibs/api/classes/estimate_result.html) containing per-trial estimates and the cost of the call. The [`IBS` reference](https://acerbilab.github.io/pyibs/api/classes/ibs.html) describes all settings, including the likelihood threshold `neg_logl_threshold`.
+`ibs(params)` returns the *negative* log-likelihood estimate, averaging 10 independent IBS repeats by default. Set `num_reps` to change this number. With `additional_output="std"`, the call also returns an estimated standard deviation, which measures variation between IBS calls at the same parameters; it is not uncertainty in the parameters. With `"full"`, it returns an [`EstimateResult`](https://acerbilab.org/pyibs/api/classes/estimate_result.html) containing per-trial estimates and the cost of the call. The [`IBS` reference](https://acerbilab.org/pyibs/api/classes/ibs.html) describes all settings, including the likelihood threshold `neg_logl_threshold`.
 
-**Choose the sampling schedule for your simulator.** The code above sets `vectorized=True`, which requests batches of responses, because `psycho_generator` returns many responses cheaply in one call. By default (`vectorized=None`), IBS times your simulator once and, if simulating is slow, requests one response per trial and call, which wastes no samples; see [Should I set `vectorized`?](https://acerbilab.github.io/pyibs/faq.html#faq-should-i-set-vectorized)
+**Choose the sampling schedule for your simulator.** The code above sets `vectorized=True`, which requests batches of responses, because `psycho_generator` returns many responses cheaply in one call. By default (`vectorized=None`), IBS times your simulator once and, if simulating is slow, requests one response per trial and call, which wastes no samples; see [Should I set `vectorized`?](https://acerbilab.org/pyibs/faq.html#faq-should-i-set-vectorized)
 
-The fitting snippets below are templates. Supply a starting parameter vector `x0`, hard bounds `lb` and `ub`, and plausible bounds `plb` and `pub`; PyVBMC also needs a prior. [Example 2](https://acerbilab.github.io/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html) and [Example 3](https://acerbilab.github.io/pyibs/_examples/pyibs_example_3_posterior_with_pyvbmc.html) define these inputs for the orientation-discrimination model.
+The fitting snippets below are templates. Supply a starting parameter vector `x0`, hard bounds `lb` and `ub`, and plausible bounds `plb` and `pub`; PyVBMC also needs a prior. [Example 2](https://acerbilab.org/pyibs/_examples/pyibs_example_2_maximum_likelihood_with_pybads.html) and [Example 3](https://acerbilab.org/pyibs/_examples/pyibs_example_3_posterior_with_pyvbmc.html) define these inputs for the orientation-discrimination model.
 
 For [PyBADS](https://github.com/acerbilab/pybads), which minimizes its target, return the negative log-likelihood and its estimated standard deviation:
 
@@ -149,13 +149,13 @@ vp, results = vbmc.optimize()
 
 Choose `num_reps` for a standard deviation of about 1 near the optimum. PyBADS works best with noise of 1 or less there; PyVBMC works best with about 1, and not much more than 3, in the region containing most posterior mass. For this model, 100 repeats give an SD of about 1.1 on 600 trials.
 
-For reproducible runs, seed both PyIBS and the fitting method, and have the simulator draw from the `rng` it receives. Set `vectorized` explicitly and leave the timing-dependent settings `max_time` and `acceleration_threshold` at their defaults. The examples above use separate seeds for IBS and the fit; the FAQ explains [when a seed reproduces a run](https://acerbilab.github.io/pyibs/faq.html#faq-how-do-i-make-a-run-reproducible).
+For reproducible runs, seed both PyIBS and the fitting method, and have the simulator draw from the `rng` it receives. Set `vectorized` explicitly and leave the timing-dependent settings `max_time` and `acceleration_threshold` at their defaults. The examples above use separate seeds for IBS and the fit; the FAQ explains [when a seed reproduces a run](https://acerbilab.org/pyibs/faq.html#faq-how-do-i-make-a-run-reproducible).
 
 ## Next steps
 
-The [example notebooks](https://acerbilab.github.io/pyibs/examples.html) form a short tutorial: basic use and checks of the uncertainty estimates, maximum-likelihood fitting with PyBADS, and posterior and model-evidence estimation with PyVBMC. Read their saved outputs on the [documentation site](https://acerbilab.github.io/pyibs/index.html), or run the notebooks installed in `pyibs/examples`.
+The [example notebooks](https://acerbilab.org/pyibs/examples.html) form a short tutorial: basic use and checks of the uncertainty estimates, maximum-likelihood fitting with PyBADS, and posterior and model-evidence estimation with PyVBMC. Read their saved outputs on the [documentation site](https://acerbilab.org/pyibs/index.html), or run the notebooks installed in `pyibs/examples`.
 
-The [FAQ](https://acerbilab.github.io/pyibs/faq.html) explains how to write a simulator, choose `num_reps` and the likelihood threshold, and troubleshoot a failed call.
+The [FAQ](https://acerbilab.org/pyibs/faq.html) explains how to write a simulator, choose `num_reps` and the likelihood threshold, and troubleshoot a failed call.
 
 ## How does it work?
 
@@ -179,7 +179,7 @@ See the IBS paper for more details ([van Opheusden, Acerbi and Ma, 2020](#refere
 
 PyIBS is under active development. Its estimates have been checked against exact likelihoods across models and settings, but you should also check the simulator, estimates, and fits for your own model.
 
-Many questions are answered in the [FAQ](https://acerbilab.github.io/pyibs/faq.html). Its [Troubleshooting](https://acerbilab.github.io/pyibs/faq.html#faq-troubleshooting) section covers the errors a call can raise, how to make a run reproducible, and how to check that the estimates are right for your model.
+Many questions are answered in the [FAQ](https://acerbilab.org/pyibs/faq.html). Its [Troubleshooting](https://acerbilab.org/pyibs/faq.html#faq-troubleshooting) section covers the errors a call can raise, how to make a run reproducible, and how to check that the estimates are right for your model.
 
 If the FAQ does not help, or for unexpected behavior or bugs:
 

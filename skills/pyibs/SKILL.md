@@ -17,7 +17,7 @@ check in a script written for an earlier release. This skill accompanies
 PyIBS 1.5. Prefer documentation from the user's checkout when available.
 The source links below point to the
 [`main` branch](https://github.com/acerbilab/pyibs/tree/main), from which
-the published [documentation](https://acerbilab.github.io/pyibs/) is built.
+the published [documentation](https://acerbilab.org/pyibs/) is built.
 For another version, use the corresponding Git tag and check API signatures
 and docstrings in that version.
 
@@ -81,7 +81,7 @@ this skill folder has been copied elsewhere.
 | Check that the estimates are right for the user's model | The FAQ's “How do I check that the estimates are right for my model?”; [Example 1](https://github.com/acerbilab/pyibs/blob/main/examples/pyibs_example_1_basic_usage.ipynb) checks them against a closed form. |
 | Port a script or an analysis from MATLAB `ibslike.m` | The FAQ's “I used `ibslike` in MATLAB. What is different in PyIBS?”, and the [catalogue of deliberate differences](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md). |
 | Compare with PyIBS 0.1.0 | The FAQ's “I used PyIBS 0.1.0. What do I need to change?”; the [changelog](https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md): its “Upgrading from 0.1.0” list, then the entries it points to. |
-| Look up exact arguments, outputs or errors | The [API reference](https://acerbilab.github.io/pyibs/documentation.html), with sources under `docsrc/source/api/` and the docstrings under `pyibs/`. |
+| Look up exact arguments, outputs or errors | The [API reference](https://acerbilab.org/pyibs/documentation.html), with sources under `docsrc/source/api/` and the docstrings under `pyibs/`. |
 
 The FAQ is published at <https://acerbilab.org/pyibs/faq.html>, where its
 section links work; its source is

@@ -83,7 +83,7 @@ and ``pub``; PyVBMC also needs a prior.
 and :doc:`Example 3 <_examples/pyibs_example_3_posterior_with_pyvbmc>` define
 these inputs for the orientation-discrimination model.
 
-For `PyBADS <https://acerbilab.github.io/pybads/>`__, which minimizes its
+For `PyBADS <https://acerbilab.org/pybads/>`__, which minimizes its
 target, return the negative log-likelihood and its estimated standard
 deviation:
 

@@ -14,7 +14,7 @@ dependencies = [
 requires-python = ">=3.10"
 
 [project.urls]
-Documentation = "https://acerbilab.github.io/pyibs/"
+Documentation = "https://acerbilab.org/pyibs/"
 Source = "https://github.com/acerbilab/pyibs"
 Changelog = "https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md"
 Issues = "https://github.com/acerbilab/pyibs/issues"

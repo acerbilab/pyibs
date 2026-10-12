@@ -128,7 +128,7 @@ error from discretization. The
 explains how to assess the uncertainty and its limitations.
 
 These estimates let you use likelihood-based methods for fitting and model
-comparison. [PyBADS](https://acerbilab.github.io/pybads/) supports
+comparison. [PyBADS](https://acerbilab.org/pybads/) supports
 maximum-likelihood and maximum-a-posteriori estimation;
 [PyVBMC](https://acerbilab.org/pyvbmc/) approximates the posterior and
 model evidence. Both accept noisy targets.
@@ -281,7 +281,7 @@ PyIBS requires NumPy 2.0 or newer and SciPy 1.13 or newer. These are its
 only runtime dependencies, and `pip` or `conda` installs them with PyIBS.
 MATLAB is not required.
 
-For fitting, install [PyBADS](https://acerbilab.github.io/pybads/) 1.5.1 or
+For fitting, install [PyBADS](https://acerbilab.org/pybads/) 1.5.1 or
 newer, or [PyVBMC](https://acerbilab.org/pyvbmc/) 1.5 or newer. Both accept
 PyIBS's estimate and estimated SD as a noisy target.
 Running the [example notebooks](examples.rst) also requires Jupyter; see
@@ -583,7 +583,7 @@ finish in time ([`max_time`](#faq-what-does-max-time-do)).
 (faq-how-do-i-use-pyibs-with-pybads)=
 ### How do I use PyIBS with PyBADS?
 
-[PyBADS](https://acerbilab.github.io/pybads/) minimizes the target
+[PyBADS](https://acerbilab.org/pybads/) minimizes the target
 function, so return the *negative* log-likelihood estimate and its
 estimated SD as a tuple. Set `options={"specify_target_noise": True}` to
 tell PyBADS that the target supplies its noise level.
@@ -614,7 +614,7 @@ optimize_result = bads.optimize()
   re-evaluate the solution with more repeats
   ([below](#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats)).
 - Run PyBADS from several starting points, as the
-  [PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html#faq-how-do-i-run-pybads-from-several-starting-points)
+  [PyBADS FAQ](https://acerbilab.org/pybads/faq.html#faq-how-do-i-run-pybads-from-several-starting-points)
   explains.
 
 (faq-how-do-i-use-pyibs-with-pyvbmc)=
@@ -679,7 +679,7 @@ SD or full result, `IBS` returns it and issues a `UserWarning` linking
 this answer:
 
 ```text
-The IBS variance estimate is 0, as it is when every trial of positive weight matched its response at its first sample. PyBADS and PyVBMC refuse an SD of 0 for a noisy target: see https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it
+The IBS variance estimate is 0, as it is when every trial of positive weight matched its response at its first sample. PyBADS and PyVBMC refuse an SD of 0 for a noisy target: see https://acerbilab.org/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it
 ```
 
 It is common when the model predicts every observed response with
@@ -727,7 +727,7 @@ requires it:
   [How do I choose `num_reps`?](#faq-how-do-i-choose-num-reps)). Still,
   PyIBS computes its SD without additional simulations, and supplying it
   gives PyBADS more information. The PyBADS FAQ recommends this too
-  ([Should I provide an estimate of the noise associated with each evaluation?](https://acerbilab.github.io/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation)).
+  ([Should I provide an estimate of the noise associated with each evaluation?](https://acerbilab.org/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation)).
 - For *Bayesian inference* with PyVBMC, supply it. Bayesian inference is
   very sensitive to noisy estimates of the log-likelihood, so the inference
   algorithm needs all available information about the magnitude of the
@@ -740,13 +740,13 @@ requires it:
 (faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help)=
 ### I have several questions about using PyBADS to optimize the log-likelihood. Can you help?
 
-[PyBADS](https://acerbilab.github.io/pybads/) is a robust
+[PyBADS](https://acerbilab.org/pybads/) is a robust
 optimizer that works well with stochastic targets, and in particular with
 the noisy estimates of IBS. The
-[PyBADS FAQ](https://acerbilab.github.io/pybads/faq.html) covers
+[PyBADS FAQ](https://acerbilab.org/pybads/faq.html) covers
 optimization settings, bounds, starting points and interpretation of
 results. Start with its section on
-[noisy objective functions](https://acerbilab.github.io/pybads/faq.html#faq-noisy-objective-function),
+[noisy objective functions](https://acerbilab.org/pybads/faq.html#faq-noisy-objective-function),
 but read the others too: all of them are relevant.
 
 (faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference)=
@@ -776,7 +776,7 @@ the estimate more precise at the cost of more simulations.
 For fitting, aim for an estimated SD of about 1 in the region that matters:
 near the optimum for PyBADS, or where most posterior mass lies for PyVBMC.
 The PyBADS FAQ says "a standard deviation of order 1 or less should work"
-([Can PyBADS handle any arbitrary amount of noise in the objective?](https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective)).
+([Can PyBADS handle any arbitrary amount of noise in the objective?](https://acerbilab.org/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective)).
 The PyVBMC FAQ says "ideally you want the SD of the noise in the
 log-likelihood to be around 1, and probably not larger than ~3"
 ([How large can the noise be?](https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc)).
@@ -1185,7 +1185,7 @@ vbmc = VBMC(log_likelihood, x0, lb, ub, plb, pub, prior=prior, options={"specify
 Create and seed the `IBS` object once for the whole fit. Recreating it with
 the same seed at every evaluation reuses the random stream and freezes
 the noise, which can bias fitting (the PyBADS FAQ,
-[Can I make a noisy objective function deterministic by fixing the noise process?](https://acerbilab.github.io/pybads/faq.html#faq-can-i-make-a-noisy-objective-function-deterministic-by-fixing-the-noise-process)).
+[Can I make a noisy objective function deterministic by fixing the noise process?](https://acerbilab.org/pybads/faq.html#faq-can-i-make-a-noisy-objective-function-deterministic-by-fixing-the-noise-process)).
 
 (faq-how-do-i-check-that-the-estimates-are-right-for-my-model)=
 ### How do I check that the estimates are right for my model?
