@@ -24,7 +24,7 @@ from pyibs import _sampler
 # The FAQ's answer on an SD of zero, which the warning on a zero variance
 # names
 _FAQ_ZERO_SD = (
-    "https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-"
+    "https://acerbilab.org/pyibs/faq.html#faq-why-is-the-sd-of-the-"
     "estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it"
 )
 

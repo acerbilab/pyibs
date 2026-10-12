@@ -84,7 +84,7 @@ says where PyIBS differs from it, and why.
   estimate of 0, as it is when every trial matches at its first sample,
   warns that PyBADS and PyVBMC refuse an SD of 0, and links the FAQ.
 - **Documentation, examples and a coding-agent skill.** PyIBS has a
-  [documentation site](https://acerbilab.github.io/pyibs/) with a page of
+  [documentation site](https://acerbilab.org/pyibs/) with a page of
   frequently asked questions, and three example notebooks, installed in
   `pyibs/examples`, which replace 0.1.0's: basic use and calibration,
   maximum-likelihood estimation with PyBADS, and the posterior and the

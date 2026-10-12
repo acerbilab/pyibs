@@ -33,7 +33,7 @@ phases and the decisions of version 1.5.
   published. A tracked file may point to a note there by its path, but
   never restates it.
 - `docsrc/` is the Sphinx source of the documentation, whose links name
-  its address, https://acerbilab.github.io/pyibs/; `docs/` is its
+  its address, https://acerbilab.org/pyibs/; `docs/` is its
   gitignored build output. `examples/` holds the example notebooks and the
   example model, installed as `pyibs.examples`. `skills/pyibs/SKILL.md`
   is the skill that points a coding agent to the documentation.
@@ -307,7 +307,7 @@ gave.
   and the notebooks ship in the wheel. Before a label is changed, or its
   question moved or removed, `git grep` for the label finds the files that
   link it. The FAQ and the notebooks also link labels of the FAQs of PyBADS
-  (`acerbilab.github.io/pybads/faq.html#…`) and PyVBMC
+  (`acerbilab.org/pybads/faq.html#…`) and PyVBMC
   (`acerbilab.org/pyvbmc/faq.html#…`), which nothing here checks: grep for
   those addresses to check them against the two repositories' `faq.md`.
 - **When IBS fits.** What PyIBS is for, and when amortized
