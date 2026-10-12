@@ -2,7 +2,7 @@
 PyIBS
 *****
 
-PyIBS is one of the open-source `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__ developed by `Luigi Acerbi's group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki. It works with `PyBADS <https://acerbilab.github.io/pybads/>`__ for point estimates and `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimates.
+PyIBS is one of the open-source `tools for fitting models to data <https://acerbilab.org/model-fitting/>`__ developed by the `Machine and Human Intelligence Group <https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence>`__ at the University of Helsinki. It works with `PyBADS <https://acerbilab.github.io/pybads/>`__ for point estimates and `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimates.
 
 What is it?
 ###########
