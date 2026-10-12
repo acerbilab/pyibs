@@ -84,11 +84,11 @@ html_theme_options = {
     "use_download_button": True,
     "extra_footer": (
         "<p>PyIBS is one of the open-source "
-        '<a href="https://acerbilab.org/model-fitting/">tools for fitting '
-        "models to data</a> from "
+        '<a href="https://acerbilab.org/model-fitting/">model-fitting '
+        "tools</a> from the "
         '<a href="https://www.helsinki.fi/en/researchgroups/'
-        "machine-and-human-intelligence\">Luigi Acerbi's group</a> at the "
-        "University of Helsinki.</p>"
+        'machine-and-human-intelligence">Machine and Human Intelligence '
+        "Group</a> at the University of Helsinki.</p>"
     ),
 }
 html_baseurl = "https://acerbilab.github.io/pyibs/"
