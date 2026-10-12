@@ -5,6 +5,8 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-12
+
 Changes since PyIBS 0.1.0. The sampling follows MATLAB `ibslike.m` 0.96,
 the reference implementation: the [catalogue of deliberate
 differences](https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md)
