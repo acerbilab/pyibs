@@ -738,8 +738,8 @@ the other two.
 ### Phase 5: release
 
 **Status**: done (2026-10-12): PyIBS 1.5.0 on GitHub, PyPI and
-conda-forge, and its documentation served (Worklog). The notebooks' trial
-in Colab remains (Timing)
+conda-forge, its documentation served, and the notebooks run in Colab
+(Worklog)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -1902,3 +1902,5 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 - Step 8: `dev-next` is `main`.
 - D28, after the PI read the quick start's paragraph on `vectorized`,
   which presented the default as a pitfall; #5 rewrote it.
+- The PI tried the example notebooks in Colab, opened from their pages,
+  where they install PyIBS 1.5.0 from PyPI, and they work (D26).
