@@ -83,8 +83,9 @@ this skill folder has been copied elsewhere.
 | Compare with PyIBS 0.1.0 | The FAQ's “I used PyIBS 0.1.0. What do I need to change?”; the [changelog](https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md): its “Upgrading from 0.1.0” list, then the entries it points to. |
 | Look up exact arguments, outputs or errors | The [API reference](https://acerbilab.github.io/pyibs/documentation.html), with sources under `docsrc/source/api/` and the docstrings under `pyibs/`. |
 
-The FAQ is [docsrc/source/faq.md](https://github.com/acerbilab/pyibs/blob/main/docsrc/source/faq.md),
-published at <https://acerbilab.github.io/pyibs/faq.html>.
+The FAQ is published at <https://acerbilab.org/pyibs/faq.html>, where its
+section links work; its source is
+[docsrc/source/faq.md](https://github.com/acerbilab/pyibs/blob/main/docsrc/source/faq.md).
 
 Before running estimates in bulk or fitting a model, estimate the cost. A
 call draws about `num_reps` times the sum over trials of `1 / p_i` samples,
