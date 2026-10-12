@@ -3,7 +3,8 @@
 Created: 2026-10-09
 Status: APPROVED (2026-10-09); its open questions are settled as D17 to
 D19, D24, D26 and D27, and the release date as 2026-10-12 (Open
-Questions)
+Questions). PyIBS 1.5.0 was released on 2026-10-12 (Phase 5); Phase 6 and
+the film's publication wait for the PI's instruction (D27)
 
 ## Summary
 
@@ -736,8 +737,9 @@ the other two.
 
 ### Phase 5: release
 
-**Status**: in progress: steps 1 to 3 done, the gate run again with
-PyVBMC 1.5.0 from PyPI (Worklog). Next, step 4, by the PI
+**Status**: done (2026-10-12): PyIBS 1.5.0 on GitHub, PyPI and
+conda-forge, and its documentation served (Worklog). The notebooks' trial
+in Colab remains (Timing)
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -815,9 +817,10 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 8. `dev-next` is reset onto `main` (`AGENTS.md`, "Conventions").
 
 **Verification**:
-- [ ] PyPI and conda-forge serve 1.5.0, and the PyPI install passes its
+- [x] PyPI and conda-forge serve 1.5.0, and the PyPI install passes its
       tests in a fresh environment.
-- [ ] The documentation is served at https://acerbilab.github.io/pyibs/.
+- [x] The documentation is served at https://acerbilab.org/pyibs/, to
+      which https://acerbilab.github.io/pyibs/ redirects.
 
 ### Phase 6: other repositories
 
@@ -1138,6 +1141,24 @@ from the README, the documentation and the model-fitting page.
   publication (Phase 7, step 3) wait for the PI's instruction, and the
   release is announced nowhere. The GitHub release notifies the
   repository's watchers.
+- **D28. `vectorized=None` stays the default** (PI, 2026-10-12) — it
+  times one simulation of all trials and takes the one-sample schedule
+  when that takes `vectorized_threshold` (0.1 s) or more, as `ibslike.m`'s
+  `'auto'` does (D19), so a simulator whose cost is per sample draws no
+  surplus. `True` would make that simulator pay for one: in
+  `dev/scripts/vectorized_surplus.py`, run on `49056a6`, `True` drew 1.31
+  and 1.51 times the samples of `False` on the example model at
+  `num_reps` 10 and 100, and up to 1.95 times on trials of matching
+  probability 0.99. The default misjudges a simulator with a fixed cost
+  per call or a slow first call, which the FAQ's "Should I set
+  `vectorized`?" covers; the quick start's code sets `True` and says why
+  (its simulator returns many responses cheaply in one call), and
+  describes the default by what it does. Rejected: `True` as the default
+  (its loss on a per-sample simulator is bounded, where `None`'s on a
+  simulator with a fixed cost per call is not, and a seed alone would
+  reproduce a run; but a per-sample simulator, whose cost matters most,
+  would simulate 30% to nearly 100% more, and the default would depart
+  from `ibslike.m`'s).
 
 ## Open Questions
 
@@ -1815,8 +1836,9 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
 - References: PyBADS 1.5.1 and PyVBMC 1.5.0 from PyPI (PyVBMC's tag
   `v1.5.0` at `864ee717`), gpyreg 1.4.0; Python 3.12.6, NumPy 2.5.3 and
   SciPy 1.18.1, on Windows 11, the PI's workstation.
-- Commits: `9fbdede` (`AGENTS.md` and the notebooks), `cf4753e` (step 3);
-  this entry.
+- Commits: `9fbdede` (`AGENTS.md` and the notebooks), `cf4753e` (step 3)
+  and this entry's first part, on `dev-next`, which #2 squashed into
+  `c144dd1`.
 - PyVBMC 1.5.0 reached PyPI and conda-forge on 2026-10-12, with its
   documentation, where every label of PyBADS's and PyVBMC's FAQs that
   PyIBS links resolves. `AGENTS.md` ("PyBADS and PyVBMC") drops its install
@@ -1841,3 +1863,42 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   checks within their bounds (0.0068 in log Z, 0.0083 SDs in the mean,
   0.21% in the SD). The notebooks' markdown holds for these outputs.
   Example 1 changes in an elapsed time and in its figure's encoding.
+- Pull requests to `main`, each squash-merged, after which `dev-next` was
+  reset onto `main`: #2 (`c144dd1`), all of `dev-next` through step 3; #3
+  (`6a13490`), the documentation's footer names the Machine and Human
+  Intelligence Group and links the model-fitting tools; #4 (`e149c3a`),
+  the openings of the README and `index.rst` name the group too; #5
+  (`ce862a2`), the quick start says why its code sets `vectorized=True`
+  (D28), and the footer drops sphinx-book-theme's "By <author>" line,
+  which read "By Author name not set"; #6 (`1e9948e`), the skill names
+  the published FAQ before its source; #7 (`49056a6`), every link to the
+  documentation of PyIBS and PyBADS names acerbilab.org, to which
+  acerbilab.github.io redirects, and so does `html_baseurl`, so that each
+  page's canonical address serves it. #4 and #6 came from another
+  session; the merged branches are deleted.
+- Step 4: `gh-pages` holds an empty `.nojekyll`, and GitHub Pages serves
+  it as PyBADS's does, from the branch with HTTPS enforced. `main`'s
+  protection is PyBADS's: a pull request, with no approval and no
+  required check, no force-push and no deletion, admins exempt.
+- Step 5: the environment `pypi` admits only tags `v*`; the PI added
+  PyPI's trusted publisher (`acerbilab/pyibs`, `release.yml`, `pypi`).
+  Before the tag, `tests.yml` dispatched on `main` passed its 16 jobs,
+  which gave the README's badge a status, and the repository's homepage
+  names the documentation.
+- Step 6: the tag `v1.5.0` on `49056a6` and the GitHub release "PyIBS
+  1.5.0", its notes the changelog's section (11:04 UTC). `release.yml`
+  uploaded `pyibs-1.5.0-py3-none-any.whl` and `pyibs-1.5.0.tar.gz`
+  (sha256 `c86b1cfb…`), and PyPI reports 1.5.0 with `requires_python
+  >=3.10`. In a fresh venv outside the repository, with Python 3.12.6,
+  `pyibs[test]==1.5.0` from PyPI passed `pytest --pyargs pyibs`: 567
+  passed, and the 2 integration tests skipped without PyBADS and PyVBMC.
+- Step 7: `conda-forge/pyibs-feedstock` #4, from the fork
+  `lacerbi/pyibs-feedstock`, the recipe of step 7, which keeps `juls-art`
+  among its maintainers. conda-forge-admin re-rendered it, and its build
+  ran the test suite under Python 3.11, 567 passed and 2 skipped; it was
+  merged at 11:21 UTC, and #1, the bot's CFEP-25 rebuild, closed as
+  superseded. anaconda.org reported 1.5.0 as the latest version of
+  `conda-forge/pyibs` at 11:25 UTC.
+- Step 8: `dev-next` is `main`.
+- D28, after the PI read the quick start's paragraph on `vectorized`,
+  which presented the default as a pitfall; #5 rewrote it.
