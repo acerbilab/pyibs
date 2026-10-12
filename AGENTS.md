@@ -100,11 +100,8 @@ package is absent or older than it needs: PyBADS 1.5.1, read from its
 version, and PyVBMC 1.5, read from the `seed` parameter of `VBMC`, since an
 install from an untagged checkout of PyVBMC reads its version as
 1.0.5.devN. They are installed into the venv with
-`uv pip install "pybads>=1.5.1" "pyvbmc>=1.5.0"`. PyVBMC 1.5.0 is not on
-PyPI before 2026-10-13; until then it comes from its release branch,
-`uv pip install "pyvbmc @ git+https://github.com/acerbilab/pyvbmc@feat-release-1.5-preparation"`.
-Each file is a heavy process (about 40 s and 2 min), run unbuffered and
-logged:
+`uv pip install "pybads>=1.5.1" "pyvbmc>=1.5.0"`. Each file is a heavy
+process (about 40 s and 2 min), run unbuffered and logged:
 `$PY -u -m pytest -m integration pyibs/testing/integration/test_pybads.py -s -v > dev/scripts/runs/it_pybads_$(date +%s).log 2>&1`,
 and `test_pyvbmc.py` likewise.
 
