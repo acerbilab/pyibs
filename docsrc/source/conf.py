@@ -82,6 +82,13 @@ html_theme_options = {
     "use_issues_button": True,
     "use_repository_button": True,
     "use_download_button": True,
+    # the theme's default less its first item, "By <author>": the copyright
+    # and the extra footer name the group
+    "footer_content_items": [
+        "copyright.html",
+        "last-updated.html",
+        "extra-footer.html",
+    ],
     "extra_footer": (
         "<p>PyIBS is one of the open-source "
         '<a href="https://acerbilab.org/model-fitting/">model-fitting '
