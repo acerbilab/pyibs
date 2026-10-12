@@ -2,7 +2,8 @@
 
 Created: 2026-10-09
 Status: APPROVED (2026-10-09); its open questions are settled as D17 to
-D19, D24 and D26, but for the release date (Open Questions)
+D19, D24, D26 and D27, and the release date as 2026-10-12 (Open
+Questions)
 
 ## Summary
 
@@ -735,10 +736,8 @@ the other two.
 
 ### Phase 5: release
 
-**Status**: in progress: steps 1 and 2 done (Worklog). Next, step 3, with
-the expected release date, which the PI gives (Open Questions); the gate
-runs again on the pull request's head, with PyVBMC 1.5.0 from PyPI
-(Timing)
+**Status**: in progress: steps 1 to 3 done, the gate run again with
+PyVBMC 1.5.0 from PyPI (Worklog). Next, step 4, by the PI
 **Executor**: Opus (orchestrator); each outward step on the PI's
 instruction.
 **Needs**: `../pybads`; the GitHub CLI `gh`, signed in to an account that
@@ -822,7 +821,8 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 ### Phase 6: other repositories
 
-**Status**: pending
+**Status**: pending: waits for the PI's instruction after the release
+(D27)
 **Executor**: Opus (orchestrator), in each repository under its own
 `AGENTS.md`, on the PI's instruction.
 **Needs**: `../model-fitting`, `../pybads`, `../pyvbmc`.
@@ -845,7 +845,7 @@ PyIBS 1.5.0 is on PyPI and the documentation is published.
 
 **Status**: in progress: steps 1 and 2 done; the film is made and its
 masters recorded (2026-10-10). Its publication, step 3, waits for the
-release (Phase 5) and the PI's instruction.
+release (Phase 5) and the PI's instruction (D27).
 **Executor**: Opus (orchestrator), on the PI's machine.
 **Needs**: `dev/private/film.md` and what it names. The phase comes last,
 after the release (D17).
@@ -1130,13 +1130,21 @@ from the README, the documentation and the model-fitting page.
   ship would hold pip's log); a button without what it needs, as the
   notebook pages had them until step 2 of Phase 5 (the notebooks failed at
   their first import).
+- **D27. PyIBS 1.5.0 is released without an announcement** (PI,
+  2026-10-12) — Phase 5 runs in full: the release on GitHub, PyPI and
+  conda-forge, and the documentation served at its address. Nothing else
+  points users to it: Phase 6, the PyIBS card and news item of the
+  model-fitting page and the links from PyBADS and PyVBMC, and the film's
+  publication (Phase 7, step 3) wait for the PI's instruction, and the
+  release is announced nowhere. The GitHub release notifies the
+  repository's watchers.
 
 ## Open Questions
 
 The PI settled the plan's first questions on 2026-10-09: D17 to D19, D24,
 and timings against 0.1.0 only, with no MATLAB installation in the
-comparison (Phase 3, step 3). Phase 5's step 2 leaves one, the expected
-release date, which step 3 takes.
+comparison (Phase 3, step 3). The last, the release date, which Phase 5's
+step 3 takes, the PI set on 2026-10-12 to that day. None is open.
 
 ## Worklog
 
@@ -1801,3 +1809,35 @@ Entries are added per phase as `### Phase N — YYYY-MM-DD`.
   the release is deployed, so the publication waits for the release.
 - Verification: pending the PI's approval of the masters; the links are
   made at the publication.
+
+### Phase 5 — 2026-10-12
+
+- References: PyBADS 1.5.1 and PyVBMC 1.5.0 from PyPI (PyVBMC's tag
+  `v1.5.0` at `864ee717`), gpyreg 1.4.0; Python 3.12.6, NumPy 2.5.3 and
+  SciPy 1.18.1, on Windows 11, the PI's workstation.
+- Commits: `9fbdede` (`AGENTS.md` and the notebooks), `cf4753e` (step 3);
+  this entry.
+- PyVBMC 1.5.0 reached PyPI and conda-forge on 2026-10-12, with its
+  documentation, where every label of PyBADS's and PyVBMC's FAQs that
+  PyIBS links resolves. `AGENTS.md` ("PyBADS and PyVBMC") drops its install
+  of PyVBMC from the release branch. Step 3: the changelog's section is
+  `[1.5.0] - 2026-10-12`, the release date that the PI gave the same day,
+  with D27.
+- Verification: the gate on `a3adf60` with those changes:
+  `$PY -m pytest -x -vv`, 567 passed and 2 deselected; the pre-commit hooks
+  on the whole tree; both integration tests (PyBADS in 9 s, 282
+  evaluations; PyVBMC in 54 s, 105 evaluations); the documentation from
+  clean, with no warning; `make -C examples/scripts run` in 111 s without
+  error, and the scripts regenerating identically. Logs:
+  `dev/scripts/runs/gate_1791797062_*.log` (gitignored).
+- The notebooks' outputs are those of this run. From the same seeds,
+  PyBADS and PyVBMC took other paths than in the outputs of `af6df49`,
+  which came from Linux. Example 2: 368 target evaluations, the solution
+  (0.0823, 0.2913, 0.0209), the 1,000-repeat estimate there
+  152.05 +/- 0.33 against the exact 151.85, 0.08 above the reference
+  minimum. Example 3: 145 evaluations, the ELBO -160.14 +/- 0.13 against
+  the grid's log evidence -160.30, the posterior mean within 0.9 posterior
+  SDs of the maximum-likelihood point in each parameter, and the grid's
+  checks within their bounds (0.0068 in log Z, 0.0083 SDs in the mean,
+  0.21% in the SD). The notebooks' markdown holds for these outputs.
+  Example 1 changes in an elapsed time and in its figure's encoding.
