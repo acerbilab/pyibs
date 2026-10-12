@@ -66,10 +66,11 @@ likelihood threshold ``neg_logl_threshold``.
 Choose a sampling schedule
 ==========================
 
-The example sets ``vectorized=True``, which requests batches of independent
-responses. The default, ``vectorized=None``, chooses by timing one
-simulation at the first call, which a fixed cost per simulator call or a
-first-call compilation can mislead; see
+The code above sets ``vectorized=True``, which requests batches of
+responses, because ``psycho_generator`` returns many responses cheaply in
+one call. By default (``vectorized=None``), IBS times your simulator once
+and, if simulating is slow, requests one response per trial and call, which
+wastes no samples; see
 :ref:`Should I set vectorized? <faq-should-i-set-vectorized>`.
 
 With PyBADS and PyVBMC
