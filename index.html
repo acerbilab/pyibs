@@ -1,0 +1,774 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyIBS &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="development.html">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/edit/main/docsrc/source/index.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2Findex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/index.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PyIBS</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-it">What is it?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-new-in-pyibs-1-5">What’s new in PyIBS 1.5</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-should-i-use-pyibs">When should I use PyIBS?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to">How-to</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing">Contributing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bibtex">BibTeX</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#license-and-source">License and source</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pyibs">
+<h1>PyIBS<a class="headerlink" href="#pyibs" title="Link to this heading">#</a></h1>
+<p>PyIBS is one of the open-source <a class="reference external" href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> developed by <a class="reference external" href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi’s group</a> at the University of Helsinki. It works with <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> for point estimates and <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimates.</p>
+<section id="what-is-it">
+<h2>What is it?<a class="headerlink" href="#what-is-it" title="Link to this heading">#</a></h2>
+<p>PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [<a class="reference external" href="#references">1</a>]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial’s log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> in <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS</a>.</p>
+<p>Use the estimates with a method that handles noisy objectives: <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> for maximum-likelihood or maximum-a-posteriori estimation, or <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.</p>
+<section id="what-s-new-in-pyibs-1-5">
+<h3>What’s new in PyIBS 1.5<a class="headerlink" href="#what-s-new-in-pyibs-1-5" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Rebuilt and checked against MATLAB IBS.</strong> The sampling code follows
+<code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> 0.96 and has been compared with it line by line. The
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md">catalogue of deliberate differences</a>
+explains the choices made for the Python implementation.</p></li>
+<li><p><strong>Validated against exact likelihoods.</strong> Tests on 16 models with exact
+log-likelihoods detected no bias. The
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md">validation record</a>
+lists the models and settings tested, and the limits of the variance
+estimates.</p></li>
+<li><p><strong>Ready for PyBADS and PyVBMC.</strong> <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code> returns a
+tuple of Python floats: the estimate and its estimated standard
+deviation. PyBADS 1.5 and PyVBMC 1.5 accept this format for noisy targets.
+PyIBS warns when the standard deviation is 0, which both methods refuse,
+and links to
+<a class="reference internal" href="faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it"><span class="std std-ref">guidance in the FAQ</span></a>.</p></li>
+<li><p><strong>Reproducible runs.</strong> <code class="docutils literal notranslate"><span class="pre">IBS(...,</span> <span class="pre">random_seed=...)</span></code> seeds a random number
+generator that the simulator receives through its <code class="docutils literal notranslate"><span class="pre">rng</span></code> parameter. Set
+the sampling schedule explicitly to avoid a decision based on timing;
+see <a class="reference internal" href="quickstart.html"><span class="doc">Getting started</span></a>.</p></li>
+<li><p><strong>Fixes.</strong> PyIBS 0.1.0’s default <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> was 15, which biased
+estimates for improbable responses. It also failed on responses with
+several columns. Version 1.5 fixes these and other defects.</p></li>
+<li><p><strong>Faster.</strong> In
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md">timings of the example model</a>,
+PyIBS 0.1.0 took 1.3 to 2.1 times as long per estimate with a fast
+simulator, and up to 3.8 times as long when a fixed cost per simulator
+call dominated the runtime.</p></li>
+<li><p><strong>Requirements.</strong> PyIBS requires Python 3.10 or later. Its only runtime
+dependencies are NumPy 2.0 or later and SciPy 1.13 or later.</p></li>
+<li><p><strong>Documentation and examples.</strong> The documentation includes three
+<a class="reference internal" href="examples.html"><span class="doc">example notebooks</span></a> covering basic use, PyBADS, and
+PyVBMC, plus a <a class="reference internal" href="faq.html"><span class="doc">FAQ</span></a>. The
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/skills/pyibs/SKILL.md">PyIBS skill</a> helps coding agents
+find the relevant documentation. To use it, give the file to your coding
+agent or copy the <code class="docutils literal notranslate"><span class="pre">skills/pyibs</span></code> folder into its skill directory. To
+update a copied skill, copy the folder again from the PyIBS version you
+use.</p></li>
+</ul>
+<p>Results differ from PyIBS 0.1.0 even with a fixed seed, and <code class="docutils literal notranslate"><span class="pre">IBS</span></code> rejects
+some settings that the earlier version accepted. Before upgrading an
+existing analysis, read “Upgrading from 0.1.0” in the
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md">changelog</a>, which also lists the changes in
+detail.</p>
+</section>
+<section id="how-does-it-work">
+<h3>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h3>
+<p>Suppose a trial’s observed response has probability <span class="math notranslate nohighlight">\(p\)</span> under the model. IBS does not need to know <span class="math notranslate nohighlight">\(p\)</span>: it simulates responses until one matches, taking <span class="math notranslate nohighlight">\(K\)</span> draws, and estimates <span class="math notranslate nohighlight">\(\log p\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[\hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k}.\]</div>
+<p>The estimate is 0 when <span class="math notranslate nohighlight">\(K = 1\)</span>. For every <span class="math notranslate nohighlight">\(p &gt; 0\)</span>, it is exactly unbiased and has the least variance among unbiased estimators based on this sampling procedure. Its variance is bounded by <span class="math notranslate nohighlight">\(\pi^2/6\)</span> even as <span class="math notranslate nohighlight">\(p\)</span> approaches 0 [<a class="reference external" href="#references">1</a>, Sections 2.4 and 4.3]. The same count <span class="math notranslate nohighlight">\(K\)</span> gives an estimate of that variance, <span class="math notranslate nohighlight">\(\psi_1(1) - \psi_1(K)\)</span>, where <span class="math notranslate nohighlight">\(\psi_1\)</span> is the trigamma function [<a class="reference external" href="#references">1</a>, Section 4.3]. Its expectation is the variance itself, <span class="math notranslate nohighlight">\(\operatorname{Li}_2(1 - p)\)</span> (Fig 1), so the variance estimate is unbiased too.</p>
+<p>Summing over trials and averaging independent repeats often makes the
+estimated standard deviation useful for normal confidence intervals
+[<a class="reference external" href="#references">1</a>, Section 4.6], though not always: if every response
+matches on its first draw, the variance estimate is 0 even though repeated
+IBS calls can vary.</p>
+<img alt="Fig 1: the expected number of samples, 1/p, and the variance of the IBS estimate, Li2(1 - p), against p" class="align-center" src="_images/ibs-cost-and-variance.png" />
+<p>Fig 1: A trial with matching probability <span class="math notranslate nohighlight">\(p\)</span> takes <span class="math notranslate nohighlight">\(1/p\)</span> samples on average (left). The variance of its <span class="math notranslate nohighlight">\(\log p\)</span> estimate, <span class="math notranslate nohighlight">\(\operatorname{Li}_2(1 - p)\)</span>, stays below <span class="math notranslate nohighlight">\(\pi^2/6\)</span> even as <span class="math notranslate nohighlight">\(p\)</span> approaches 0 (right) [<a class="reference external" href="#references">1</a>, Sections 4.2 and 4.3].</p>
+<p>The data’s log-likelihood is the sum of the trial log-likelihoods. IBS
+therefore adds their estimates and variance estimates. An <code class="docutils literal notranslate"><span class="pre">IBS</span></code> call
+averages <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> independent repeats, reducing the variance by that
+factor. Each simulator call samples all trials that still need a match.
+With <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>, it requests several samples per trial, a number
+that grows after every call.</p>
+<p>The optional likelihood threshold, <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code>, stops a repeat
+once its accumulating negative log-likelihood estimate exceeds the
+threshold. That repeat contributes the threshold value to the negative
+log-likelihood estimate. This saves simulation at poor parameters but biases the estimate
+[<a class="reference external" href="#references">1</a>, Appendix C.1]. A finite <code class="docutils literal notranslate"><span class="pre">max_time</span></code> also biases
+estimates; use neither limit when unbiasedness is essential.</p>
+<p>See the IBS paper for more details (<a class="reference external" href="#references">van Opheusden, Acerbi and Ma, 2020</a>).</p>
+</section>
+<section id="when-should-i-use-pyibs">
+<h3>When should I use PyIBS?<a class="headerlink" href="#when-should-i-use-pyibs" title="Link to this heading">#</a></h3>
+<p>Use PyIBS when you can simulate a model’s responses but cannot compute its likelihood. The responses must be discrete, such as choices, categories, or counts, and the simulator must be able to draw each trial’s response given its context: its stimulus and, when relevant, earlier stimuli and responses [<a class="reference external" href="#references">1</a>, Section 2.2]. IBS then supplies the noisy log-likelihood and uncertainty estimates needed for maximum-likelihood or maximum-a-posteriori fitting with PyBADS, posterior and model-evidence estimation with PyVBMC, and model comparison.</p>
+<ul class="simple">
+<li><p><strong>Use a tractable likelihood when available.</strong> The IBS paper recommends
+a closed form or an analytical or numerical approximation whenever one is
+practical. IBS estimates can help check its implementation, and the
+accuracy of an approximation [<a class="reference external" href="#references">1</a>, Section 6.4].</p></li>
+<li><p><strong>Amortized simulation-based inference is often better when fitting one
+model to many datasets with cheap simulations.</strong> A neural network trained once on
+simulations can share that training cost across datasets. In neural
+posterior estimation, it then estimates the posterior for each new
+dataset almost immediately
+[<a class="reference external" href="#references">3</a>].</p></li>
+<li><p><strong>IBS remains the method of choice when trial contexts are numerous and
+richly structured.</strong> An amortized estimator must learn the model’s
+behaviour across the contexts it may encounter; IBS only simulates the
+contexts present in the data. For example, a model of human board-game
+play chooses each move from the current board position, which may occur
+only once in the dataset [<a class="reference external" href="#references">1</a>,
+Section 5.4; <a class="reference external" href="#references">2</a>].</p></li>
+<li><p><strong>IBS also helps when guarantees for each dataset matter.</strong> An amortized
+estimator can be accurate on some datasets and unreliable on others, so
+each dataset needs its own diagnostics [<a class="reference external" href="#references">3</a>]. IBS needs
+no training, and its log-likelihood and variance estimates are unbiased
+for any dataset whose observed responses all have positive probability.</p></li>
+<li><p><strong>Account for the cost of improbable responses.</strong> A trial whose observed
+response has model probability <span class="math notranslate nohighlight">\(p\)</span> takes <span class="math notranslate nohighlight">\(1/p\)</span> samples on
+average. A lapse component that gives every possible response positive
+probability limits this cost. The likelihood threshold can save work at
+poor parameter vectors, at the cost of bias [<a class="reference external" href="#references">1</a>, Sections
+2.2 and 6.4, Appendix C.1]. Continuous responses require binning or an
+approximate matching rule [<a class="reference external" href="#references">1</a>, Section 6.3]; see the
+<a class="reference internal" href="faq.html#faq-can-i-use-ibs-with-continuous-responses"><span class="std std-ref">FAQ</span></a>.</p></li>
+</ul>
+<p>The FAQ discusses
+<a class="reference internal" href="faq.html#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference"><span class="std std-ref">IBS and amortized simulation-based inference</span></a>
+in more detail.</p>
+</section>
+</section>
+<section id="how-to">
+<h2>How-to<a class="headerlink" href="#how-to" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/functions/functions.html">Functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Instructions for developers and contributors</a></li>
+</ul>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>van Opheusden, B.*, Acerbi, L.* &amp; Ma, W. J. (2020). Unbiased and efficient log-likelihood estimation with inverse binomial sampling. <em>PLOS Computational Biology</em> 16(12): e1008483. (* equal contribution) (<a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1008483">paper</a>)</p></li>
+<li><p>van Opheusden, B., Kuperwajs, I., Galbiati, G., Bnaya, Z., Li, Y. &amp; Ma, W. J. (2023). Expertise increases planning depth in human gameplay. <em>Nature</em> 618: 1000-1005. (<a class="reference external" href="https://doi.org/10.1038/s41586-023-06124-2">paper</a>)</p></li>
+<li><p>Li, C., Vehtari, A., Bürkner, P.-C., Radev, S. T., Acerbi, L. &amp; Schmitt, M. (2026). Amortized Bayesian workflow. <em>Transactions on Machine Learning Research</em>. (<a class="reference external" href="https://openreview.net/forum?id=osV7adJlKD">paper on OpenReview</a>)</p></li>
+</ol>
+<p>Please cite reference 1 when using PyIBS. For example:</p>
+<blockquote>
+<div><p>We estimated the log-likelihood of our models with inverse binomial sampling (IBS; van Opheusden, Acerbi and Ma, 2020), implemented in PyIBS. IBS simulates responses until each observed response is matched, giving unbiased log-likelihood and variance estimates when sampling is allowed to complete.</p>
+</div></blockquote>
+<section id="bibtex">
+<h3>BibTeX<a class="headerlink" href="#bibtex" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">vanopheusden2020unbiased</span><span class="p">,</span>
+  <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Unbiased</span> <span class="ow">and</span> <span class="n">efficient</span> <span class="n">log</span><span class="o">-</span><span class="n">likelihood</span> <span class="n">estimation</span> <span class="k">with</span> <span class="n">inverse</span> <span class="n">binomial</span> <span class="n">sampling</span><span class="p">},</span>
+  <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">van</span> <span class="n">Opheusden</span><span class="p">,</span> <span class="n">Bas</span> <span class="ow">and</span> <span class="n">Acerbi</span><span class="p">,</span> <span class="n">Luigi</span> <span class="ow">and</span> <span class="n">Ma</span><span class="p">,</span> <span class="n">Wei</span> <span class="n">Ji</span><span class="p">},</span>
+  <span class="n">journal</span><span class="o">=</span><span class="p">{</span><span class="n">PLOS</span> <span class="n">Computational</span> <span class="n">Biology</span><span class="p">},</span>
+  <span class="n">volume</span><span class="o">=</span><span class="p">{</span><span class="mi">16</span><span class="p">},</span>
+  <span class="n">number</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">},</span>
+  <span class="n">pages</span><span class="o">=</span><span class="p">{</span><span class="n">e1008483</span><span class="p">},</span>
+  <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
+  <span class="n">publisher</span><span class="o">=</span><span class="p">{</span><span class="n">Public</span> <span class="n">Library</span> <span class="n">of</span> <span class="n">Science</span><span class="p">},</span>
+  <span class="n">doi</span><span class="o">=</span><span class="p">{</span><span class="mf">10.1371</span><span class="o">/</span><span class="n">journal</span><span class="o">.</span><span class="n">pcbi</span><span class="mf">.1008483</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="license-and-source">
+<h3>License and source<a class="headerlink" href="#license-and-source" title="Link to this heading">#</a></h3>
+<p>PyIBS is released under the terms of the <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/LICENSE">BSD 3-Clause License</a>.
+The Python source code is on <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/pyibs">GitHub</a>.
+Explore <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a>, <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a>, the original <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS toolbox</a>, and the lab’s other <a class="reference external" href="https://acerbilab.org/model-fitting/">model-fitting tools</a> for related software.</p>
+</section>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading">#</a></h2>
+<p>PyIBS is developed by members (past and current) of the <a class="reference external" href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Machine and Human Intelligence Group</a> at the University of Helsinki and <a class="reference external" href="https://www.ellisinstitute.fi/">ELLIS Institute Finland</a>. We thank Julia Maria Perathoner for her work on PyIBS 0.1.0, an earlier Python port of IBS. Development of PyIBS 1.5 was assisted by coding agents, including Anthropic’s <a class="reference external" href="https://www.anthropic.com/claude">Claude</a>. Work on the PyIBS package is supported by the Research Council of Finland (grants 356498 and 358980 to Luigi Acerbi) and its Flagship programme: <a class="reference external" href="https://fcai.fi/">Finnish Center for Artificial Intelligence FCAI</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="installation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-it">What is it?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-new-in-pyibs-1-5">What’s new in PyIBS 1.5</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-should-i-use-pyibs">When should I use PyIBS?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to">How-to</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing">Contributing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bibtex">BibTeX</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#license-and-source">License and source</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

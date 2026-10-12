@@ -1,0 +1,1880 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyIBS: Frequently Asked Questions &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'faq';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/faq.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Getting started" href="quickstart.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="development.html">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/edit/main/docsrc/source/faq.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2Ffaq.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/faq.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PyIBS: Frequently Asked Questions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general">General</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-kind-of-problems-is-pyibs-suited-for">Which kind of problems is PyIBS suited for?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-should-i-use-ibs-rather-than-amortized-simulation-based-inference">When should I use IBS rather than amortized simulation-based inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood">How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-ibs-basic-for">What is <code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code> for?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-pyibs">Installing PyIBS</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#where-can-i-download-pyibs">Where can I download PyIBS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-external-packages-does-pyibs-require">Which external packages does PyIBS require?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-version-of-python-do-i-need">Which version of Python do I need?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-know-whether-a-newer-version-of-pyibs-exists">How do I know whether a newer version of PyIBS exists?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-check-that-pyibs-works-on-my-computer">How do I check that PyIBS works on my computer?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-am-having-trouble-installing-pyibs-can-you-help">I am having trouble installing PyIBS. Can you help?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-simulator-and-the-data">The simulator and the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-write-the-simulator">How do I write the simulator?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">My simulator needs additional data or inputs. How do I pass them to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs">The responses of my model depend both on the current trial and on responses or stimuli from previous trials. How can I tell this to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs">My model uses data structures which are not easily converted to numerical arrays. Can I still use <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-i-use-ibs-with-continuous-responses">Can I use IBS with continuous responses?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-a-call-of-ibs-return">What does a call of <code class="docutils literal notranslate"><span class="pre">IBS</span></code> return?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pybads-and-pyvbmc">PyBADS and PyVBMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-use-pyibs-with-pybads">How do I use PyIBS with PyBADS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-use-pyibs-with-pyvbmc">How do I use PyIBS with PyVBMC?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance">Why does the target return the SD of the estimate, and not its variance?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">Why is the SD of the estimate zero, and why do PyBADS and PyVBMC refuse it?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate">Do I need to give PyBADS or PyVBMC the SD of every estimate?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help">I have several questions about using PyBADS to optimize the log-likelihood. Can you help?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference">What if I want to use IBS to perform Bayesian posterior or model inference?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-and-ibs-repeats">Precision and IBS repeats</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-choose-num-reps">How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum">In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal">As I increase <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs">What are trial-dependent repeats, and can I use them with PyIBS?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cost-limits-and-the-likelihood-threshold">Cost, limits and the likelihood threshold</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-many-samples-does-an-estimate-take">How many samples does an estimate take?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#should-i-set-vectorized">Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">What does the likelihood threshold <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> do, and how do I choose it?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-e-g-20">Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-max-time-do">What does <code class="docutils literal notranslate"><span class="pre">max_time</span></code> do?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-call-raises-ibssamplingerror-what-do-i-do">A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code>. What do I do?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator"><code class="docutils literal notranslate"><span class="pre">IBS</span></code> calls my simulator with different subsets of trials. What does this mean for my simulator?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-call-raises-a-valueerror-or-a-typeerror-about-the-simulator-s-output-what-is-wrong">A call raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> about the simulator’s output. What is wrong?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-make-a-run-reproducible">How do I make a run reproducible?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-check-that-the-estimates-are-right-for-my-model">How do I check that the estimates are right for my model?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#miscellanea">Miscellanea</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-used-ibslike-in-matlab-what-is-different-in-pyibs">I used <code class="docutils literal notranslate"><span class="pre">ibslike</span></code> in MATLAB. What is different in PyIBS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-used-pyibs-0-1-0-what-do-i-need-to-change">I used PyIBS 0.1.0. What do I need to change?</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pyibs-frequently-asked-questions">
+<h1>PyIBS: Frequently Asked Questions<a class="headerlink" href="#pyibs-frequently-asked-questions" title="Link to this heading">#</a></h1>
+<p>This FAQ covers PyIBS 1.5 and is curated by
+<a class="reference external" href="https://lacerbi.github.io/">Luigi Acerbi</a>. It adapts the
+<a class="reference external" href="https://github.com/acerbilab/ibs/wiki">MATLAB IBS FAQ</a> and adds questions
+about the Python package.</p>
+<p>For a tutorial with detailed examples, see the <a class="reference internal" href="examples.html"><span class="std std-doc">Jupyter notebook examples</span></a>.</p>
+<p>For questions not covered here, ask in the lab’s
+<a class="reference external" href="https://github.com/orgs/acerbilab/discussions">Discussions forum</a>.</p>
+<p>PyIBS estimates log-likelihoods from a model’s simulator. PyBADS can use
+these estimates to fit the parameters, and PyVBMC can use them to infer
+the posterior and model evidence. PyIBS, PyBADS and PyVBMC are among the
+lab’s <a class="reference external" href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a>.</p>
+<p><strong>Acknowledgments:</strong> Many of the questions answered here originated in a
+live Q&amp;A session with the <a class="reference external" href="http://www.cns.nyu.edu/malab/">Ma lab</a>. We thank
+Hsin-Hung Li for taking notes.</p>
+<p>In the answers, [1] is the IBS paper: B. van Opheusden, L. Acerbi and
+W. J. Ma (2020), “Unbiased and efficient log-likelihood estimation with
+inverse binomial sampling”, <em>PLOS Computational Biology</em> 16(12): e1008483,
+<a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1008483">https://doi.org/10.1371/journal.pcbi.1008483</a>.</p>
+<p>The snippets below use <code class="docutils literal notranslate"><span class="pre">np</span></code> for NumPy and <code class="docutils literal notranslate"><span class="pre">IBS</span></code> for the estimator class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs</span><span class="w"> </span><span class="kn">import</span> <span class="n">IBS</span>
+</pre></div>
+</div>
+<p>The snippets use <code class="docutils literal notranslate"><span class="pre">sample_from_model</span></code> for your simulator, <code class="docutils literal notranslate"><span class="pre">R</span></code> for the
+observed responses, <code class="docutils literal notranslate"><span class="pre">S</span></code> for the design, and <code class="docutils literal notranslate"><span class="pre">theta</span></code> for a parameter vector.
+Both <code class="docutils literal notranslate"><span class="pre">R</span></code> and <code class="docutils literal notranslate"><span class="pre">S</span></code> have one row per trial; they are the <code class="docutils literal notranslate"><span class="pre">response_matrix</span></code>
+and <code class="docutils literal notranslate"><span class="pre">design_matrix</span></code> arguments of <code class="docutils literal notranslate"><span class="pre">IBS</span></code>. Define these inputs for your model
+before running a snippet.</p>
+<p>The fitting snippets also use a starting point <code class="docutils literal notranslate"><span class="pre">x0</span></code>, hard bounds <code class="docutils literal notranslate"><span class="pre">lb</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ub</span></code>, and plausible bounds <code class="docutils literal notranslate"><span class="pre">plb</span></code> and <code class="docutils literal notranslate"><span class="pre">pub</span></code>. Each is a one-dimensional NumPy
+array with one element per parameter. The PyVBMC snippet additionally
+requires a prior. The <a class="reference internal" href="examples.html"><span class="std std-doc">example notebooks</span></a> provide complete
+worked setups.</p>
+<section id="table-of-contents">
+<h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#faq-general">General</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-which-kind-of-problems-is-pyibs-suited-for">Which kind of problems is PyIBS suited for?</a></p></li>
+<li><p><a class="reference internal" href="#faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference">When should I use IBS rather than amortized simulation-based inference?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood">How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-is-ibs-basic-for">What is <code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code> for?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-installation">Installing PyIBS</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-where-can-i-download-pyibs">Where can I download PyIBS?</a></p></li>
+<li><p><a class="reference internal" href="#faq-which-external-packages-does-pyibs-require">Which external packages does PyIBS require?</a></p></li>
+<li><p><a class="reference internal" href="#faq-which-version-of-python-do-i-need">Which version of Python do I need?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists">How do I know whether a newer version of PyIBS exists?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-do-i-check-that-pyibs-works-on-my-computer">How do I check that PyIBS works on my computer?</a></p></li>
+<li><p><a class="reference internal" href="#faq-i-am-having-trouble-installing-pyibs-can-you-help">I am having trouble installing PyIBS. Can you help?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-the-simulator-and-the-data">The simulator and the data</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-how-do-i-write-the-simulator">How do I write the simulator?</a></p></li>
+<li><p><a class="reference internal" href="#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">My simulator needs additional data or inputs. How do I pass them to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#faq-the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs">The responses of my model depend both on the current trial and on responses or stimuli from previous trials. How can I tell this to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#faq-my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs">My model uses data structures which are not easily converted to numerical arrays. Can I still use <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#faq-can-i-use-ibs-with-continuous-responses">Can I use IBS with continuous responses?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-does-a-call-of-ibs-return">What does a call of <code class="docutils literal notranslate"><span class="pre">IBS</span></code> return?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-pybads-and-pyvbmc">PyBADS and PyVBMC</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-how-do-i-use-pyibs-with-pybads">How do I use PyIBS with PyBADS?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-do-i-use-pyibs-with-pyvbmc">How do I use PyIBS with PyVBMC?</a></p></li>
+<li><p><a class="reference internal" href="#faq-why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance">Why does the target return the SD of the estimate, and not its variance?</a></p></li>
+<li><p><a class="reference internal" href="#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">Why is the SD of the estimate zero, and why do PyBADS and PyVBMC refuse it?</a></p></li>
+<li><p><a class="reference internal" href="#faq-do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate">Do I need to give PyBADS or PyVBMC the SD of every estimate?</a></p></li>
+<li><p><a class="reference internal" href="#faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help">I have several questions about using PyBADS to optimize the log-likelihood. Can you help?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference">What if I want to use IBS to perform Bayesian posterior or model inference?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-precision-and-ibs-repeats">Precision and IBS repeats</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-how-do-i-choose-num-reps">How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?</a></p></li>
+<li><p><a class="reference internal" href="#faq-in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum">In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?</a></p></li>
+<li><p><a class="reference internal" href="#faq-as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal">As I increase <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs">What are trial-dependent repeats, and can I use them with PyIBS?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-cost-limits-and-the-likelihood-threshold">Cost, limits and the likelihood threshold</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-how-many-samples-does-an-estimate-take">How many samples does an estimate take?</a></p></li>
+<li><p><a class="reference internal" href="#faq-should-i-set-vectorized">Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">What does the likelihood threshold <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> do, and how do I choose it?</a></p></li>
+<li><p><a class="reference internal" href="#faq-is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-eg-20">Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?</a></p></li>
+<li><p><a class="reference internal" href="#faq-what-does-max-time-do">What does <code class="docutils literal notranslate"><span class="pre">max_time</span></code> do?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-troubleshooting">Troubleshooting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-a-call-raises-ibssamplingerror-what-do-i-do">A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code>. What do I do?</a></p></li>
+<li><p><a class="reference internal" href="#faq-ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator"><code class="docutils literal notranslate"><span class="pre">IBS</span></code> calls my simulator with different subsets of trials. What does this mean for my simulator?</a></p></li>
+<li><p><a class="reference internal" href="#faq-a-call-raises-a-valueerror-or-a-typeerror-about-the-simulators-output-what-is-wrong">A call raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> about the simulator’s output. What is wrong?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-do-i-make-a-run-reproducible">How do I make a run reproducible?</a></p></li>
+<li><p><a class="reference internal" href="#faq-how-do-i-check-that-the-estimates-are-right-for-my-model">How do I check that the estimates are right for my model?</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#faq-miscellanea">Miscellanea</a></p>
+<ul>
+<li><p><a class="reference internal" href="#faq-i-used-ibslike-in-matlab-what-is-different-in-pyibs">I used <code class="docutils literal notranslate"><span class="pre">ibslike</span></code> in MATLAB. What is different in PyIBS?</a></p></li>
+<li><p><a class="reference internal" href="#faq-i-used-pyibs-010-what-do-i-need-to-change">I used PyIBS 0.1.0. What do I need to change?</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="general">
+<span id="faq-general"></span><h2>General<a class="headerlink" href="#general" title="Link to this heading">#</a></h2>
+<section id="which-kind-of-problems-is-pyibs-suited-for">
+<span id="faq-which-kind-of-problems-is-pyibs-suited-for"></span><h3>Which kind of problems is PyIBS suited for?<a class="headerlink" href="#which-kind-of-problems-is-pyibs-suited-for" title="Link to this heading">#</a></h3>
+<p>Use PyIBS when you can simulate your model but cannot evaluate its
+likelihood. The problem must meet these requirements ([1], Section 2.2):</p>
+<ul class="simple">
+<li><p>the responses are discrete (choices, categories, counts), or you define
+a matching event by binning or an approximate matching rule (see
+<a class="reference internal" href="#faq-can-i-use-ibs-with-continuous-responses">below</a>);</p></li>
+<li><p>the simulator can generate a response for any trial given its context,
+such as the stimulus and any relevant earlier observed stimuli and
+responses (<em>conditional simulation</em>);</p></li>
+<li><p>every observed response, or the matching event you define, has a positive
+probability under the model.
+For IBS to be practical, these probabilities must also be large enough
+at the parameters of interest: a response of probability <code class="docutils literal notranslate"><span class="pre">p</span></code> takes
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">p</span></code> samples on average ([1], Section 4.2).</p></li>
+</ul>
+<p>For each trial, IBS simulates responses until one matches the observation.
+For discrete responses, the number of draws gives an unbiased estimate of
+the trial’s log-likelihood. Summing these estimates gives an unbiased
+estimate of the data’s log-likelihood. IBS also estimates the variance of
+its estimate ([1], Section 4.3), and that variance estimate is unbiased
+too: its expectation, <code class="docutils literal notranslate"><span class="pre">Li₂(1</span> <span class="pre">−</span> <span class="pre">p)</span></code> for a response of probability <code class="docutils literal notranslate"><span class="pre">p</span></code>, is
+the variance itself. With continuous responses, the same guarantee
+applies to the log-probability of the matching event, with approximation
+error from discretization. The
+<a class="reference internal" href="#faq-how-do-i-check-that-the-estimates-are-right-for-my-model">answer on checking estimates</a>
+explains how to assess the uncertainty and its limitations.</p>
+<p>These estimates let you use likelihood-based methods for fitting and model
+comparison. <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> supports
+maximum-likelihood and maximum-a-posteriori estimation;
+<a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> approximates the posterior and
+model evidence. Both accept noisy targets.</p>
+<p>Use a closed-form likelihood or an accurate analytical or numerical
+approximation when one is tractable. IBS can then help check its
+implementation and accuracy ([1], Section 6.4).</p>
+</section>
+<section id="when-should-i-use-ibs-rather-than-amortized-simulation-based-inference">
+<span id="faq-when-should-i-use-ibs-rather-than-amortized-simulation-based-inference"></span><h3>When should I use IBS rather than amortized simulation-based inference?<a class="headerlink" href="#when-should-i-use-ibs-rather-than-amortized-simulation-based-inference" title="Link to this heading">#</a></h3>
+<p>Both approaches can fit models with an intractable likelihood. The better
+choice depends on the simulator, the trial contexts, how many datasets you
+will fit, and the accuracy you need.</p>
+<p><strong>What IBS gives.</strong> IBS estimates the log-likelihood of one dataset at one
+parameter vector by simulating each trial in its own context. For discrete
+responses, the estimator is unbiased for each dataset and parameter vector,
+provided the observed responses have positive probabilities, sampling runs
+to completion, and no call is discarded or kept for its outcome. It also
+estimates the variance ([1], Section 4.3), and that estimate is unbiased
+too. IBS requires no training or summary statistics. Its estimates can
+serve as a target for methods that support noisy log-likelihoods, including
+PyBADS for optimization and PyVBMC for posterior and evidence inference.</p>
+<p><strong>When amortized inference is the better choice.</strong> Amortized methods train
+a neural network on simulations, then reuse it across datasets. In neural
+posterior estimation, a trained network can produce a posterior
+approximation for a new dataset almost immediately
+(<a class="reference external" href="https://openreview.net/forum?id=osV7adJlKD">Li et al., 2026</a>, Section 1).
+The training cost is shared across all the datasets it serves. This is
+often the better choice when you fit one model to many datasets and its
+simulations are cheap.</p>
+<p>IBS, by contrast, needs new simulations for every dataset and every
+parameter vector evaluated during a fit, and a fit typically needs hundreds
+of evaluations. Libraries such as <a class="reference external" href="https://github.com/sbi-dev/sbi">sbi</a> and
+<a class="reference external" href="https://github.com/bayesflow-org/bayesflow">BayesFlow</a> implement amortized
+inference (Li et al., 2026, Section 2.3).</p>
+<p><strong>What favors IBS.</strong></p>
+<ul class="simple">
+<li><p><em>The trials’ contexts are many and richly structured.</em> An amortized
+estimator must learn the model’s behavior across the contexts it may
+encounter. IBS simulates only the contexts in the observed data. For
+example, a model of human board-game play chooses a move given the
+current board position, which may occur only once in the dataset ([1],
+Section 5.4; B. van Opheusden et al., 2023, “Expertise increases planning
+depth in human gameplay”, <em>Nature</em> 618: 1000–1005,
+<a class="reference external" href="https://doi.org/10.1038/s41586-023-06124-2">https://doi.org/10.1038/s41586-023-06124-2</a>). In the four-in-a-row
+game studied in [1], Section 5.4, the datasets used positions drawn from
+5,482 positions recorded in human play. The model’s distribution over
+moves could not be computed even numerically, so IBS estimated its
+log-likelihood from simulations.</p></li>
+<li><p><em>Guarantees on each dataset matter.</em> “A given pre-trained amortized
+neural estimator may be perfectly suitable for some real datasets while it
+is utterly untrustworthy for others” (C. Li, A. Vehtari, P.-C. Bürkner,
+S. T. Radev, L. Acerbi and M. Schmitt, 2026, “Amortized Bayesian
+Workflow”, <em>Transactions on Machine Learning Research</em>,
+<a class="reference external" href="https://openreview.net/forum?id=osV7adJlKD">https://openreview.net/forum?id=osV7adJlKD</a>, Section 2.2). Their workflow
+checks each dataset’s results with diagnostics, then uses importance
+sampling and MCMC when the checks fail. IBS provides unbiased
+log-likelihood estimates for each dataset without training, together with
+variance estimates. These guarantees concern the likelihood estimator.
+The optimizer or inference method can still make errors, so assess the
+fit itself, for example by comparing independent runs.</p></li>
+</ul>
+<p><strong>Its costs and requirements.</strong> A response of probability <code class="docutils literal notranslate"><span class="pre">p</span></code> takes
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">p</span></code> samples on average ([1], Section 4.2), so an improbable response
+can be very expensive to match.
+A lapse rate can put a lower bound on response probabilities, and a
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>
+can stop sampling at poor parameters, at the cost of bias ([1], Section 6.4
+and Appendix C.1).</p>
+<p>Responses must be discrete or have a matching event defined by binning or
+an approximate matching rule ([1], Section 6.3). The
+simulator must also generate an individual trial’s response conditioned on
+its observed context. A model with latent dynamics that can generate whole
+sequences, but cannot simulate one response conditional on an observed
+history, does not meet this requirement ([1], Section 2.2).</p>
+</section>
+<section id="how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood">
+<span id="faq-how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood"></span><h3>How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?<a class="headerlink" href="#how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood" title="Link to this heading">#</a></h3>
+<p>ABC and synthetic likelihood commonly compare summary statistics of
+observed and simulated data ([1], Section 1, citing Beaumont et al., 2002,
+for ABC and Wood, 2010, for synthetic likelihood). Such statistics may
+discard information relevant to inference. IBS instead estimates the
+log-likelihood of the full data, trial by trial ([1], Sections 1 and 6.3).
+Its output can be used by likelihood-based methods that support noisy
+targets; ABC uses dedicated inference algorithms ([1], Section 6.3).</p>
+<p>A synthetic likelihood gives a noisy estimate of the log-likelihood of
+the summary statistics. PyVBMC’s FAQ notes that a synthetic likelihood
+could also serve as PyVBMC’s target
+(<a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-can-i-use-any-technique-to-estimate-a-noisy-log-likelihood">Can I use <em>any</em> technique to estimate a noisy log-likelihood?</a>).
+For continuous responses, [1] proposes approximate IBS, which borrows ABC’s
+tolerance but compares the full responses (see
+<a class="reference internal" href="#faq-can-i-use-ibs-with-continuous-responses">below</a>).</p>
+</section>
+<section id="what-is-ibs-basic-for">
+<span id="faq-what-is-ibs-basic-for"></span><h3>What is <code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code> for?<a class="headerlink" href="#what-is-ibs-basic-for" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="api/functions/ibs_basic.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></span></a> is a minimal implementation for
+teaching and reading the algorithm. It follows <code class="docutils literal notranslate"><span class="pre">ibs_basic.m</span></code> of MATLAB IBS
+and the loop in [1], Section 4.1: sample one trial at a time, one response
+per simulator call, until it matches. The function returns one
+log-likelihood estimate, not its negative as <code class="docutils literal notranslate"><span class="pre">IBS</span></code> does by default. It has
+no averaging over repeats, variance
+estimate, sampling cap or likelihood threshold. Use <code class="docutils literal notranslate"><span class="pre">IBS</span></code> for analyses.</p>
+</section>
+</section>
+<section id="installing-pyibs">
+<span id="faq-installation"></span><h2>Installing PyIBS<a class="headerlink" href="#installing-pyibs" title="Link to this heading">#</a></h2>
+<section id="where-can-i-download-pyibs">
+<span id="faq-where-can-i-download-pyibs"></span><h3>Where can I download PyIBS?<a class="headerlink" href="#where-can-i-download-pyibs" title="Link to this heading">#</a></h3>
+<p>Install or upgrade PyIBS with pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install --upgrade pyibs</span>
+</pre></div>
+</div>
+<p>Or install with Conda:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install --channel=conda-forge pyibs</span>
+</pre></div>
+</div>
+<p>PyIBS 1.5 requires NumPy 2.0 or newer, and its conda-forge package requires
+Python 3.11 or newer. In an environment with NumPy 1.x, a package that
+requires it, or Python 3.10, conda may select PyIBS 0.1.0 without warning.
+Require version 1.5 or newer explicitly:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda install --channel=conda-forge "pyibs&gt;=1.5"</span>
+</pre></div>
+</div>
+<p>Conda then installs PyIBS 1.5 or reports the conflict.</p>
+<p>See the <a class="reference internal" href="installation.html"><span class="std std-doc">installation instructions</span></a> for more details, and
+the <a class="reference external" href="https://github.com/acerbilab/pyibs">GitHub repository</a> for the source
+code.</p>
+</section>
+<section id="which-external-packages-does-pyibs-require">
+<span id="faq-which-external-packages-does-pyibs-require"></span><h3>Which external packages does PyIBS require?<a class="headerlink" href="#which-external-packages-does-pyibs-require" title="Link to this heading">#</a></h3>
+<p>PyIBS requires NumPy 2.0 or newer and SciPy 1.13 or newer. These are its
+only runtime dependencies, and <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code> installs them with PyIBS.
+MATLAB is not required.</p>
+<p>For fitting, install <a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> 1.5.1 or
+newer, or <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> 1.5 or newer. Both accept
+PyIBS’s estimate and estimated SD as a noisy target.
+Running the <a class="reference internal" href="examples.html"><span class="std std-doc">example notebooks</span></a> also requires Jupyter; see
+the <a class="reference internal" href="installation.html"><span class="std std-doc">installation instructions</span></a>.</p>
+</section>
+<section id="which-version-of-python-do-i-need">
+<span id="faq-which-version-of-python-do-i-need"></span><h3>Which version of Python do I need?<a class="headerlink" href="#which-version-of-python-do-i-need" title="Link to this heading">#</a></h3>
+<p>PyIBS requires Python 3.10 or newer, and its conda-forge package Python 3.11
+or newer.</p>
+</section>
+<section id="how-do-i-know-whether-a-newer-version-of-pyibs-exists">
+<span id="faq-how-do-i-know-whether-a-newer-version-of-pyibs-exists"></span><h3>How do I know whether a newer version of PyIBS exists?<a class="headerlink" href="#how-do-i-know-whether-a-newer-version-of-pyibs-exists" title="Link to this heading">#</a></h3>
+<p>Run <code class="docutils literal notranslate"><span class="pre">pyibs.check_for_updates()</span></code>. It queries PyPI and prints a message. If a
+newer release is available, the message includes an update command:
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pyibs</span></code> for pip, or
+<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--channel=conda-forge</span> <span class="pre">pyibs</span></code> for conda. The conda-forge
+package can appear a few days after the PyPI release. The function also
+returns the installed version, the latest release and whether an update
+is available.</p>
+<p>This function is PyIBS’s only network access, and it runs only when you
+call it. PyIBS prints no automatic messages. Use <code class="docutils literal notranslate"><span class="pre">pyibs.__version__</span></code> to
+read the installed version
+without a network request. See the
+<a class="reference internal" href="api/functions/check_for_updates.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code> API</span></a> for details.</p>
+</section>
+<section id="how-do-i-check-that-pyibs-works-on-my-computer">
+<span id="faq-how-do-i-check-that-pyibs-works-on-my-computer"></span><h3>How do I check that PyIBS works on my computer?<a class="headerlink" href="#how-do-i-check-that-pyibs-works-on-my-computer" title="Link to this heading">#</a></h3>
+<p>The test suite ships with PyIBS. Install the <code class="docutils literal notranslate"><span class="pre">test</span></code> extra to add pytest,
+then run the tests:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install --upgrade "pyibs[test]"</span>
+<span class="go">python -m pytest --pyargs pyibs</span>
+</pre></div>
+</div>
+<p>If PyBADS 1.5.1 or newer or PyVBMC 1.5 or newer is installed, the suite
+also fits the example model with the available package. These integration
+tests take a few minutes. To omit them, run
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span> <span class="pre">--pyargs</span> <span class="pre">pyibs</span> <span class="pre">-m</span> <span class="pre">&quot;not</span> <span class="pre">integration&quot;</span></code>.</p>
+</section>
+<section id="i-am-having-trouble-installing-pyibs-can-you-help">
+<span id="faq-i-am-having-trouble-installing-pyibs-can-you-help"></span><h3>I am having trouble installing PyIBS. Can you help?<a class="headerlink" href="#i-am-having-trouble-installing-pyibs-can-you-help" title="Link to this heading">#</a></h3>
+<p>Ask in the <a class="reference external" href="https://github.com/orgs/acerbilab/discussions">Discussions forum</a>.
+Include your operating system, Python version, installation command and
+the full error message so that we can reproduce the problem.</p>
+</section>
+</section>
+<section id="the-simulator-and-the-data">
+<span id="faq-the-simulator-and-the-data"></span><h2>The simulator and the data<a class="headerlink" href="#the-simulator-and-the-data" title="Link to this heading">#</a></h2>
+<section id="how-do-i-write-the-simulator">
+<span id="faq-how-do-i-write-the-simulator"></span><h3>How do I write the simulator?<a class="headerlink" href="#how-do-i-write-the-simulator" title="Link to this heading">#</a></h3>
+<p>Write a function <code class="docutils literal notranslate"><span class="pre">sample_from_model(theta,</span> <span class="pre">design_rows)</span></code>. If it also has a
+parameter named <code class="docutils literal notranslate"><span class="pre">rng</span></code> that accepts a keyword, <code class="docutils literal notranslate"><span class="pre">IBS</span></code> calls it as
+<code class="docutils literal notranslate"><span class="pre">sample_from_model(theta,</span> <span class="pre">design_rows,</span> <span class="pre">rng=rng)</span></code> and supplies the object’s
+random number generator. Use that generator for
+<a class="reference internal" href="#faq-how-do-i-make-a-run-reproducible">reproducible runs</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">theta</span></code> is the parameter vector passed to <code class="docutils literal notranslate"><span class="pre">ibs</span></code>. <code class="docutils literal notranslate"><span class="pre">design_rows</span></code> contains
+the design rows for the trials requested in this simulator call. If
+<code class="docutils literal notranslate"><span class="pre">design_matrix=None</span></code>, it contains their 0-based trial indices instead.
+Return one simulated response per requested row:</p>
+<ul class="simple">
+<li><p>For <code class="docutils literal notranslate"><span class="pre">r</span></code> requested rows, return an array of shape <code class="docutils literal notranslate"><span class="pre">(r,)</span></code> or <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">1)</span></code> for
+single-column responses, or <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">C)</span></code> for <code class="docutils literal notranslate"><span class="pre">C</span></code> response columns. A response
+matches only when all its columns match the observation.</p></li>
+<li><p>Generate each row independently. A trial may be requested more than
+once, so each occurrence needs a fresh draw. Sharing random draws
+across rows violates the sampling assumptions.</p></li>
+<li><p>Use compatible response types. Numbers and booleans can match each
+other, but NumPy does not equate them with text or bytes.</p></li>
+</ul>
+<p>For example, this observer makes a noisy measurement of stimulus <code class="docutils literal notranslate"><span class="pre">S</span></code>,
+reports right (1) when the measurement is at least a bias and left (-1)
+otherwise, and responds at random on a fraction <code class="docutils literal notranslate"><span class="pre">lapse</span></code> of trials:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+    <span class="n">log_sigma</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">lapse</span> <span class="o">=</span> <span class="n">theta</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_sigma</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">bias</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">guess</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">lapse</span>
+    <span class="n">r</span><span class="p">[</span><span class="n">guess</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">guess</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">neg_logl</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the model used in the <a class="reference internal" href="examples.html"><span class="std std-doc">notebooks</span></a>. PyIBS installs
+its simulator as <code class="docutils literal notranslate"><span class="pre">pyibs.examples.psycho_model.psycho_generator</span></code> and its
+closed-form negative log-likelihood as <code class="docutils literal notranslate"><span class="pre">psycho_neg_logl</span></code>. The
+<a class="reference internal" href="api/classes/ibs.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">IBS</span></code> API</span></a> describes the simulator interface and all
+settings.</p>
+</section>
+<section id="my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">
+<span id="faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs"></span><h3>My simulator needs additional data or inputs. How do I pass them to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?<a class="headerlink" href="#my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">IBS</span></code> passes the parameter vector, the requested design rows and, if the
+simulator accepts it, the random generator. Bind additional inputs to a
+wrapper function or use <code class="docutils literal notranslate"><span class="pre">functools.partial</span></code>. Unlike MATLAB <code class="docutils literal notranslate"><span class="pre">ibslike</span></code>,
+<code class="docutils literal notranslate"><span class="pre">IBS</span></code> has no <code class="docutils literal notranslate"><span class="pre">varargin</span></code> argument.</p>
+<p>For a simulator with signature <code class="docutils literal notranslate"><span class="pre">simulator(theta,</span> <span class="pre">design_rows,</span> <span class="pre">rng,</span> <span class="pre">data)</span></code>,
+you can write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">design_rows</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">simulator</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">design_rows</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Define <code class="docutils literal notranslate"><span class="pre">data</span></code> before calling this wrapper. Alternatively, bind it with
+<code class="docutils literal notranslate"><span class="pre">functools.partial</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both approaches retain a parameter named <code class="docutils literal notranslate"><span class="pre">rng</span></code>, so <code class="docutils literal notranslate"><span class="pre">IBS</span></code> still passes its
+generator to the simulator.</p>
+</section>
+<section id="the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs">
+<span id="faq-the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs"></span><h3>The responses of my model depend both on the current trial and on responses or stimuli from previous trials. How can I tell this to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?<a class="headerlink" href="#the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs" title="Link to this heading">#</a></h3>
+<p>IBS estimates each response’s probability conditional on the observed
+history ([1], Section 2.2). Your simulator must therefore generate the
+requested trial’s response given the earlier stimuli and <em>observed</em>
+responses. It must not replace that history with newly simulated trials.</p>
+<p>To give the simulator access to the full history:</p>
+<ul class="simple">
+<li><p>Leave <code class="docutils literal notranslate"><span class="pre">design_matrix=None</span></code>: <code class="docutils literal notranslate"><span class="pre">IBS</span></code> then calls the simulator with the
+0-based indices of the requested trials;</p></li>
+<li><p>Bind the full stimulus and response arrays, and any
+other data, to the simulator (see the
+<a class="reference internal" href="#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">previous question</a>);</p></li>
+<li><p>For each requested index, generate a response using that trial’s
+stimulus and the relevant observed history.</p></li>
+</ul>
+<p>For example, this model shifts the decision towards the previous observed
+response. Here <code class="docutils literal notranslate"><span class="pre">S</span></code> and <code class="docutils literal notranslate"><span class="pre">R</span></code> are one-dimensional arrays:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_simulator</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+        <span class="n">log_sigma</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">pull</span> <span class="o">=</span> <span class="n">theta</span>
+        <span class="n">r_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">R</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 0 before the first trial</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">pull</span> <span class="o">*</span> <span class="n">r_prev</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_sigma</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">bias</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sample_from_model</span>
+
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">make_simulator</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">),</span> <span class="n">R</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># no design: trial indices</span>
+</pre></div>
+</div>
+<p>You can also include the history in the design when each trial’s inputs
+fit in one row. If <code class="docutils literal notranslate"><span class="pre">r_prev</span></code> contains the previous observed response for
+each trial, use
+<code class="docutils literal notranslate"><span class="pre">IBS(sample_from_model,</span> <span class="pre">R,</span> <span class="pre">np.column_stack([S,</span> <span class="pre">r_prev]))</span></code> and write the
+simulator to read the two columns.</p>
+</section>
+<section id="my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs">
+<span id="faq-my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs"></span><h3>My model uses data structures which are not easily converted to numerical arrays. Can I still use <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?<a class="headerlink" href="#my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs" title="Link to this heading">#</a></h3>
+<p>Yes. The responses must support comparison, but the simulator’s other
+inputs can be arbitrary Python objects.</p>
+<ul class="simple">
+<li><p>Encode discrete <em>responses</em> as numbers, booleans, text (such as
+<code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>) or bytes; <code class="docutils literal notranslate"><span class="pre">IBS</span></code> compares them with <code class="docutils literal notranslate"><span class="pre">==</span></code>. For
+example, encode a board-game move as the index of its square. If a
+response combines numbers and text, give both the observed and simulated
+responses as object arrays (<code class="docutils literal notranslate"><span class="pre">dtype=object</span></code>).</p></li>
+<li><p>Other inputs need not be numerical arrays. Bind them to the simulator
+and request trials by index, as
+explained in the
+<a class="reference internal" href="#faq-the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs">question above</a>.
+Alternatively, pass them as <code class="docutils literal notranslate"><span class="pre">design_matrix</span></code>, which accepts an array with
+one row per trial, including an object array of board positions or other
+Python objects. The simulator receives the requested entries. A list of
+dictionaries becomes an object array directly. For objects that NumPy
+may interpret as sequences, such as lists of different lengths, create
+an array with <code class="docutils literal notranslate"><span class="pre">np.empty(N,</span> <span class="pre">dtype=object)</span></code> and fill it element by element.</p></li>
+</ul>
+</section>
+<section id="can-i-use-ibs-with-continuous-responses">
+<span id="faq-can-i-use-ibs-with-continuous-responses"></span><h3>Can I use IBS with continuous responses?<a class="headerlink" href="#can-i-use-ibs-with-continuous-responses" title="Link to this heading">#</a></h3>
+<p>A simulated continuous response has probability zero of matching the
+observed value exactly, so ordinary IBS cannot estimate its density
+([1], Section 6.3). You can instead define discrete matching events in
+either of two ways.</p>
+<p>The simplest approach is binning. Map both observed and simulated
+responses to bins with the same edges:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># bins 0.5 wide</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>  <span class="c1"># y, the observed continuous responses</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">simulate</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">),</span> <span class="n">edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">simulate</span></code> draws continuous responses of the model.</p>
+<p>The second approach is <em>approximate IBS</em> ([1], Section 6.3), inspired by
+approximate Bayesian computation. Define a match as a simulated response
+within <code class="docutils literal notranslate"><span class="pre">eps</span></code> of the observation. For a one-dimensional response, the
+approximate density is <code class="docutils literal notranslate"><span class="pre">p_match</span> <span class="pre">/</span> <span class="pre">(2</span> <span class="pre">*</span> <span class="pre">eps)</span></code>, where <code class="docutils literal notranslate"><span class="pre">p_match</span></code> is the
+probability of this event. IBS estimates <code class="docutils literal notranslate"><span class="pre">log(p_match)</span></code>; subtract
+<code class="docutils literal notranslate"><span class="pre">log(2</span> <span class="pre">*</span> <span class="pre">eps)</span></code> to estimate the log density. In more dimensions, replace
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">eps</span></code> by the volume of the matching region.</p>
+<p>Implement this by returning a boolean for each requested trial, with
+every observed “response” set to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eps</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">within_eps</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">simulate</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">rng</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">eps</span>
+
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">within_eps</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+<span class="n">neg_logl</span><span class="p">,</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span>
+<span class="n">neg_logl</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">eps</span><span class="p">)</span>  <span class="c1"># the volume term</span>
+</pre></div>
+</div>
+<p>For a fixed tolerance, the volume correction is constant across parameter
+vectors. It therefore changes neither the optimum nor the posterior, but
+it matters for model evidence or a comparison with another calculation of
+the log-likelihood.</p>
+<p>Approximate IBS centers the matching region on each observation and avoids
+the choice of bin boundaries. Binning is often adequate if the bins are
+narrow compared with the noise in the data. Both approaches introduce a
+discretization approximation; roughly, they smooth the model’s responses
+on the scale of <code class="docutils literal notranslate"><span class="pre">eps</span></code> or half the bin width. Make this scale much smaller
+than the noise you wish to model. Narrower regions take more samples to
+match, and the expected sample count diverges as <code class="docutils literal notranslate"><span class="pre">eps</span></code> tends to zero
+([1], Section 6.3).</p>
+</section>
+<section id="what-does-a-call-of-ibs-return">
+<span id="faq-what-does-a-call-of-ibs-return"></span><h3>What does a call of <code class="docutils literal notranslate"><span class="pre">IBS</span></code> return?<a class="headerlink" href="#what-does-a-call-of-ibs-return" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ibs(theta)</span></code> returns a Python float estimating the <em>negative</em>
+log-likelihood at <code class="docutils literal notranslate"><span class="pre">theta</span></code>. It averages <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> independent IBS repeats,
+10 by default. Set <code class="docutils literal notranslate"><span class="pre">additional_output</span></code> to request more information:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;var&quot;</span></code>: the tuple <code class="docutils literal notranslate"><span class="pre">(neg_logl,</span> <span class="pre">neg_logl_var)</span></code>, containing the estimate
+and its estimated variance;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;std&quot;</span></code>: the tuple <code class="docutils literal notranslate"><span class="pre">(neg_logl,</span> <span class="pre">neg_logl_std)</span></code>, containing the estimate
+and the square root of the variance estimate;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;full&quot;</span></code>: an <a class="reference internal" href="api/classes/estimate_result.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></span></a>, a
+dictionary whose entries can also be read as attributes: <code class="docutils literal notranslate"><span class="pre">neg_logl</span></code>,
+<code class="docutils literal notranslate"><span class="pre">neg_logl_var</span></code>, <code class="docutils literal notranslate"><span class="pre">neg_logl_std</span></code>, <code class="docutils literal notranslate"><span class="pre">exit_flag</span></code> and its <code class="docutils literal notranslate"><span class="pre">message</span></code>,
+<code class="docutils literal notranslate"><span class="pre">elapsed_time</span></code>, <code class="docutils literal notranslate"><span class="pre">num_samples_per_trial</span></code> (the average sample count per
+trial), <code class="docutils literal notranslate"><span class="pre">fun_count</span></code> (the number of simulator calls),
+and the per-trial estimates <code class="docutils literal notranslate"><span class="pre">neg_logl_trials</span></code> and <code class="docutils literal notranslate"><span class="pre">neg_logl_var_trials</span></code>.</p></li>
+</ul>
+<p>PyBADS and PyVBMC take the <code class="docutils literal notranslate"><span class="pre">&quot;std&quot;</span></code> tuple as a noisy target.
+<code class="docutils literal notranslate"><span class="pre">return_positive=True</span></code> changes the returned value to the log-likelihood.
+The variance estimate and the per-trial arrays keep their values and signs.
+<code class="docutils literal notranslate"><span class="pre">trial_weights</span></code> weights the trials’ log-likelihoods. A zero-weight trial is
+still sampled; remove a trial from the data if you want to exclude it from
+sampling.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">&quot;full&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">exit_flag</span></code> reports how sampling ended:</p>
+<ul class="simple">
+<li><p><strong>0:</strong> every repeat completed without reaching the likelihood threshold;</p></li>
+<li><p><strong>1:</strong> the
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>
+ended at least one repeat. Each ended repeat counts exactly
+<code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> in the negative log-likelihood, which biases the
+estimate, and all per-trial estimates are NaN;</p></li>
+<li><p><strong>2:</strong> <a class="reference internal" href="#faq-what-does-max-time-do"><code class="docutils literal notranslate"><span class="pre">max_time</span></code></a> stopped sampling. The call
+returns a potentially biased estimate and issues a warning.</p></li>
+</ul>
+<p>Without a likelihood threshold and with the default <code class="docutils literal notranslate"><span class="pre">max_time=np.inf</span></code>,
+every call that returns has flag 0 and an unbiased estimate. A finite
+<code class="docutils literal notranslate"><span class="pre">max_time</span></code> can bias even the calls that end with flag 0, since calls that
+need fewer samples, which give higher log-likelihoods, are likelier to
+finish in time (<a class="reference internal" href="#faq-what-does-max-time-do"><code class="docutils literal notranslate"><span class="pre">max_time</span></code></a>).</p>
+</section>
+</section>
+<section id="pybads-and-pyvbmc">
+<span id="faq-pybads-and-pyvbmc"></span><h2>PyBADS and PyVBMC<a class="headerlink" href="#pybads-and-pyvbmc" title="Link to this heading">#</a></h2>
+<section id="how-do-i-use-pyibs-with-pybads">
+<span id="faq-how-do-i-use-pyibs-with-pybads"></span><h3>How do I use PyIBS with PyBADS?<a class="headerlink" href="#how-do-i-use-pyibs-with-pybads" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> minimizes the target
+function, so return the <em>negative</em> log-likelihood estimate and its
+estimated SD as a tuple. Set <code class="docutils literal notranslate"><span class="pre">options={&quot;specify_target_noise&quot;:</span> <span class="pre">True}</span></code> to
+tell PyBADS that the target supplies its noise level.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pybads</span><span class="w"> </span><span class="kn">import</span> <span class="n">BADS</span>
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">target</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span>
+
+
+<span class="n">bads</span> <span class="o">=</span> <span class="n">BADS</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">plb</span><span class="p">,</span> <span class="n">pub</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"specify_target_noise"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">optimize_result</span> <span class="o">=</span> <span class="n">bads</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Return the tuple directly from <code class="docutils literal notranslate"><span class="pre">IBS</span></code>. PyBADS requires a Python <code class="docutils literal notranslate"><span class="pre">tuple</span></code>
+of length two; returning a list or array raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p>For maximum-a-posteriori estimation, return
+<code class="docutils literal notranslate"><span class="pre">neg_logl</span> <span class="pre">-</span> <span class="pre">log_prior(theta)</span></code> with the same SD, since the log prior adds no
+noise.</p></li>
+<li><p>PyBADS calls the target with one one-dimensional parameter vector in
+the original parameter space, using the same coordinates as your bounds.</p></li>
+<li><p>Choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> for an SD of about 1 near the optimum (see
+<a class="reference internal" href="#faq-how-do-i-choose-num-reps">How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?</a>), and
+re-evaluate the solution with more repeats
+(<a class="reference internal" href="#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">below</a>).</p></li>
+<li><p>Run PyBADS from several starting points, as the
+<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-how-do-i-run-pybads-from-several-starting-points">PyBADS FAQ</a>
+explains.</p></li>
+</ul>
+</section>
+<section id="how-do-i-use-pyibs-with-pyvbmc">
+<span id="faq-how-do-i-use-pyibs-with-pyvbmc"></span><h3>How do I use PyIBS with PyVBMC?<a class="headerlink" href="#how-do-i-use-pyibs-with-pyvbmc" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> approximates the parameter
+posterior and estimates the model evidence. When you give it a
+prior, its target should return the log-likelihood estimate
+(<code class="docutils literal notranslate"><span class="pre">return_positive=True</span></code>) and its estimated SD. PyVBMC adds the log prior
+itself. Set <code class="docutils literal notranslate"><span class="pre">options={&quot;specify_target_noise&quot;:</span> <span class="pre">True}</span></code> so it uses the
+supplied noise level.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyvbmc</span><span class="w"> </span><span class="kn">import</span> <span class="n">VBMC</span>
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">,</span> <span class="n">return_positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">vbmc</span> <span class="o">=</span> <span class="n">VBMC</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">plb</span><span class="p">,</span> <span class="n">pub</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"specify_target_noise"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">vp</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">vbmc</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">prior</span></code> is a PyVBMC prior object, such as
+<code class="docutils literal notranslate"><span class="pre">pyvbmc.priors.Trapezoidal(lb,</span> <span class="pre">plb,</span> <span class="pre">pub,</span> <span class="pre">ub)</span></code>. You can instead pass a
+function with <code class="docutils literal notranslate"><span class="pre">log_prior=</span></code>. Without either argument, return the log joint
+yourself: add <code class="docutils literal notranslate"><span class="pre">log_prior(theta)</span></code> to the log-likelihood estimate and keep
+the same SD. PyVBMC calls the target with one one-dimensional parameter
+vector in the original parameter space, using your bounds’ coordinates.</p>
+<p><code class="docutils literal notranslate"><span class="pre">results[&quot;elbo&quot;]</span></code> estimates the evidence lower bound (ELBO), which PyVBMC
+uses as an approximation to the log model evidence. <code class="docutils literal notranslate"><span class="pre">results[&quot;elbo_sd&quot;]</span></code>
+reports uncertainty in that estimate. Aim for target noise with an SD of
+about 1, “and probably not larger than ~3” in the region containing most
+posterior mass (the PyVBMC FAQ,
+<a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc">How large can the noise be?</a>).</p>
+</section>
+<section id="why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance">
+<span id="faq-why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance"></span><h3>Why does the target return the SD of the estimate, and not its variance?<a class="headerlink" href="#why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance" title="Link to this heading">#</a></h3>
+<p>PyBADS and PyVBMC interpret the second element as a standard deviation
+(SD). Use <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code>. With <code class="docutils literal notranslate"><span class="pre">&quot;var&quot;</span></code>, they would silently
+interpret the variance as an SD: a variance of 4 means an SD of 2, but
+they would read it as an SD of 4. MATLAB <code class="docutils literal notranslate"><span class="pre">ibslike</span></code> returns the variance
+unless <code class="docutils literal notranslate"><span class="pre">ReturnStd</span></code> is set, so check this when porting code.</p>
+</section>
+<section id="why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">
+<span id="faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it"></span><h3>Why is the SD of the estimate zero, and why do PyBADS and PyVBMC refuse it?<a class="headerlink" href="#why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it" title="Link to this heading">#</a></h3>
+<p><strong>Why it is zero.</strong> For a trial that first matches at sample <code class="docutils literal notranslate"><span class="pre">K</span></code>, IBS
+estimates the variance as <code class="docutils literal notranslate"><span class="pre">ψ₁(1)</span> <span class="pre">−</span> <span class="pre">ψ₁(K)</span></code>, where <code class="docutils literal notranslate"><span class="pre">ψ₁</span></code> is the trigamma
+function ([1], Sections 2.4 and 4.3). At <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">1</span></code>, both the log-likelihood
+estimate and the variance estimate are zero. If every positive-weight
+trial matches immediately in every repeat, the whole call returns zero
+for both quantities.</p>
+<p>This is a valid outcome of the estimator. When you request a variance,
+SD or full result, <code class="docutils literal notranslate"><span class="pre">IBS</span></code> returns it and issues a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> linking
+this answer:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>The IBS variance estimate is 0, as it is when every trial of positive weight matched its response at its first sample. PyBADS and PyVBMC refuse an SD of 0 for a noisy target: see https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it
+</pre></div>
+</div>
+<p>It is common when the model predicts every observed response with
+probability close to one. For 100 trials with matching probability 0.999,
+the probability of a zero variance estimate is 0.37 at <code class="docutils literal notranslate"><span class="pre">num_reps=10</span></code> and
+0.000045 at <code class="docutils literal notranslate"><span class="pre">num_reps=100</span></code>.</p>
+<p><strong>Why PyBADS and PyVBMC refuse it.</strong> Their Gaussian-process models use
+the supplied SD as the noise level of the evaluation. Zero would declare
+the value exact, although immediate matches do not establish that it is.
+With positive trial weights, IBS has zero true variance only when every
+observed response has probability one. Otherwise a zero <em>estimated</em>
+variance is a possible sampling outcome.</p>
+<p>Both packages require a finite, strictly positive SD for a noisy target.
+PyBADS raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> with a message beginning
+<code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">target</span> <span class="pre">function</span> <span class="pre">returned</span> <span class="pre">the</span> <span class="pre">noise</span> <span class="pre">SD</span> <span class="pre">0.0</span></code>. PyVBMC’s <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+says the estimated SD <code class="docutils literal notranslate"><span class="pre">must</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">finite,</span> <span class="pre">positive</span> <span class="pre">real-valued</span> <span class="pre">scalar</span></code>.</p>
+<p><strong>What to do.</strong></p>
+<ul class="simple">
+<li><p><em>More repeats</em> make zero variance estimates exponentially less likely
+as <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> increases. They do not rule them out: over a fit’s
+hundreds of evaluations, a small chance per call adds up.</p></li>
+<li><p><em>A lapse rate in the model</em> puts an upper bound below one on matching
+probabilities. If the lapse rate is at least <code class="docutils literal notranslate"><span class="pre">lapse</span></code> and a lapse chooses
+uniformly among <code class="docutils literal notranslate"><span class="pre">k</span></code> responses, then
+<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">≤</span> <span class="pre">1</span> <span class="pre">−</span> <span class="pre">lapse</span> <span class="pre">*</span> <span class="pre">(k</span> <span class="pre">−</span> <span class="pre">1)</span> <span class="pre">/</span> <span class="pre">k</span></code>. For <code class="docutils literal notranslate"><span class="pre">N</span></code> positive-weight trials, the
+probability of zero estimated variance is at most
+<code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">-</span> <span class="pre">lapse</span> <span class="pre">*</span> <span class="pre">(k</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">/</span> <span class="pre">k)</span> <span class="pre">**</span> <span class="pre">(N</span> <span class="pre">*</span> <span class="pre">num_reps)</span></code>. This is below <code class="docutils literal notranslate"><span class="pre">1e-13</span></code>
+for 600 binary trials, a lapse rate of 0.01 and ten repeats. The IBS
+paper also recommends a positive lapse rate to control sampling cost
+([1], Section 6.4).</p></li>
+</ul>
+</section>
+<section id="do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate">
+<span id="faq-do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate"></span><h3>Do I need to give PyBADS or PyVBMC the SD of every estimate?<a class="headerlink" href="#do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate" title="Link to this heading">#</a></h3>
+<p>Supplying the SD is recommended for both packages, but neither strictly
+requires it:</p>
+<ul class="simple">
+<li><p>For <em>optimization</em> with PyBADS, you can return the value alone and set
+<code class="docutils literal notranslate"><span class="pre">options={&quot;uncertainty_handling&quot;:</span> <span class="pre">True}</span></code>. PyBADS then estimates the
+noise. This can work, since IBS’s variance stays bounded across the
+parameter space (see
+<a class="reference internal" href="#faq-how-do-i-choose-num-reps">How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?</a>). Still,
+PyIBS computes its SD without additional simulations, and supplying it
+gives PyBADS more information. The PyBADS FAQ recommends this too
+(<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-should-i-provide-an-estimate-of-the-noise-associated-with-each-evaluation">Should I provide an estimate of the noise associated with each evaluation?</a>).</p></li>
+<li><p>For <em>Bayesian inference</em> with PyVBMC, supply it. Bayesian inference is
+very sensitive to noisy estimates of the log-likelihood, so the inference
+algorithm needs all available information about the magnitude of the
+noise. PyVBMC can infer a noise level from a scalar-valued target with
+<code class="docutils literal notranslate"><span class="pre">options={&quot;uncertainty_handling&quot;:</span> <span class="pre">True}</span></code>, but supplying the SD of each
+evaluation is preferable. Its FAQ recommends this
+(<a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-does-vbmc-automatically-detect-that-the-target-function-is-noisy">Does VBMC automatically detect that the target function is noisy?</a>),
+and PyIBS provides it without additional simulations.</p></li>
+</ul>
+</section>
+<section id="i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help">
+<span id="faq-i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help"></span><h3>I have several questions about using PyBADS to optimize the log-likelihood. Can you help?<a class="headerlink" href="#i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://acerbilab.github.io/pybads/">PyBADS</a> is a robust
+optimizer that works well with stochastic targets, and in particular with
+the noisy estimates of IBS. The
+<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html">PyBADS FAQ</a> covers
+optimization settings, bounds, starting points and interpretation of
+results. Start with its section on
+<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-noisy-objective-function">noisy objective functions</a>,
+but read the others too: all of them are relevant.</p>
+</section>
+<section id="what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference">
+<span id="faq-what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference"></span><h3>What if I want to use IBS to perform Bayesian posterior or model inference?<a class="headerlink" href="#what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference" title="Link to this heading">#</a></h3>
+<p>We recommend <a class="reference external" href="https://acerbilab.org/pyvbmc/">Variational Bayesian Monte Carlo (PyVBMC)</a>
+for approximating the posterior over model parameters and estimating the
+marginal likelihood, or model evidence. It supports noisy log-likelihood
+estimates such as IBS; see its FAQ on
+<a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-noisy-target-function">noisy target functions</a>.
+VBMC performed well with IBS in the empirical benchmark of
+<a class="reference external" href="https://arxiv.org/abs/2006.08655">Acerbi, 2020</a>.</p>
+<p><a class="reference internal" href="#faq-how-do-i-use-pyibs-with-pyvbmc">How do I use PyIBS with PyVBMC?</a>
+gives the target and settings.</p>
+</section>
+</section>
+<section id="precision-and-ibs-repeats">
+<span id="faq-precision-and-ibs-repeats"></span><h2>Precision and IBS repeats<a class="headerlink" href="#precision-and-ibs-repeats" title="Link to this heading">#</a></h2>
+<p>A <em>repeat</em> is an independent run of IBS ([1], Section 4.4). A PyIBS call
+averages <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> repeats, ten by default. Increasing this number makes
+the estimate more precise at the cost of more simulations.</p>
+<section id="how-do-i-choose-num-reps">
+<span id="faq-how-do-i-choose-num-reps"></span><h3>How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?<a class="headerlink" href="#how-do-i-choose-num-reps" title="Link to this heading">#</a></h3>
+<p>For fitting, aim for an estimated SD of about 1 in the region that matters:
+near the optimum for PyBADS, or where most posterior mass lies for PyVBMC.
+The PyBADS FAQ says “a standard deviation of order 1 or less should work”
+(<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective">Can PyBADS handle any arbitrary amount of noise in the objective?</a>).
+The PyVBMC FAQ says “ideally you want the SD of the noise in the
+log-likelihood to be around 1, and probably not larger than ~3”
+(<a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc">How large can the noise be?</a>).</p>
+<p>For ordinary IBS, variance falls as <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">num_reps</span></code> and SD as
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">sqrt(num_reps)</span></code>. The expected sample count grows in proportion to
+<code class="docutils literal notranslate"><span class="pre">num_reps</span></code>. A pilot evaluation near the expected solution, perhaps from
+a preliminary fit, gives a starting choice:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span>
+<span class="n">num_reps</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">sd</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>  <span class="c1"># for an SD of about 1</span>
+</pre></div>
+</div>
+<p>This uses the pilot’s variance estimate to target an SD of about 1. That
+estimate is noisy: use more pilot repeats, or average variance estimates
+from several independent calls, for a steadier guide. A pilot SD of zero
+does not establish that the target is deterministic; see the
+<a class="reference internal" href="#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">zero-SD answer</a>.</p>
+<p>One fixed <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> usually serves a whole fit, since IBS’s variance is
+bounded: one trial contributes at most <code class="docutils literal notranslate"><span class="pre">π²/6</span> <span class="pre">≈</span> <span class="pre">1.645</span></code> to the variance of
+one repeat ([1], Section 4.3), so with unit weights the SD is at most
+<code class="docutils literal notranslate"><span class="pre">sqrt(π²/6</span> <span class="pre">*</span> <span class="pre">N</span> <span class="pre">/</span> <span class="pre">num_reps)</span></code> for <code class="docutils literal notranslate"><span class="pre">N</span></code> trials, wherever the fit goes. Larger
+noise away from the solution is usually acceptable during optimization.</p>
+<p>If you cannot bring the SD down to about 1 within your computational budget,
+be as precise as you can afford.</p>
+</section>
+<section id="once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">
+<span id="faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats"></span><h3>Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?<a class="headerlink" href="#once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats" title="Link to this heading">#</a></h3>
+<p>Yes. This is standard practice whenever a noisy target is optimized, with
+IBS or without: re-evaluate the candidate solution with an independent,
+more precise estimate. Selecting a point because its noisy value was low
+can make the reported minimum too optimistic ([1], Section 4.1). With
+PyBADS:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_best</span> <span class="o">=</span> <span class="n">optimize_result</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span>
+<span class="n">neg_logl</span><span class="p">,</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">x_best</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use an <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object without a
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>
+for this evaluation. Compare models using these independent estimates
+and their SDs.</p>
+</section>
+<section id="in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum">
+<span id="faq-in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum"></span><h3>In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?<a class="headerlink" href="#in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum" title="Link to this heading">#</a></h3>
+<p>Adaptive precision can be useful and is a topic of research. PyIBS accepts
+<code class="docutils literal notranslate"><span class="pre">num_reps</span></code> separately for each call, so your target can choose a precision
+and return the corresponding estimated SD. PyBADS and PyVBMC call the
+target with the parameters alone; they do not choose its repeat count.
+Choose the count before drawing that evaluation’s samples. Changing the
+count in response to those same samples can introduce selection bias.</p>
+</section>
+<section id="as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal">
+<span id="faq-as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal"></span><h3>As I increase <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?<a class="headerlink" href="#as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal" title="Link to this heading">#</a></h3>
+<p>Yes. The expected sample count grows in proportion to <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, while
+the SD falls as <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">sqrt(num_reps)</span></code>. Halving the SD therefore takes four
+times as many repeats.</p>
+<p>Elapsed time also depends on batching and simulator overhead. With
+<code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>, IBS requests larger batches as sampling proceeds, so
+the number of simulator calls can grow much more slowly than the sample
+count. If most time is spent on a fixed
+cost per call, additional repeats may therefore cost little extra time
+(see <a class="reference internal" href="#faq-should-i-set-vectorized">Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?</a>).</p>
+</section>
+<section id="what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs">
+<span id="faq-what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs"></span><h3>What are trial-dependent repeats, and can I use them with PyIBS?<a class="headerlink" href="#what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs" title="Link to this heading">#</a></h3>
+<p>Trial-dependent repeats assign a separate repeat count to each trial to
+minimize variance for a fixed expected sample budget ([1], Appendix C.2).
+A fixed allocation preserves unbiasedness as long as every trial gets at
+least one repeat. The optimal allocation favors probabilities near 1/2.
+It allocates fewer repeats to responses near probability zero, which
+are expensive to match, and near probability one, whose estimates are
+already precise.</p>
+<p>The allocation depends on unknown trial probabilities. The paper
+recommends computing it from a pilot estimate with many repeats at a
+representative parameter vector, and retaining it for the fit.</p>
+<p>For this to work well, the trial likelihoods should be correlated across
+reasonable regions of parameter space, so that an allocation computed at
+one parameter vector remains beneficial at the others that the fit
+evaluates. This seems to hold often in practice, since the improbable
+trials are often those where something unexpected occurred, such as a
+lapse; more empirical studies are needed. In the paper’s example of 500
+trials with probabilities drawn uniformly between zero and one, the
+optimal allocation gave a median precision gain of about 1.6 over equal
+repeats at the same budget ([1], Appendix C.2).</p>
+<p>PyIBS takes one <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> for all trials in a call. To use different
+counts, group trials with the same count and create an <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object for
+each group. Sum the independent groups’ estimates and variance estimates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># reps: the number of repeats of each trial, from the allocation of [1]</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">reps</span> <span class="o">==</span> <span class="n">k</span><span class="p">),</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">reps</span><span class="p">)]</span>
+<span class="n">ibs_groups</span> <span class="o">=</span> <span class="p">[(</span><span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">[</span><span class="n">g</span><span class="p">],</span> <span class="n">S</span><span class="p">[</span><span class="n">g</span><span class="p">]),</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">target</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">neg_logl</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">ibs_g</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ibs_groups</span><span class="p">:</span>
+        <span class="n">value_g</span><span class="p">,</span> <span class="n">var_g</span> <span class="o">=</span> <span class="n">ibs_g</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"var"</span><span class="p">)</span>
+        <span class="n">neg_logl</span> <span class="o">+=</span> <span class="n">value_g</span>
+        <span class="n">var</span> <span class="o">+=</span> <span class="n">var_g</span>
+    <span class="k">return</span> <span class="n">neg_logl</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Without a design, each group’s simulator receives indices local to that
+group, starting at zero. To preserve the original trial indices, pass them
+as the design: <code class="docutils literal notranslate"><span class="pre">IBS(sample_from_model,</span> <span class="pre">R[g],</span> <span class="pre">g)</span></code>.</p>
+<p>A group whose responses nearly always match can return zero estimated
+variance, with the
+<a class="reference internal" href="#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">zero-SD warning</a>.
+An individual group’s zero is harmless for the fitting interface when the
+sum of the groups’ variances is positive.</p>
+</section>
+</section>
+<section id="cost-limits-and-the-likelihood-threshold">
+<span id="faq-cost-limits-and-the-likelihood-threshold"></span><h2>Cost, limits and the likelihood threshold<a class="headerlink" href="#cost-limits-and-the-likelihood-threshold" title="Link to this heading">#</a></h2>
+<section id="how-many-samples-does-an-estimate-take">
+<span id="faq-how-many-samples-does-an-estimate-take"></span><h3>How many samples does an estimate take?<a class="headerlink" href="#how-many-samples-does-an-estimate-take" title="Link to this heading">#</a></h3>
+<p>If trial <code class="docutils literal notranslate"><span class="pre">i</span></code> has matching probability <code class="docutils literal notranslate"><span class="pre">p_i</span></code>, it takes <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">p_i</span></code> samples
+per repeat on average ([1], Section 4.2). With no early stopping, a call
+therefore needs an expected <code class="docutils literal notranslate"><span class="pre">num_reps</span> <span class="pre">*</span> <span class="pre">sum(1</span> <span class="pre">/</span> <span class="pre">p_i)</span></code> samples. Batching
+with <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code> also generates surplus samples after a trial’s
+last needed match, which are discarded.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;full&quot;</span></code> to inspect the cost:
+<code class="docutils literal notranslate"><span class="pre">num_samples_per_trial</span></code> is the total number of simulated responses divided
+by the number of trials, including surplus samples; <code class="docutils literal notranslate"><span class="pre">fun_count</span></code> counts
+simulator calls; and <code class="docutils literal notranslate"><span class="pre">elapsed_time</span></code> gives the call’s duration.</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">p</span> <span class="pre">=</span> <span class="pre">exp(-log</span> <span class="pre">p)</span></code>, the cost of matching an individual response
+can grow rapidly as its log-probability falls ([1], Appendix C.1).
+A positive lapse rate can bound this expected cost, and a
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>
+can stop sampling at poor parameters ([1], Section 6.4).
+The sampling cap <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> raises an error when a trial takes too many
+samples, including when its response is impossible (see
+<a class="reference internal" href="#faq-a-call-raises-ibssamplingerror-what-do-i-do">A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a>).</p>
+</section>
+<section id="should-i-set-vectorized">
+<span id="faq-should-i-set-vectorized"></span><h3>Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?<a class="headerlink" href="#should-i-set-vectorized" title="Link to this heading">#</a></h3>
+<p>An explicit choice can improve speed, and removes a decision based on
+timing from <a class="reference internal" href="#faq-how-do-i-make-a-run-reproducible">reproducibility</a>.
+<code class="docutils literal notranslate"><span class="pre">vectorized</span></code> controls how <code class="docutils literal notranslate"><span class="pre">IBS</span></code> batches simulator requests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code> requests several samples of each trial that still needs matches.
+The batch size grows by the <code class="docutils literal notranslate"><span class="pre">acceleration</span></code> factor, 1.5 by default,
+subject to the batch limits. This reduces simulator calls but can
+generate samples beyond the last match needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> requests one sample per unfinished trial per call. It generates
+no surplus, but can require many calls while waiting for rare responses.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, times one simulation of all trials at the object’s
+first call with <code class="docutils literal notranslate"><span class="pre">num_reps</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>. It selects <code class="docutils literal notranslate"><span class="pre">False</span></code> if that simulation
+takes at least <code class="docutils literal notranslate"><span class="pre">vectorized_threshold</span></code> seconds (0.1 by default), and
+<code class="docutils literal notranslate"><span class="pre">True</span></code> otherwise. The object retains the choice, readable as
+<code class="docutils literal notranslate"><span class="pre">ibs.vectorized</span></code>.</p></li>
+</ul>
+<p>A call with <code class="docutils literal notranslate"><span class="pre">num_reps=1</span></code> always requests one sample per trial per simulator
+call. It warns if you explicitly set <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>.</p>
+<p>To choose explicitly, consider where your simulator spends its time:</p>
+<ul class="simple">
+<li><p><strong>Expensive individual responses:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code> avoids surplus samples and
+is often preferable when runtime is proportional to sample count.</p></li>
+<li><p><strong>Expensive calls:</strong> choose <code class="docutils literal notranslate"><span class="pre">True</span></code> when most cost is incurred once per
+call, for example when starting a process, loading a model or moving
+data to a GPU. A slow initial simulation would make <code class="docutils literal notranslate"><span class="pre">None</span></code> choose
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, although fewer, larger calls would be faster.</p></li>
+</ul>
+<p>The difference can be large. For the example model with 100 to 10,000
+trials and a fixed cost of 0.2 s per call, the
+<a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md">validation of PyIBS</a>
+found that 100 repeats took 15.5 to 27 minutes with <code class="docutils literal notranslate"><span class="pre">False</span></code>. Requesting
+batches with <code class="docutils literal notranslate"><span class="pre">True</span></code> required only 9 to 12 calls, corresponding to about
+2 s of simulator overhead.</p>
+<p>For a cheap simulator, batching can also save Python and sampler overhead.
+If both call overhead and per-response cost matter, time both schedules
+at representative parameters.</p>
+<p>A simulator that is slow only on its first call, such as one compiled
+just in time, can distort the automatic decision. Warm it up before the
+first IBS call, or set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code> explicitly.</p>
+</section>
+<section id="what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">
+<span id="faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it"></span><h3>What does the likelihood threshold <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> do, and how do I choose it?<a class="headerlink" href="#what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it" title="Link to this heading">#</a></h3>
+<p>The threshold saves simulations at poor parameter vectors. During each
+repeat, IBS maintains a running lower bound on the repeat’s final negative
+log-likelihood <em>estimate</em>. Once the bound exceeds <code class="docutils literal notranslate"><span class="pre">T</span></code>, the repeat stops
+and contributes exactly <code class="docutils literal notranslate"><span class="pre">T</span></code> to the negative log-likelihood estimate ([1],
+Appendix C.1). If any repeat stops this way, the call reports exit flag 1,
+unless a time limit subsequently stops the call with exit flag 2.</p>
+<p><code class="docutils literal notranslate"><span class="pre">T</span></code> applies to the weighted negative log-likelihood. With
+<code class="docutils literal notranslate"><span class="pre">return_positive=True</span></code>, the same rule applies, but the stopped repeat
+contributes <code class="docutils literal notranslate"><span class="pre">-T</span></code> to the returned log-likelihood estimate.</p>
+<p>A usual choice during optimization is the chance level: the negative
+log-likelihood of choosing uniformly among each trial’s possible
+responses. It is <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">w_i</span> <span class="pre">log(k_i)</span></code> for <code class="docutils literal notranslate"><span class="pre">k_i</span></code> responses and weight <code class="docutils literal notranslate"><span class="pre">w_i</span></code>
+on trial <code class="docutils literal notranslate"><span class="pre">i</span></code>, or <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">log(2)</span></code> for <code class="docutils literal notranslate"><span class="pre">N</span></code> binary trials with unit weights:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ibs_fit</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">neg_logl_threshold</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Clipping changes the estimator:</p>
+<ul class="simple">
+<li><p>It biases log-likelihood estimates upwards and negative log-likelihood
+estimates downwards. The bias becomes negligible when the true
+log-likelihood is sufficiently above <code class="docutils literal notranslate"><span class="pre">-T</span></code> ([1], Appendix C.1). The
+threshold is intended to identify poor parameters during optimization.</p></li>
+<li><p>The variance estimate of a stopped repeat uses its counts at stopping,
+not the variance of the clipped value, so it is not calibrated when the
+threshold acts.</p></li>
+<li><p>All per-trial arrays returned by <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;full&quot;</span></code> are NaN if
+any repeat was thresholded. The clipped contribution belongs to the
+repeat as a whole and has no per-trial decomposition.</p></li>
+</ul>
+<p>You can use the threshold during optimization, but evaluate the final
+solution with an object that has no threshold:
+<code class="docutils literal notranslate"><span class="pre">neg_logl_threshold=np.inf</span></code>, the default
+(<a class="reference internal" href="#faq-once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">see above</a>).</p>
+<p>For Bayesian posterior or evidence inference, leave the threshold off,
+unless runs with and without it show that clipping leaves the posterior and
+evidence unchanged.</p>
+<p>If each trial’s number of possible responses is hard to count, an average
+can provide a practical optimization threshold. For the four-in-a-row
+game, where the number of legal moves depends on the board, [1] used
+<code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">log(20)</span></code> (Appendix C.1).</p>
+</section>
+<section id="is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-e-g-20">
+<span id="faq-is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-eg-20"></span><h3>Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?<a class="headerlink" href="#is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-e-g-20" title="Link to this heading">#</a></h3>
+<p>No. Returning a value from a trial that has not matched truncates its
+sampling distribution and introduces bias, losing the benefit of IBS
+over fixed sampling ([1], Section 3). For optimization, the paper instead
+proposes an early-stopping threshold on the whole dataset’s estimate
+([1], Appendix C.1), implemented by the
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>.
+The sampling cap <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> therefore raises an error instead of
+returning an estimate from incomplete counts (see
+<a class="reference internal" href="#faq-a-call-raises-ibssamplingerror-what-do-i-do">A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a>).</p>
+</section>
+<section id="what-does-max-time-do">
+<span id="faq-what-does-max-time-do"></span><h3>What does <code class="docutils literal notranslate"><span class="pre">max_time</span></code> do?<a class="headerlink" href="#what-does-max-time-do" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">max_time</span></code> limits each call’s duration in seconds. The limit is checked
+after every simulator call, so a simulator call can run past it. If the
+limit is reached while sampling is unfinished, each trial’s estimate
+averages the repeats it completed. The result has exit flag 2 and a
+warning. A trial without a completed repeat causes <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code>.
+If some repeats were thresholded, they retain their clipped contributions.</p>
+<p>A finite time limit can bias estimates because draws needing fewer
+samples are more likely to finish. Keep <code class="docutils literal notranslate"><span class="pre">max_time=np.inf</span></code>, its default, for
+ordinary estimation and fitting. Use the sampling cap to raise an error
+on excessive cost, or consider the likelihood threshold for optimization;
+see their respective answers for the statistical consequences. A finite
+time limit also makes the result depend on timing, so a seed alone no
+longer reproduces the run.</p>
+</section>
+</section>
+<section id="troubleshooting">
+<span id="faq-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="a-call-raises-ibssamplingerror-what-do-i-do">
+<span id="faq-a-call-raises-ibssamplingerror-what-do-i-do"></span><h3>A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code>. What do I do?<a class="headerlink" href="#a-call-raises-ibssamplingerror-what-do-i-do" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="api/classes/ibs_sampling_error.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></span></a> usually means a
+trial exceeded the sampling cap. A call allows <code class="docutils literal notranslate"><span class="pre">max_iter</span> <span class="pre">*</span> <span class="pre">num_reps</span></code>
+samples for each trial, with <code class="docutils literal notranslate"><span class="pre">max_iter=10**5</span></code> by default. It returns no
+estimate from an incomplete draw. The message gives the affected trials’
+0-based indices and sample counts:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>In a draw of 10 repeats, trial 1 drew 1135 samples, more than max_iter * num_reps = 1000. 1 of 3 trials still need matches, and IBS returns no estimate for an incomplete repeat. Check that the simulator can produce every observed response at this parameter vector, or raise max_iter.
+</pre></div>
+</div>
+<p>The simulator may be unable to produce an observed response, or that
+response may be extremely improbable at the current parameters:</p>
+<ul class="simple">
+<li><p>Check the response coding and order. For example, a simulator returning
+0 and 1 cannot match data encoded as -1 and 1. Return responses in the
+order of the requested design rows.</p></li>
+<li><p>A lapse component with a small positive lower bound, such as 0.005,
+can make every response possible and bound the expected cost ([1],
+Section 6.4). It should be part of the model you intend to fit.</p></li>
+<li><p>For optimization, consider a
+<a class="reference internal" href="#faq-what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">likelihood threshold</a>
+to stop sampling poor parameter vectors before they reach the cap.</p></li>
+</ul>
+<p>Raise <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> when the response probabilities justify the sample cost
+and that cost is acceptable. Do not retry a failed call until one
+succeeds: the calls that finish under a cap are those with shorter draws,
+which give higher log-likelihood estimates. Investigate failures and
+revise the simulator or sampling settings instead.</p>
+<p><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code> is also raised if
+<a class="reference internal" href="#faq-what-does-max-time-do"><code class="docutils literal notranslate"><span class="pre">max_time</span></code></a> stops a call before a trial has
+completed a repeat.</p>
+</section>
+<section id="ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator">
+<span id="faq-ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator"></span><h3><code class="docutils literal notranslate"><span class="pre">IBS</span></code> calls my simulator with different subsets of trials. What does this mean for my simulator?<a class="headerlink" href="#ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator" title="Link to this heading">#</a></h3>
+<p>Each requested row must have the same response distribution regardless
+of which other rows are requested or their order. Requests may contain a
+subset of trials and may repeat a trial several times.</p>
+<p>For example, if <code class="docutils literal notranslate"><span class="pre">S[:,</span> <span class="pre">0]</span></code> holds stimulus contrast, then
+<code class="docutils literal notranslate"><span class="pre">np.min(design_rows[:,</span> <span class="pre">0])</span></code> is the minimum over the current request. It is
+not the dataset’s minimum and may change on every call. If the model needs
+the dataset’s minimum or other global information, compute it from the
+full data and
+<a class="reference internal" href="#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">bind it to the simulator</a>.</p>
+<p>Generate each requested response independently. Drawing one random
+number and sharing it across all rows makes samples dependent and can
+invalidate the likelihood estimate or its estimated variance.</p>
+</section>
+<section id="a-call-raises-a-valueerror-or-a-typeerror-about-the-simulator-s-output-what-is-wrong">
+<span id="faq-a-call-raises-a-valueerror-or-a-typeerror-about-the-simulators-output-what-is-wrong"></span><h3>A call raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> about the simulator’s output. What is wrong?<a class="headerlink" href="#a-call-raises-a-valueerror-or-a-typeerror-about-the-simulator-s-output-what-is-wrong" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">The</span> <span class="pre">simulator</span> <span class="pre">was</span> <span class="pre">asked</span> <span class="pre">for</span> <span class="pre">...</span> <span class="pre">and</span> <span class="pre">returned</span> <span class="pre">an</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">shape</span> <span class="pre">...</span></code>: return one response per requested row. For <code class="docutils literal notranslate"><span class="pre">r</span></code> rows, the array
+must have shape <code class="docutils literal notranslate"><span class="pre">(r,)</span></code> or <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">1)</span></code> for one response column, or <code class="docutils literal notranslate"><span class="pre">(r,</span> <span class="pre">C)</span></code>
+for <code class="docutils literal notranslate"><span class="pre">C</span></code> columns. Check that you use the requested rows, rather than
+returning a response for every trial in the full dataset.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">The</span> <span class="pre">simulator</span> <span class="pre">returned</span> <span class="pre">responses</span> <span class="pre">of</span> <span class="pre">dtype</span> <span class="pre">...,</span> <span class="pre">which</span> <span class="pre">NumPy</span> <span class="pre">never</span> <span class="pre">finds</span> <span class="pre">equal</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">...</span> <span class="pre">among</span> <span class="pre">the</span> <span class="pre">observed</span> <span class="pre">responses</span></code>: the simulator
+returned a type that cannot match the observed responses, such as text
+for numerical observations. Use compatible types. For responses mixing
+numbers and text, use object arrays (<code class="docutils literal notranslate"><span class="pre">dtype=object</span></code>) for both the data
+and simulator output.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">response_matrix</span> <span class="pre">holds</span> <span class="pre">a</span> <span class="pre">NaN</span></code> occurs during construction and
+names the affected trials. NaN is unequal to itself, so it cannot match.
+If it denotes a response category, encode that category with a value the
+simulator can return. If it denotes missing data, handle the missingness
+in your analysis or remove the trial.</p>
+</section>
+<section id="how-do-i-make-a-run-reproducible">
+<span id="faq-how-do-i-make-a-run-reproducible"></span><h3>How do I make a run reproducible?<a class="headerlink" href="#how-do-i-make-a-run-reproducible" title="Link to this heading">#</a></h3>
+<p>Seed the <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object and draw all simulator randomness from its supplied
+generator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+    <span class="o">...</span>  <span class="c1"># every random draw from rng</span>
+
+
+<span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">random_seed</span></code> follows PyBADS’s convention:</p>
+<ul class="simple">
+<li><p>An integer or <code class="docutils literal notranslate"><span class="pre">numpy.random.SeedSequence</span></code> seeds a new generator.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> is used directly.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, derives a new generator from NumPy’s global random
+state. Calling <code class="docutils literal notranslate"><span class="pre">np.random.seed</span></code> before constructing the object therefore
+also fixes its seed.</p></li>
+</ul>
+<p>The object stores its generator as <code class="docutils literal notranslate"><span class="pre">ibs.rng</span></code> and passes it to simulators
+with a keyword-compatible parameter named <code class="docutils literal notranslate"><span class="pre">rng</span></code>.</p>
+<p>Two objects with the same seed reproduce the same sequence of estimates
+when given the same calls and simulator, provided timing does not change
+the sampling:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>. Automatic <code class="docutils literal notranslate"><span class="pre">None</span></code> also reproduces draws
+if it makes the same decision in both runs, but that decision depends on
+timing (see <a class="reference internal" href="#faq-should-i-set-vectorized">Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?</a>).</p></li>
+<li><p>Keep <code class="docutils literal notranslate"><span class="pre">acceleration_threshold=None</span></code> and <code class="docutils literal notranslate"><span class="pre">max_time=np.inf</span></code>, their
+defaults. Neither then uses simulator runtime to alter sampling.</p></li>
+</ul>
+<p>A simulator using global functions such as <code class="docutils literal notranslate"><span class="pre">np.random.normal</span></code> is not
+controlled by the seed passed to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>. Reproducibility across computers
+or different Python, NumPy and SciPy versions is also not guaranteed.</p>
+<p>For fitting, give separate seeds to PyIBS and the optimizer or inference
+method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">bads</span> <span class="o">=</span> <span class="n">BADS</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">plb</span><span class="p">,</span> <span class="n">pub</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"specify_target_noise"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"random_seed"</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="n">vbmc</span> <span class="o">=</span> <span class="n">VBMC</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">plb</span><span class="p">,</span> <span class="n">pub</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"specify_target_noise"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create and seed the <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object once for the whole fit. Recreating it with
+the same seed at every evaluation reuses the random stream and freezes
+the noise, which can bias fitting (the PyBADS FAQ,
+<a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-can-i-make-a-noisy-objective-function-deterministic-by-fixing-the-noise-process">Can I make a noisy objective function deterministic by fixing the noise process?</a>).</p>
+</section>
+<section id="how-do-i-check-that-the-estimates-are-right-for-my-model">
+<span id="faq-how-do-i-check-that-the-estimates-are-right-for-my-model"></span><h3>How do I check that the estimates are right for my model?<a class="headerlink" href="#how-do-i-check-that-the-estimates-are-right-for-my-model" title="Link to this heading">#</a></h3>
+<p>Check the simulator against a likelihood computed independently wherever
+possible ([1], Section 6.4). This may be a closed-form or accurate numerical
+likelihood for the full model, a simplified model, or a few carefully
+chosen trials and parameter vectors. PyIBS itself has been
+<a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/dev/results/2026-10-09-validation.md">validated across models and settings</a>,
+but that does not check your simulator.</p>
+<p>Draw many independent IBS estimates at a fixed parameter vector, without
+a likelihood threshold or time limit. Compare their mean with the
+reference value, allowing for the mean’s sampling error. Also compare
+their empirical variance with the mean of the reported variance
+estimates. Ordinary IBS gives unbiased estimates of both log-likelihood
+and variance when its draws are completed and not selected.</p>
+<p>If the estimates are approximately normal and the reported SDs are stable
+and positive, inspect the z-scores <code class="docutils literal notranslate"><span class="pre">(neg_logl</span> <span class="pre">-</span> <span class="pre">exact)</span> <span class="pre">/</span> <span class="pre">sd</span></code>. They should
+be approximately centered on zero with SD near one. This rests on a normal
+approximation, which unbiasedness does not guarantee. If nearly all trials
+match on their first samples, estimated variances can be zero and
+z-scores can behave poorly even with many repeats; see the
+<a class="reference internal" href="#faq-why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">zero-SD answer</a>.</p>
+<p>The installed example model, <code class="docutils literal notranslate"><span class="pre">pyibs.examples.psycho_model</span></code>, provides a
+simulator and the closed-form negative log-likelihood <code class="docutils literal notranslate"><span class="pre">psycho_neg_logl</span></code>.
+The <a class="reference internal" href="examples.html"><span class="std std-doc">first example notebook</span></a> shows this comparison on 600
+trials, where the standardized errors are close to normal.</p>
+<p>Check the fit separately, for example by comparing independent runs of
+PyBADS or PyVBMC from different starting points.</p>
+</section>
+</section>
+<section id="miscellanea">
+<span id="faq-miscellanea"></span><h2>Miscellanea<a class="headerlink" href="#miscellanea" title="Link to this heading">#</a></h2>
+<section id="i-used-ibslike-in-matlab-what-is-different-in-pyibs">
+<span id="faq-i-used-ibslike-in-matlab-what-is-different-in-pyibs"></span><h3>I used <code class="docutils literal notranslate"><span class="pre">ibslike</span></code> in MATLAB. What is different in PyIBS?<a class="headerlink" href="#i-used-ibslike-in-matlab-what-is-different-in-pyibs" title="Link to this heading">#</a></h3>
+<p>PyIBS implements the same IBS estimator as <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> 0.96 of
+<a class="reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS</a>, with a Python interface.
+In PyIBS:</p>
+<ul class="simple">
+<li><p>Create an <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object with the simulator, responses and design:
+<code class="docutils literal notranslate"><span class="pre">ibs</span> <span class="pre">=</span> <span class="pre">IBS(sample_from_model,</span> <span class="pre">response_matrix,</span> <span class="pre">design_matrix,</span> <span class="pre">...)</span></code>.
+Evaluate it with
+<code class="docutils literal notranslate"><span class="pre">ibs(params,</span> <span class="pre">num_reps,</span> <span class="pre">trial_weights,</span> <span class="pre">additional_output,</span> <span class="pre">return_positive)</span></code>.
+The corresponding MATLAB call is
+<code class="docutils literal notranslate"><span class="pre">ibslike(fun,</span> <span class="pre">params,</span> <span class="pre">respMat,</span> <span class="pre">designMat,</span> <span class="pre">options,</span> <span class="pre">varargin)</span></code>.
+Extra simulator arguments are
+<a class="reference internal" href="#faq-my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">bound to it</a>
+rather than passed as <code class="docutils literal notranslate"><span class="pre">varargin</span></code>.</p></li>
+<li><p>MATLAB’s <code class="docutils literal notranslate"><span class="pre">Nreps</span></code>, <code class="docutils literal notranslate"><span class="pre">TrialWeights</span></code> and <code class="docutils literal notranslate"><span class="pre">ReturnPositive</span></code> become the call
+arguments <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, <code class="docutils literal notranslate"><span class="pre">trial_weights</span></code> and <code class="docutils literal notranslate"><span class="pre">return_positive</span></code>.
+<code class="docutils literal notranslate"><span class="pre">ReturnStd</span></code> becomes <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code>.
+<code class="docutils literal notranslate"><span class="pre">additional_output=&quot;full&quot;</span></code> combines the exit flag and output structure
+in one result. Its fields use Python names: <code class="docutils literal notranslate"><span class="pre">funcCount</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">fun_count</span></code>, <code class="docutils literal notranslate"><span class="pre">NsamplesPerTrial</span></code> becomes <code class="docutils literal notranslate"><span class="pre">num_samples_per_trial</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">nlogL_trials</span></code> and <code class="docutils literal notranslate"><span class="pre">nlogLvar_trials</span></code> become <code class="docutils literal notranslate"><span class="pre">neg_logl_trials</span></code> and
+<code class="docutils literal notranslate"><span class="pre">neg_logl_var_trials</span></code>.</p></li>
+<li><p>Other options become object settings: <code class="docutils literal notranslate"><span class="pre">Vectorized</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">vectorized</span></code> (<code class="docutils literal notranslate"><span class="pre">'auto'</span></code> becomes <code class="docutils literal notranslate"><span class="pre">None</span></code>), <code class="docutils literal notranslate"><span class="pre">Acceleration</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">acceleration</span></code>, <code class="docutils literal notranslate"><span class="pre">NsamplesPerCall</span></code> becomes <code class="docutils literal notranslate"><span class="pre">num_samples_per_call</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MaxIter</span></code> becomes <code class="docutils literal notranslate"><span class="pre">max_iter</span></code>, <code class="docutils literal notranslate"><span class="pre">MaxTime</span></code> becomes <code class="docutils literal notranslate"><span class="pre">max_time</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">NegLogLikeThreshold</span></code> becomes <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> (<code class="docutils literal notranslate"><span class="pre">np.inf</span></code> turns it
+off). MATLAB’s hard-coded <code class="docutils literal notranslate"><span class="pre">MaxSamples</span></code>, <code class="docutils literal notranslate"><span class="pre">AccelerationThreshold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">VectorizedThreshold</span></code> and <code class="docutils literal notranslate"><span class="pre">MaxMem</span></code> are also settings:
+<code class="docutils literal notranslate"><span class="pre">max_samples</span></code>, <code class="docutils literal notranslate"><span class="pre">acceleration_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">vectorized_threshold</span></code> and
+<code class="docutils literal notranslate"><span class="pre">max_mem</span></code>.</p></li>
+<li><p>With no design, the simulator receives 0-based trial indices.</p></li>
+<li><p>The simulator can take the object’s random generator, <code class="docutils literal notranslate"><span class="pre">rng</span></code>, for
+<a class="reference internal" href="#faq-how-do-i-make-a-run-reproducible">reproducible runs</a>.</p></li>
+</ul>
+<p>The sampling and stopping rules also have deliberate differences:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vectorized=None</span></code> makes its decision once per object.</p></li>
+<li><p>The number of samples per call grows after every call by default.
+Set <code class="docutils literal notranslate"><span class="pre">acceleration_threshold=0.1</span></code> to use <code class="docutils literal notranslate"><span class="pre">ibslike</span></code>’s timing rule.</p></li>
+<li><p>The likelihood threshold checks each repeat separately and assigns
+a stopped repeat exactly the threshold value ([1], Appendix C.1).</p></li>
+<li><p>The sample cap counts samples separately for each trial and raises
+<code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code> when exceeded.</p></li>
+<li><p>A time-limited estimate averages each trial’s completed repeats and
+issues a warning.</p></li>
+</ul>
+<p>For the tests corresponding to <code class="docutils literal notranslate"><span class="pre">ibslike('test')</span></code>, run
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--pyargs</span> <span class="pre">pyibs</span></code>. The
+<a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md">catalogue of deliberate differences</a>
+lists all differences from <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> and the didactic <code class="docutils literal notranslate"><span class="pre">ibs_basic.m</span></code>,
+with their reasons. The two implementations draw random numbers
+differently, so runs do not match draw for draw even with the same
+simulator.</p>
+</section>
+<section id="i-used-pyibs-0-1-0-what-do-i-need-to-change">
+<span id="faq-i-used-pyibs-010-what-do-i-need-to-change"></span><h3>I used PyIBS 0.1.0. What do I need to change?<a class="headerlink" href="#i-used-pyibs-0-1-0-what-do-i-need-to-change" title="Link to this heading">#</a></h3>
+<p>PyIBS 1.5 keeps the main calling convention: construct <code class="docutils literal notranslate"><span class="pre">IBS(...)</span></code> and
+evaluate it with <code class="docutils literal notranslate"><span class="pre">ibs(params,</span> <span class="pre">num_reps,</span> <span class="pre">...)</span></code>. Check an existing script
+for the following changes:</p>
+<ul class="simple">
+<li><p>Results differ because of the new sampler and fixes to 0.1.0, including
+its default <code class="docutils literal notranslate"><span class="pre">max_iter=15</span></code>, which biased estimates for improbable
+responses. Calling <code class="docutils literal notranslate"><span class="pre">np.random.seed</span></code> does not reproduce 0.1.0’s results.</p></li>
+<li><p>Settings, data and call arguments are checked more strictly. Values
+accepted by 0.1.0 may raise an exception.</p></li>
+<li><p>Exceeding the sample cap raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code> instead of returning
+exit flag 3.</p></li>
+<li><p>The example model is imported from <code class="docutils literal notranslate"><span class="pre">pyibs.examples.psycho_model</span></code>.</p></li>
+</ul>
+<p>The “Upgrading from 0.1.0” list in the
+<a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md">changelog</a>
+gives the full set of checks, including changes to returned values and
+object settings.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="quickstart.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="examples.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general">General</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-kind-of-problems-is-pyibs-suited-for">Which kind of problems is PyIBS suited for?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-should-i-use-ibs-rather-than-amortized-simulation-based-inference">When should I use IBS rather than amortized simulation-based inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-ibs-compare-with-approximate-bayesian-computation-abc-or-synthetic-likelihood">How does IBS compare with approximate Bayesian computation (ABC) or synthetic likelihood?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-ibs-basic-for">What is <code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code> for?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-pyibs">Installing PyIBS</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#where-can-i-download-pyibs">Where can I download PyIBS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-external-packages-does-pyibs-require">Which external packages does PyIBS require?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-version-of-python-do-i-need">Which version of Python do I need?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-know-whether-a-newer-version-of-pyibs-exists">How do I know whether a newer version of PyIBS exists?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-check-that-pyibs-works-on-my-computer">How do I check that PyIBS works on my computer?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-am-having-trouble-installing-pyibs-can-you-help">I am having trouble installing PyIBS. Can you help?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-simulator-and-the-data">The simulator and the data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-write-the-simulator">How do I write the simulator?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-simulator-needs-additional-data-or-inputs-how-do-i-pass-them-to-ibs">My simulator needs additional data or inputs. How do I pass them to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-responses-of-my-model-depend-both-on-the-current-trial-and-on-responses-or-stimuli-from-previous-trials-how-can-i-tell-this-to-ibs">The responses of my model depend both on the current trial and on responses or stimuli from previous trials. How can I tell this to <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#my-model-uses-data-structures-which-are-not-easily-converted-to-numerical-arrays-can-i-still-use-ibs">My model uses data structures which are not easily converted to numerical arrays. Can I still use <code class="docutils literal notranslate"><span class="pre">IBS</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-i-use-ibs-with-continuous-responses">Can I use IBS with continuous responses?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-a-call-of-ibs-return">What does a call of <code class="docutils literal notranslate"><span class="pre">IBS</span></code> return?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pybads-and-pyvbmc">PyBADS and PyVBMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-use-pyibs-with-pybads">How do I use PyIBS with PyBADS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-use-pyibs-with-pyvbmc">How do I use PyIBS with PyVBMC?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-does-the-target-return-the-sd-of-the-estimate-and-not-its-variance">Why does the target return the SD of the estimate, and not its variance?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-the-sd-of-the-estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it">Why is the SD of the estimate zero, and why do PyBADS and PyVBMC refuse it?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-i-need-to-give-pybads-or-pyvbmc-the-sd-of-every-estimate">Do I need to give PyBADS or PyVBMC the SD of every estimate?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-have-several-questions-about-using-pybads-to-optimize-the-log-likelihood-can-you-help">I have several questions about using PyBADS to optimize the log-likelihood. Can you help?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-if-i-want-to-use-ibs-to-perform-bayesian-posterior-or-model-inference">What if I want to use IBS to perform Bayesian posterior or model inference?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-and-ibs-repeats">Precision and IBS repeats</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-choose-num-reps">How do I choose <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#once-the-optimizer-has-found-the-best-parameters-should-i-evaluate-the-log-likelihood-there-with-more-repeats">Once the optimizer has found the best parameters, should I evaluate the log-likelihood there with more repeats?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#in-an-ideal-world-would-you-let-the-number-of-repeats-depend-on-how-close-the-optimization-algorithm-thinks-it-is-to-the-maximum">In an ideal world, would you let the number of repeats depend on how close the optimization algorithm thinks it is to the maximum?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#as-i-increase-num-reps-the-sd-of-the-estimate-goes-down-slowly-but-the-computational-time-increases-linearly-is-this-normal">As I increase <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, the SD of the estimate goes down slowly, but the computational time increases linearly. Is this normal?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-trial-dependent-repeats-and-can-i-use-them-with-pyibs">What are trial-dependent repeats, and can I use them with PyIBS?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cost-limits-and-the-likelihood-threshold">Cost, limits and the likelihood threshold</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-many-samples-does-an-estimate-take">How many samples does an estimate take?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#should-i-set-vectorized">Should I set <code class="docutils literal notranslate"><span class="pre">vectorized</span></code>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-the-likelihood-threshold-neg-logl-threshold-do-and-how-do-i-choose-it">What does the likelihood threshold <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> do, and how do I choose it?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-it-okay-to-stop-the-ibs-algorithm-for-one-trial-after-a-fixed-number-of-samples-e-g-20">Is it okay to stop the IBS algorithm for one trial after a fixed number of samples (e.g., 20)?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-max-time-do">What does <code class="docutils literal notranslate"><span class="pre">max_time</span></code> do?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-call-raises-ibssamplingerror-what-do-i-do">A call raises <code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code>. What do I do?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ibs-calls-my-simulator-with-different-subsets-of-trials-what-does-this-mean-for-my-simulator"><code class="docutils literal notranslate"><span class="pre">IBS</span></code> calls my simulator with different subsets of trials. What does this mean for my simulator?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-call-raises-a-valueerror-or-a-typeerror-about-the-simulator-s-output-what-is-wrong">A call raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> about the simulator’s output. What is wrong?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-make-a-run-reproducible">How do I make a run reproducible?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-check-that-the-estimates-are-right-for-my-model">How do I check that the estimates are right for my model?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#miscellanea">Miscellanea</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-used-ibslike-in-matlab-what-is-different-in-pyibs">I used <code class="docutils literal notranslate"><span class="pre">ibslike</span></code> in MATLAB. What is different in PyIBS?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-used-pyibs-0-1-0-what-do-i-need-to-change">I used PyIBS 0.1.0. What do I need to change?</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

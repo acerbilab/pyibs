@@ -1,0 +1,801 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Instructions for developers and contributors &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'development';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/development.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="About us" href="about_us.html" />
+    <link rel="prev" title="check_for_updates" href="api/functions/check_for_updates.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_examples/pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/edit/main/docsrc/source/development.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2Fdevelopment.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/development.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Instructions for developers and contributors</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-instructions-for-developers">Installation instructions for developers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-conventions">Coding conventions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-formatting">Code formatting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docstrings">Docstrings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random-numbers">Random numbers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-documentation">Code documentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General structure</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#git-commits"><code class="docutils literal notranslate"><span class="pre">git</span></code> commits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="instructions-for-developers-and-contributors">
+<h1>Instructions for developers and contributors<a class="headerlink" href="#instructions-for-developers-and-contributors" title="Link to this heading">#</a></h1>
+<p>PyIBS implements inverse binomial sampling in Python. It requires Python
+3.10 or later, NumPy 2.0 or later, and SciPy 1.13 or later. The reference
+implementation is <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> in
+<a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS</a>; the
+<a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md">catalogue of deliberate differences</a> lists
+the intentional differences and explains their reasons.</p>
+<p>The published documentation is at <a class="reference external" href="https://acerbilab.github.io/pyibs/">https://acerbilab.github.io/pyibs/</a>.</p>
+<section id="installation-instructions-for-developers">
+<h2>Installation instructions for developers<a class="headerlink" href="#installation-instructions-for-developers" title="Link to this heading">#</a></h2>
+<p>For a source checkout with development dependencies:</p>
+<ol class="arabic">
+<li><p>Clone the PyIBS GitHub repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">acerbilab</span><span class="o">/</span><span class="n">pyibs</span>
+<span class="n">cd</span> <span class="n">pyibs</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create a virtual environment with <a class="reference external" href="https://docs.astral.sh/uv/">uv</a> and
+install PyIBS in editable mode, so changes to the source take effect
+without reinstalling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">venv</span> <span class="o">--</span><span class="n">python</span> <span class="mf">3.12</span> <span class="o">.</span><span class="n">venv</span>
+<span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">".[dev]"</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install the pre-commit hooks, which format and check staged files before
+a commit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pre_commit</span> <span class="n">install</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Commands on this page use the environment’s interpreter,
+<code class="docutils literal notranslate"><span class="pre">.venv/bin/python</span></code>. On Windows, replace this path with
+<code class="docutils literal notranslate"><span class="pre">.venv\Scripts\python.exe</span></code>, including in the hook-installation command
+above. No environment activation is needed. <code class="docutils literal notranslate"><span class="pre">setuptools_scm</span></code> derives
+PyIBS’s version from the Git tags.</p>
+<p>Declare dependencies in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>: runtime requirements under
+<code class="docutils literal notranslate"><span class="pre">dependencies</span></code>, test requirements under the <code class="docutils literal notranslate"><span class="pre">test</span></code> extra, and development
+requirements under <code class="docutils literal notranslate"><span class="pre">dev</span></code>. The development extra also includes the test
+requirements. Every runtime and test dependency needs a lower bound; CI
+tests the lowest permitted versions.</p>
+</section>
+<section id="coding-conventions">
+<h2>Coding conventions<a class="headerlink" href="#coding-conventions" title="Link to this heading">#</a></h2>
+<p>Useful background on Python style:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://peps.python.org/pep-0008/">PEP 8 – Style Guide for Python Code</a></p></li>
+<li><p><a class="reference external" href="https://docs.python-guide.org/writing/style/">Code style in The Hitchhiker’s Guide to Python</a></p></li>
+</ul>
+<p>The repository conventions below keep contributions consistent with the
+existing code.</p>
+<section id="code-formatting">
+<h3>Code formatting<a class="headerlink" href="#code-formatting" title="Link to this heading">#</a></h3>
+<p>The pre-commit hooks run <a class="reference external" href="https://pypi.org/project/black/">Black</a> at a
+line length of 79, <a class="reference external" href="https://pycqa.github.io/isort/">isort</a> with Black’s
+profile, and <a class="reference external" href="https://hadialqattan.github.io/pycln/">pycln</a>. To check every
+file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pre_commit</span> <span class="n">run</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>Once installed, the hooks check staged files at each commit and may reformat
+them. Restage any modified files before committing again. The hooks are
+defined in <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code> and their formatting settings in
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. CI does not check formatting, so run the hooks locally.</p>
+</section>
+<section id="docstrings">
+<h3>Docstrings<a class="headerlink" href="#docstrings" title="Link to this heading">#</a></h3>
+<p>The docstrings follow the
+<a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html">NumPy format</a>.
+Use the <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/example.html">numpydoc example</a>
+and the docstrings in <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/pyibs/ibs.py">pyibs/ibs.py</a> as guides.</p>
+</section>
+<section id="random-numbers">
+<h3>Random numbers<a class="headerlink" href="#random-numbers" title="Link to this heading">#</a></h3>
+<p>Pass an explicit <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> to code that draws random
+numbers. A fixed seed must reproduce a run when the sampling schedule does
+not depend on timing.</p>
+</section>
+<section id="exceptions">
+<h3>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">#</a></h3>
+<p>Use <a class="reference external" href="https://docs.python.org/3/library/exceptions.html">standard Python exceptions</a>
+where appropriate.</p>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">pytest</span></code> suite lives in <code class="docutils literal notranslate"><span class="pre">pyibs/testing/</span></code>. It ships with the package
+and can be run after installing the <code class="docutils literal notranslate"><span class="pre">test</span></code> extra with
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--pyargs</span> <span class="pre">pyibs</span></code>. From a development checkout, run the full default
+suite or a selected test with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span>
+<span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="n">pyibs</span><span class="o">/</span><span class="n">testing</span><span class="o">/</span><span class="n">test_sampler</span><span class="o">.</span><span class="n">py</span><span class="p">::</span><span class="n">test_cost</span>
+</pre></div>
+</div>
+<p>Test requirements:</p>
+<ul class="simple">
+<li><p>Run the relevant tests before submitting a change. CI runs the full
+matrix on pull requests to <code class="docutils literal notranslate"><span class="pre">main</span></code> or <code class="docutils literal notranslate"><span class="pre">dev*</span></code> branches that change the
+package, examples, installation metadata, or test workflows. It covers
+Windows, Linux, and macOS with Python 3.10–3.14, plus Python 3.10 with the
+lowest NumPy, SciPy, and pytest versions allowed by <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.</p></li>
+<li><p>Seed every test that draws random numbers so its failure can be
+reproduced.</p></li>
+<li><p>State statistical tolerances in standard errors, 4.5 by default.
+Investigate a failing statistical test; do not reseed it to make it pass.</p></li>
+<li><p>Use a fake clock advanced by the simulator for timing tests, or make the
+expected values independent of the machine’s speed. Avoid timing margins
+that a slow runner can miss.</p></li>
+<li><p>Some tests port the self-tests of <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code>, the reference
+implementation.</p></li>
+</ul>
+<p>The integration tests in <code class="docutils literal notranslate"><span class="pre">pyibs/testing/integration/</span></code> fit the example
+model with PyBADS or PyVBMC, using IBS estimates as the noisy target. The
+default checkout run excludes the <code class="docutils literal notranslate"><span class="pre">integration</span></code> marker. Each integration
+test skips when its package is absent or too old: it requires PyBADS 1.5.1
+or later or PyVBMC 1.5 or later, respectively. These tests take a few
+minutes. To run them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="s2">"pybads&gt;=1.5.1"</span> <span class="s2">"pyvbmc&gt;=1.5.0"</span>
+<span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="o">-</span><span class="n">m</span> <span class="n">integration</span> <span class="n">pyibs</span><span class="o">/</span><span class="n">testing</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_pybads</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">v</span>
+<span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="o">-</span><span class="n">m</span> <span class="n">integration</span> <span class="n">pyibs</span><span class="o">/</span><span class="n">testing</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_pyvbmc</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+</section>
+<section id="code-documentation">
+<h3>Code documentation<a class="headerlink" href="#code-documentation" title="Link to this heading">#</a></h3>
+<p>Build the documentation with
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx</a>. The
+source is in <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/docsrc">docsrc</a>.
+From the repository root, with the environment’s <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory
+(<code class="docutils literal notranslate"><span class="pre">Scripts</span></code> on Windows) first on the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PATH</span><span class="o">=</span><span class="s2">"$PWD/.venv/bin:$PATH"</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">docsrc</span> <span class="n">github</span>
+</pre></div>
+</div>
+<p>The target copies the example notebooks into the documentation source,
+builds the site, copies it to the gitignored <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory, and removes
+the temporary notebook copies. Open <code class="docutils literal notranslate"><span class="pre">docs/index.html</span></code> to view the result.
+On Windows, use <code class="docutils literal notranslate"><span class="pre">.venv/Scripts</span></code> in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> command above, or run
+<code class="docutils literal notranslate"><span class="pre">.\make.bat</span> <span class="pre">github</span></code> from <code class="docutils literal notranslate"><span class="pre">docsrc</span></code> in <code class="docutils literal notranslate"><span class="pre">cmd</span></code> with that directory on
+<code class="docutils literal notranslate"><span class="pre">PATH</span></code>. The build must produce no warnings.</p>
+<p>If pages or navigation do not update correctly, clear the generated site
+in <code class="docutils literal notranslate"><span class="pre">docs/</span></code> and the cached <code class="docutils literal notranslate"><span class="pre">docsrc/_build</span></code> directory, then rebuild:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">docsrc</span> <span class="n">clean</span>
+</pre></div>
+</div>
+<p>On Windows, run <code class="docutils literal notranslate"><span class="pre">.\make.bat</span> <span class="pre">clean</span></code> from <code class="docutils literal notranslate"><span class="pre">docsrc</span></code> in <code class="docutils literal notranslate"><span class="pre">cmd</span></code> instead.</p>
+<section id="general-structure">
+<h4>General structure<a class="headerlink" href="#general-structure" title="Link to this heading">#</a></h4>
+<p>Each public class or function needs a hand-written <code class="docutils literal notranslate"><span class="pre">.rst</span></code> page in
+<code class="docutils literal notranslate"><span class="pre">docsrc/source/api/classes/</span></code> or <code class="docutils literal notranslate"><span class="pre">docsrc/source/api/functions/</span></code>. Give it a
+short introduction and an <code class="docutils literal notranslate"><span class="pre">autoclass</span></code> or <code class="docutils literal notranslate"><span class="pre">autofunction</span></code> directive to
+render the docstring, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">autoclass</span><span class="p">::</span> <span class="n">pyibs</span><span class="o">.</span><span class="n">IBS</span>
+   <span class="p">:</span><span class="n">members</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Add the page to its table of contents: <code class="docutils literal notranslate"><span class="pre">documentation.rst</span></code> for a headline
+page, and <code class="docutils literal notranslate"><span class="pre">api/classes/classes.rst</span></code> or <code class="docutils literal notranslate"><span class="pre">api/functions/functions.rst</span></code>.
+Keep the documentation in step with changes to the public API.</p>
+</section>
+<section id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h4>
+<p>The example notebooks live in <code class="docutils literal notranslate"><span class="pre">examples/</span></code> and are installed as
+<code class="docutils literal notranslate"><span class="pre">pyibs.examples</span></code>. Their model is in <code class="docutils literal notranslate"><span class="pre">psycho_model.py</span></code>. The documentation
+renders saved outputs without executing the notebooks.
+To rerun them in place, with PyBADS, PyVBMC, matplotlib and ipykernel
+installed in the environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">nbconvert</span> <span class="n">ipykernel</span> <span class="n">matplotlib</span> <span class="s2">"pybads&gt;=1.5.1"</span> <span class="s2">"pyvbmc&gt;=1.5.0"</span>
+<span class="n">PATH</span><span class="o">=</span><span class="s2">"$PWD/.venv/bin:$PATH"</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">examples</span><span class="o">/</span><span class="n">scripts</span> <span class="n">run</span>
+</pre></div>
+</div>
+<p>After rerunning the notebooks, regenerate their code in
+<code class="docutils literal notranslate"><span class="pre">examples/scripts/</span></code> with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-B</span> <span class="pre">-C</span> <span class="pre">examples/scripts</span></code>. Keep the
+environment first on <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and install nbconvert, IPython, and the Black
+and isort versions specified by the pre-commit hooks. Edit the notebooks;
+the scripts are generated files.</p>
+</section>
+</section>
+<section id="git-commits">
+<h3><code class="docutils literal notranslate"><span class="pre">git</span></code> commits<a class="headerlink" href="#git-commits" title="Link to this heading">#</a></h3>
+<p>Commits follow the
+<a class="reference external" href="https://www.conventionalcommits.org/en/v1.0.0/">conventional commits</a>
+style. See the
+<a class="reference external" href="https://cheatography.com/albelop/cheat-sheets/conventional-commits/">cheat sheet</a>
+for examples.</p>
+<p>Use a feature branch for a contribution and submit completed changes with
+passing tests through a pull request. For example, replacing
+<code class="docutils literal notranslate"><span class="pre">&lt;new-feature&gt;</span></code> with your branch name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="o">&lt;</span><span class="n">new</span><span class="o">-</span><span class="n">feature</span><span class="o">&gt;</span>
+<span class="p">[</span><span class="o">...</span> <span class="n">do</span> <span class="n">stuff</span> <span class="ow">and</span> <span class="n">commit</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">git</span> <span class="n">push</span> <span class="o">-</span><span class="n">u</span> <span class="n">origin</span> <span class="o">&lt;</span><span class="n">new</span><span class="o">-</span><span class="n">feature</span><span class="o">&gt;</span>
+<span class="p">[</span><span class="o">...</span> <span class="nb">open</span> <span class="n">a</span> <span class="n">pull</span> <span class="n">request</span> <span class="n">on</span> <span class="n">GitHub</span> <span class="n">when</span> <span class="n">ready</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://martinfowler.com/bliki/FeatureBranch.html">Feature Branch</a>
+for background on this workflow.</p>
+</section>
+<section id="changelog">
+<h3>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h3>
+<p>In the same commit as a change to results, the interface, or what a
+script sees or has to handle, add one or two sentences for users under
+<code class="docutils literal notranslate"><span class="pre">Unreleased</span></code> in <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/CHANGELOG.md">CHANGELOG.md</a>. A change that
+can break a script written for the last release or alter its results also
+needs an entry in the opening “Upgrading from” list. When a change adds,
+removes, or alters an intentional difference from <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code>, update the
+corresponding entry in the <a class="extlink-mainbranch reference external" href="https://github.com/acerbilab/pyibs/blob/main/pyibs/README.md">catalogue</a>.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api/functions/check_for_updates.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="about_us.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">About us</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-instructions-for-developers">Installation instructions for developers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coding-conventions">Coding conventions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-formatting">Code formatting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docstrings">Docstrings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random-numbers">Random numbers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-documentation">Code documentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#general-structure">General structure</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#git-commits"><code class="docutils literal notranslate"><span class="pre">git</span></code> commits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

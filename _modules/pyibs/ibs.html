@@ -1,0 +1,1146 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyibs.ibs &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pyibs/ibs';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/_modules/pyibs/ibs.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../_examples/pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_examples/pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_examples/pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2F_modules/pyibs/ibs.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pyibs.ibs</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Inverse binomial sampling (IBS) estimates of the log-likelihood.</span>
+
+<span class="sd">:class:`IBS` holds a model's simulator, the observed data and the sampling</span>
+<span class="sd">settings, and estimates the log-likelihood of a parameter vector each time</span>
+<span class="sd">it is called, with an estimate of the estimate's variance ([1]).</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] van Opheusden, B., Acerbi, L. &amp; Ma, W. J. (2020). Unbiased and</span>
+<span class="sd">   efficient log-likelihood estimation with inverse binomial sampling.</span>
+<span class="sd">   PLOS Computational Biology 16(12): e1008483.</span>
+<span class="sd">   https://doi.org/10.1371/journal.pcbi.1008483</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs</span><span class="w"> </span><span class="kn">import</span> <span class="n">_sampler</span>
+
+<span class="c1"># The FAQ's answer on an SD of zero, which the warning on a zero variance</span>
+<span class="c1"># names</span>
+<span class="n">_FAQ_ZERO_SD</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"https://acerbilab.github.io/pyibs/faq.html#faq-why-is-the-sd-of-the-"</span>
+    <span class="s2">"estimate-zero-and-why-do-pybads-and-pyvbmc-refuse-it"</span>
+<span class="p">)</span>
+
+<span class="n">_ZERO_VARIANCE</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"The IBS variance estimate is 0, as it is when every trial of positive "</span>
+    <span class="s2">"weight matched its response at its first sample. PyBADS and PyVBMC "</span>
+    <span class="sa">f</span><span class="s2">"refuse an SD of 0 for a noisy target: see </span><span class="si">{</span><span class="n">_FAQ_ZERO_SD</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>
+
+<span class="c1"># The messages of the exit flags.</span>
+<span class="n">_EXIT_MESSAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"All requested IBS repeats completed without reaching the "</span>
+        <span class="s2">"likelihood threshold."</span>
+    <span class="p">),</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"The negative log-likelihood threshold ended a repeat; the estimate "</span>
+        <span class="s2">"is biased."</span>
+    <span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"The sampling stopped at max_time; the estimate can be arbitrarily "</span>
+        <span class="s2">"biased."</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">_ADDITIONAL_OUTPUTS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"none"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">,</span> <span class="s2">"full"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EstimateResult">
+<a class="viewcode-back" href="../../api/classes/estimate_result.html#pyibs.EstimateResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EstimateResult</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The result of an :class:`IBS` call with ``additional_output="full"``.</span>
+
+<span class="sd">    A dictionary whose keys can also be read as attributes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    neg_logl : float</span>
+<span class="sd">        The negative log-likelihood estimate, or the log-likelihood</span>
+<span class="sd">        estimate with ``return_positive=True``.</span>
+<span class="sd">    neg_logl_var : float</span>
+<span class="sd">        Estimated variance of ``neg_logl``.</span>
+<span class="sd">    neg_logl_std : float</span>
+<span class="sd">        Estimated standard deviation of ``neg_logl``: the square root of</span>
+<span class="sd">        ``neg_logl_var``.</span>
+<span class="sd">    exit_flag : int</span>
+<span class="sd">        0 if all requested repeats completed without reaching the</span>
+<span class="sd">        likelihood threshold; 1 if the threshold ended at least one</span>
+<span class="sd">        repeat; 2 if ``max_time`` stopped the sampling. Flag 2 takes</span>
+<span class="sd">        precedence when both stopping rules apply. These flags describe</span>
+<span class="sd">        how the call ended; see the stopping settings of :class:`IBS`</span>
+<span class="sd">        for their statistical consequences.</span>
+<span class="sd">    message : str</span>
+<span class="sd">        The exit flag's meaning.</span>
+<span class="sd">    elapsed_time : float</span>
+<span class="sd">        Seconds spent in the call.</span>
+<span class="sd">    num_samples_per_trial : float</span>
+<span class="sd">        Total simulated responses divided by the number of trials.</span>
+<span class="sd">        Includes samples drawn after a trial's last required match.</span>
+<span class="sd">    fun_count : int</span>
+<span class="sd">        Number of simulator calls used to produce this estimate.</span>
+<span class="sd">    neg_logl_trials : ndarray of shape (N,)</span>
+<span class="sd">        Unweighted negative log-likelihood estimate for each trial,</span>
+<span class="sd">        averaged over its completed repeats. All entries are NaN if the</span>
+<span class="sd">        likelihood threshold ended any repeat. Otherwise, their weighted</span>
+<span class="sd">        sum equals ``neg_logl`` up to rounding, with the opposite sign</span>
+<span class="sd">        when ``return_positive=True``.</span>
+<span class="sd">    neg_logl_var_trials : ndarray of shape (N,)</span>
+<span class="sd">        Estimated variance for each entry of ``neg_logl_trials``. All</span>
+<span class="sd">        entries are NaN if the threshold ended any repeat. Otherwise,</span>
+<span class="sd">        summing them with squared trial weights gives ``neg_logl_var``.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_ORDER</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"neg_logl"</span><span class="p">,</span>
+        <span class="s2">"neg_logl_var"</span><span class="p">,</span>
+        <span class="s2">"neg_logl_std"</span><span class="p">,</span>
+        <span class="s2">"exit_flag"</span><span class="p">,</span>
+        <span class="s2">"message"</span><span class="p">,</span>
+        <span class="s2">"elapsed_time"</span><span class="p">,</span>
+        <span class="s2">"num_samples_per_trial"</span><span class="p">,</span>
+        <span class="s2">"fun_count"</span><span class="p">,</span>
+        <span class="s2">"neg_logl_trials"</span><span class="p">,</span>
+        <span class="s2">"neg_logl_var_trials"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+
+    <span class="fm">__setattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span>
+    <span class="fm">__delattr__</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__delitem__</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">"()"</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ORDER</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="n">keys</span> <span class="o">+=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ORDER</span><span class="p">]</span>
+        <span class="c1"># The per-trial arrays show their first and last three entries.</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">printoptions</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">edgeitems</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rng</span><span class="p">(</span><span class="n">random_seed</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The generator of ``random_seed``, as PyBADS's ``random_seed``.</span>
+
+<span class="sd">    None derives a new generator from NumPy's global random state; an</span>
+<span class="sd">    integer (a whole-number float taken as one) or a ``SeedSequence``</span>
+<span class="sd">    seeds a new one; a ``Generator`` is used as given.</span>
+<span class="sd">    """</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="n">random_seed</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)(</span>
+            <span class="s2">"random_seed must be None or a value that "</span>
+            <span class="s2">"numpy.random.default_rng takes, such as a non-negative "</span>
+            <span class="s2">"integer, a numpy.random.SeedSequence or a "</span>
+            <span class="sa">f</span><span class="s2">"numpy.random.Generator, got </span><span class="si">{</span><span class="n">random_seed</span><span class="si">!r}</span><span class="s2">."</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_takes_rng</span><span class="p">(</span><span class="n">fun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether ``fun`` has a parameter named ``rng`` that takes a keyword.</span>
+
+<span class="sd">    A callable whose signature :func:`inspect.signature` cannot read has</span>
+<span class="sd">    none.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rng"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rng</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rng</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">,</span>
+        <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Simulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The user's simulator, called as the sampler calls a simulator.</span>
+
+<span class="sd">    ``_Simulator(fun)(params, design_rows, rng)`` calls</span>
+<span class="sd">    ``fun(params, design_rows, rng=rng)`` when ``fun`` has a parameter</span>
+<span class="sd">    named ``rng`` (:func:`_takes_rng`), and ``fun(params, design_rows)``</span>
+<span class="sd">    otherwise. It pickles when ``fun`` does.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">fun</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">takes_rng</span> <span class="o">=</span> <span class="n">_takes_rng</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">design_rows</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">takes_rng</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">design_rows</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">design_rows</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IBS">
+<a class="viewcode-back" href="../../api/classes/ibs.html#pyibs.IBS">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IBS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Estimate a model's log-likelihood by inverse binomial sampling.</span>
+
+<span class="sd">    An ``IBS`` object holds a simulator, the observed responses and the</span>
+<span class="sd">    sampling settings. Call it with a parameter vector to estimate the</span>
+<span class="sd">    negative log-likelihood of the data and, optionally, its variance.</span>
+<span class="sd">    IBS simulates each trial until a response matches the observation</span>
+<span class="sd">    ([1]_). The estimator is unbiased when sampling is allowed to complete;</span>
+<span class="sd">    a likelihood threshold or time limit can introduce bias.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sample_from_model : callable</span>
+<span class="sd">        Called as ``sample_from_model(params, design_rows)``. If it has a</span>
+<span class="sd">        parameter named ``rng`` that accepts a keyword, IBS also passes</span>
+<span class="sd">        its random generator as ``rng=rng``.</span>
+
+<span class="sd">        ``design_rows`` contains the requested rows of ``design_matrix``,</span>
+<span class="sd">        or their 0-based trial indices when no design is supplied. A trial</span>
+<span class="sd">        can appear more than once in a call. Return an independent draw</span>
+<span class="sd">        for every requested row: an array of shape (r,) or (r, 1) for</span>
+<span class="sd">        single-column responses, or (r, C) for C &gt; 1 response columns,</span>
+<span class="sd">        where r is the number of requested rows.</span>
+<span class="sd">    response_matrix : array_like of shape (N,) or (N, C)</span>
+<span class="sd">        Observed responses, one row per trial; a scalar represents one</span>
+<span class="sd">        trial. A simulated response matches only if every column agrees.</span>
+<span class="sd">        Responses must be discrete and comparable with ``==``: numbers,</span>
+<span class="sd">        booleans, text, bytes, or objects. The simulator must return the</span>
+<span class="sd">        same kind of response: text and bytes do not match numbers.</span>
+<span class="sd">        For responses that mix numbers and text, give both the observed</span>
+<span class="sd">        and the simulated responses as object arrays (``dtype=object``):</span>
+<span class="sd">        otherwise NumPy converts the numbers to text, and responses can</span>
+<span class="sd">        fail to match.</span>
+<span class="sd">    design_matrix : array_like of shape (N, ...), optional</span>
+<span class="sd">        Experimental conditions or other simulator inputs, one row per</span>
+<span class="sd">        trial. With None (the default), the simulator receives trial</span>
+<span class="sd">        indices instead.</span>
+<span class="sd">    vectorized : bool or None, optional</span>
+<span class="sd">        The sampling schedule. True requests several samples per open</span>
+<span class="sd">        trial in each simulator call; ``acceleration`` controls how this</span>
+<span class="sd">        number grows. False requests one sample per open trial per call.</span>
+<span class="sd">        None (the default) chooses a schedule on the first call with</span>
+<span class="sd">        ``num_reps &gt; 1`` by timing one simulation of all trials. It chooses</span>
+<span class="sd">        False if that simulation takes at least ``vectorized_threshold``</span>
+<span class="sd">        seconds, and True otherwise. The choice is retained for later</span>
+<span class="sd">        calls and exposed through the ``vectorized`` attribute.</span>
+
+<span class="sd">        This timing cannot distinguish a fixed cost per simulator call</span>
+<span class="sd">        from a cost per response. It can choose False for a simulator with</span>
+<span class="sd">        a large fixed cost per call, which True spreads over more samples;</span>
+<span class="sd">        set True for such a simulator. If its first call compiles code or</span>
+<span class="sd">        performs other setup, warm it up before IBS times it. With</span>
+<span class="sd">        ``num_reps=1``, IBS uses the False schedule and warns if True was</span>
+<span class="sd">        explicitly requested.</span>
+<span class="sd">    acceleration : float, optional</span>
+<span class="sd">        Factor by which the requested samples per trial grow between</span>
+<span class="sd">        simulator calls. Must be finite and &gt;= 1. Default 1.5.</span>
+<span class="sd">    num_samples_per_call : int, optional</span>
+<span class="sd">        Initial number of samples per trial per simulator call, subject to</span>
+<span class="sd">        ``max_samples`` and ``max_mem``. The default, 0, starts at</span>
+<span class="sd">        ``num_reps`` samples. Unused with ``vectorized=False``.</span>
+<span class="sd">    max_iter : int, optional</span>
+<span class="sd">        Sample cap per trial, expressed per repeat. A call requesting</span>
+<span class="sd">        ``num_reps`` repeats raises :class:`IBSSamplingError` if any trial</span>
+<span class="sd">        draws more than ``max_iter * num_reps`` samples. Default 10**5.</span>
+<span class="sd">        A very large value, such as 10**18, effectively removes the cap;</span>
+<span class="sd">        sampling can then continue indefinitely if an observed response</span>
+<span class="sd">        has zero probability under the model.</span>
+<span class="sd">    max_time : float, optional</span>
+<span class="sd">        Time limit of each call in seconds, &gt; 0. Checked after each</span>
+<span class="sd">        simulator call. The default, ``np.inf``, imposes no limit. If the</span>
+<span class="sd">        limit stops sampling, IBS averages each trial's completed repeats,</span>
+<span class="sd">        returns exit flag 2 and warns. A trial with no completed repeat</span>
+<span class="sd">        raises :class:`IBSSamplingError`. Repeats ended by the likelihood</span>
+<span class="sd">        threshold contribute ``neg_logl_threshold`` to the negative</span>
+<span class="sd">        log-likelihood before averaging.</span>
+
+<span class="sd">        A finite limit can bias the returned estimates, since repeats that</span>
+<span class="sd">        need fewer samples, which give higher log-likelihoods, are likelier</span>
+<span class="sd">        to finish in time.</span>
+<span class="sd">    max_samples : int, optional</span>
+<span class="sd">        Maximum samples per trial in one simulator call. Default 10**4.</span>
+<span class="sd">    acceleration_threshold : float or None, optional</span>
+<span class="sd">        None (the default) grows the requested samples after every</span>
+<span class="sd">        simulator call. A positive time in seconds grows them only after</span>
+<span class="sd">        calls faster than that time. With a finite threshold, wall-clock</span>
+<span class="sd">        timing affects the draws, so a seed alone cannot reproduce a run.</span>
+<span class="sd">    vectorized_threshold : float, optional</span>
+<span class="sd">        Time in seconds at or above which ``vectorized=None`` selects</span>
+<span class="sd">        False. Must be &gt; 0. Default 0.1.</span>
+<span class="sd">    max_mem : int or None, optional</span>
+<span class="sd">        Approximate limit on samples in one simulator call. Each open</span>
+<span class="sd">        trial receives at most ``ceil(max_mem / n_open)`` samples, where</span>
+<span class="sd">        ``n_open`` is the number of trials still being sampled. Rounding</span>
+<span class="sd">        can exceed the limit by fewer than ``n_open`` samples. None (the</span>
+<span class="sd">        default) sets ``max(min(N, 10**4), 10) * 100``.</span>
+<span class="sd">    neg_logl_threshold : float, optional</span>
+<span class="sd">        Threshold T &gt; 0 for the weighted negative log-likelihood. A repeat</span>
+<span class="sd">        stops once its accumulating estimate exceeds T and contributes</span>
+<span class="sd">        T to the negative log-likelihood (or -T to the log-likelihood).</span>
+<span class="sd">        This saves simulations at poor parameter vectors but biases the</span>
+<span class="sd">        log-likelihood estimate upwards ([1]_, Appendix C.1).</span>
+
+<span class="sd">        For optimization, a common choice is the chance-level negative</span>
+<span class="sd">        log-likelihood: ``sum_i w_i log(k_i)`` for k_i equally likely</span>
+<span class="sd">        responses and trial weight w_i, or ``N log 2`` for N binary trials</span>
+<span class="sd">        with unit weights. For Bayesian inference, leave the threshold</span>
+<span class="sd">        disabled unless its effect on the posterior and model evidence</span>
+<span class="sd">        has been assessed. The default, ``np.inf``, disables it.</span>
+<span class="sd">    random_seed : None, int, numpy.random.SeedSequence or \</span>
+<span class="sd">numpy.random.Generator, optional</span>
+<span class="sd">        Seed for ``rng``; keyword only. None (the default) derives a new</span>
+<span class="sd">        generator from NumPy's global random state, so calling</span>
+<span class="sd">        ``np.random.seed`` before construction fixes its initial state.</span>
+<span class="sd">        An integer or ``SeedSequence`` seeds a new generator. An existing</span>
+<span class="sd">        ``Generator`` is used directly.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rng : numpy.random.Generator</span>
+<span class="sd">        Random generator passed to ``sample_from_model`` when it has a</span>
+<span class="sd">        parameter named ``rng`` that accepts a keyword.</span>
+<span class="sd">    vectorized : bool or None</span>
+<span class="sd">        Selected sampling schedule. With automatic selection, remains</span>
+<span class="sd">        None until the first call with ``num_reps &gt; 1``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``sample_from_model`` is not callable or a setting has the</span>
+<span class="sd">        wrong type, such as a boolean for a count or a time.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``response_matrix`` is empty, has more than two dimensions, or</span>
+<span class="sd">        contains a NaN, an element not equal to itself, which no simulated</span>
+<span class="sd">        response matches; if ``design_matrix`` does not have N rows; or if</span>
+<span class="sd">        a setting is out of range.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Settings.** Constructor parameters other than ``random_seed`` are</span>
+<span class="sd">    available as read-only attributes. The response and design arrays are</span>
+<span class="sd">    read-only copies. ``max_mem`` contains the resolved sample limit;</span>
+<span class="sd">    ``vectorized`` contains the selected schedule. Counts take integers or</span>
+<span class="sd">    whole-number floats, such as ``1e5``, and are stored as integers; other</span>
+<span class="sd">    numeric settings are stored as floats.</span>
+
+<span class="sd">    **Reproducibility.** The simulator must draw from the ``rng`` it</span>
+<span class="sd">    receives. Two objects created with the same seed then reproduce the</span>
+<span class="sd">    same sequence of estimates when timing does not affect the sampling:</span>
+<span class="sd">    set ``vectorized`` explicitly to True or False, and keep</span>
+<span class="sd">    ``acceleration_threshold`` and ``max_time`` at their defaults.</span>
+<span class="sd">    Automatic schedule selection also reproduces the draws if it makes</span>
+<span class="sd">    the same choice in both runs.</span>
+
+<span class="sd">    **Cost.** If the observed response has probability p, its trial takes</span>
+<span class="sd">    ``1 / p`` samples per repeat on average, before any stopping rule.</span>
+<span class="sd">    The sample cap stops runs with exceptionally rare or impossible</span>
+<span class="sd">    responses. A likelihood threshold can reduce the cost at poor</span>
+<span class="sd">    parameter vectors.</span>
+
+<span class="sd">    **MATLAB reference.** ``pyibs/README.md`` catalogues deliberate</span>
+<span class="sd">    differences from MATLAB ``ibslike.m`` and explains their reasons.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] van Opheusden, B., Acerbi, L. &amp; Ma, W. J. (2020). Unbiased and</span>
+<span class="sd">       efficient log-likelihood estimation with inverse binomial sampling.</span>
+<span class="sd">       PLOS Computational Biology 16(12): e1008483.</span>
+<span class="sd">       https://doi.org/10.1371/journal.pcbi.1008483</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sample_from_model</span><span class="p">,</span>
+        <span class="n">response_matrix</span><span class="p">,</span>
+        <span class="n">design_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vectorized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">acceleration</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+        <span class="n">num_samples_per_call</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">max_time</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+        <span class="n">max_samples</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">acceleration_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vectorized_threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">max_mem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">neg_logl_threshold</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"sample_from_model must be callable, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sample_from_model</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">responses</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_responses</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">response_matrix</span><span class="p">),</span> <span class="s2">"response_matrix"</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">design_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">design_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">design_matrix</span><span class="p">)</span>
+        <span class="n">design</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_design</span><span class="p">(</span>
+            <span class="n">design_matrix</span><span class="p">,</span> <span class="n">responses</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"design_matrix"</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">vectorized</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">vectorized</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"vectorized must be None, True or False, got </span><span class="si">{</span><span class="n">vectorized</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">num_samples_per_call</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_count</span><span class="p">(</span>
+            <span class="n">num_samples_per_call</span><span class="p">,</span> <span class="s2">"num_samples_per_call"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">max_iter</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_count</span><span class="p">(</span><span class="n">max_iter</span><span class="p">,</span> <span class="s2">"max_iter"</span><span class="p">)</span>
+        <span class="n">vectorized_threshold</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_real</span><span class="p">(</span>
+            <span class="n">vectorized_threshold</span><span class="p">,</span> <span class="s2">"vectorized_threshold"</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vectorized_threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"vectorized_threshold must be &gt; 0 seconds, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">vectorized_threshold</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">neg_logl_threshold</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_real</span><span class="p">(</span>
+            <span class="n">neg_logl_threshold</span><span class="p">,</span> <span class="s2">"neg_logl_threshold"</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">neg_logl_threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"neg_logl_threshold must be &gt; 0, or np.inf for none, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">neg_logl_threshold</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_Settings</span><span class="p">(</span>
+            <span class="n">_Simulator</span><span class="p">(</span><span class="n">sample_from_model</span><span class="p">),</span>
+            <span class="n">responses</span><span class="p">,</span>
+            <span class="n">design</span><span class="p">,</span>
+            <span class="n">initial_samples</span><span class="o">=</span><span class="n">num_samples_per_call</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">acceleration</span><span class="o">=</span><span class="n">acceleration</span><span class="p">,</span>
+            <span class="n">acceleration_threshold</span><span class="o">=</span><span class="n">acceleration_threshold</span><span class="p">,</span>
+            <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">,</span>
+            <span class="n">max_mem</span><span class="o">=</span><span class="n">max_mem</span><span class="p">,</span>
+            <span class="n">max_samples_per_trial</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">max_time</span><span class="o">=</span><span class="n">max_time</span><span class="p">,</span>
+            <span class="n">neg_loglik_threshold</span><span class="o">=</span><span class="p">(</span>
+                <span class="kc">None</span> <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">neg_logl_threshold</span><span class="p">)</span> <span class="k">else</span> <span class="n">neg_logl_threshold</span>
+            <span class="p">),</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">(</span><span class="s2">"max_iter"</span><span class="p">,</span> <span class="s2">"num_reps"</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_from_model</span> <span class="o">=</span> <span class="n">sample_from_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_given</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">vectorized</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="n">vectorized</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_given</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples_per_call</span> <span class="o">=</span> <span class="n">num_samples_per_call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_threshold</span> <span class="o">=</span> <span class="n">vectorized_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neg_logl_threshold</span> <span class="o">=</span> <span class="n">neg_logl_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">_rng</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_from_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The simulator."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_from_model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">response_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The observed responses, a read-only array."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">responses</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">design_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Simulator inputs per trial as a read-only array, or None."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">design</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vectorized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Selected sampling schedule. With automatic selection, remains</span>
+<span class="sd">        None until the first call with ``num_reps &gt; 1``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">acceleration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Growth factor for samples requested per trial per simulator call."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">acceleration</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_samples_per_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initial samples per trial per simulator call; 0 uses</span>
+<span class="sd">        ``num_reps``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_samples_per_call</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The cap on the samples of one trial per repeat."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">max_samples_per_trial</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The time limit of a call, in seconds."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">max_time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Maximum samples per trial in one simulator call."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">max_samples</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">acceleration_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Simulator-call time in seconds below which sample requests grow.</span>
+
+<span class="sd">        None grows the requests after every call.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">acceleration_threshold</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vectorized_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Time in seconds at or above which automatic scheduling selects</span>
+<span class="sd">        ``vectorized=False``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_threshold</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_mem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Resolved sample limit per simulator call, subject to rounding."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">max_mem</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">neg_logl_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Weighted negative log-likelihood threshold; ``inf`` disables it."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neg_logl_threshold</span>
+
+<div class="viewcode-block" id="IBS.__call__">
+<a class="viewcode-back" href="../../api/classes/ibs.html#pyibs.IBS.__call__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">,</span>
+        <span class="n">num_reps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">trial_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">additional_output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Estimate the negative log-likelihood of ``params``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        params : array_like</span>
+<span class="sd">            The parameter vector, passed to the simulator as given.</span>
+<span class="sd">        num_reps : int, optional</span>
+<span class="sd">            Number of independent IBS repeats to average, at least 1.</span>
+<span class="sd">            Whole-number floats are accepted as integers. Default 10.</span>
+<span class="sd">        trial_weights : None, float or array_like of shape (N,), optional</span>
+<span class="sd">            Non-negative, finite real weights of the trials'</span>
+<span class="sd">            log-likelihoods. Booleans and strings are rejected. A scalar</span>
+<span class="sd">            applies the same weight to every trial; None (the default) uses</span>
+<span class="sd">            unit weights. Zero-weight trials are still sampled and can</span>
+<span class="sd">            reach the sample cap or time limit. Remove trials from the data</span>
+<span class="sd">            to exclude them entirely.</span>
+<span class="sd">        additional_output : None or str, optional</span>
+<span class="sd">            None or ``"none"`` returns only the estimate. ``"var"`` adds</span>
+<span class="sd">            its estimated variance; ``"std"`` adds the square root of that</span>
+<span class="sd">            variance. ``"full"`` returns an :class:`EstimateResult` with</span>
+<span class="sd">            diagnostics and per-trial estimates.</span>
+<span class="sd">        return_positive : bool, optional</span>
+<span class="sd">            Whether to return the log-likelihood rather than the negative</span>
+<span class="sd">            log-likelihood; the variance estimate and the per-trial arrays</span>
+<span class="sd">            of ``"full"`` are unchanged. Default False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        neg_logl : float</span>
+<span class="sd">            The negative log-likelihood estimate (the log-likelihood with</span>
+<span class="sd">            ``return_positive=True``), when ``additional_output`` is None.</span>
+<span class="sd">        (neg_logl, neg_logl_var) : tuple of two floats</span>
+<span class="sd">            Estimate and estimated variance, with ``"var"``.</span>
+<span class="sd">        (neg_logl, neg_logl_std) : tuple of two floats</span>
+<span class="sd">            Estimate and estimated standard deviation, with ``"std"``.</span>
+<span class="sd">            PyBADS and PyVBMC accept this pair from a noisy target.</span>
+<span class="sd">        result : EstimateResult</span>
+<span class="sd">            Estimate and diagnostics, with ``"full"``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IBSSamplingError</span>
+<span class="sd">            If a trial draws more than ``max_iter * num_reps`` samples, or</span>
+<span class="sd">            ``max_time`` stops the sampling before a trial has completed a</span>
+<span class="sd">            repeat.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``num_reps``, ``trial_weights`` or ``additional_output`` is</span>
+<span class="sd">            invalid, or the simulator returns an array with the wrong</span>
+<span class="sd">            shape.</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If ``num_reps``, ``trial_weights`` or ``return_positive`` has</span>
+<span class="sd">            the wrong type, or the simulator returns responses of a kind</span>
+<span class="sd">            that cannot match the observations, such as text for numbers.</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        UserWarning</span>
+<span class="sd">            When ``max_time`` stops the sampling (exit flag 2); when a call</span>
+<span class="sd">            returns a variance estimate of 0, which gives an SD that</span>
+<span class="sd">            PyBADS and PyVBMC refuse; or when ``vectorized=True`` is used</span>
+<span class="sd">            with ``num_reps=1``.</span>
+<span class="sd">        """</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">num_reps</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">_check_count</span><span class="p">(</span><span class="n">num_reps</span><span class="p">,</span> <span class="s2">"num_reps"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_positive</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"return_positive must be True or False, got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">return_positive</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">additional_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">additional_output</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">additional_output</span> <span class="ow">in</span> <span class="n">_ADDITIONAL_OUTPUTS</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"additional_output must be None, 'none', 'var', 'std' or "</span>
+                <span class="sa">f</span><span class="s2">"'full', got </span><span class="si">{</span><span class="n">additional_output</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">additional_output</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>
+            <span class="n">additional_output</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_settings</span>
+        <span class="k">if</span> <span class="n">trial_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">with_trial_weights</span><span class="p">(</span><span class="n">trial_weights</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">vectorized</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized</span>
+        <span class="k">if</span> <span class="n">num_reps</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_given</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">"vectorized=True needs num_reps &gt; 1: this call requests "</span>
+                    <span class="s2">"one sample per trial per call, as vectorized=False "</span>
+                    <span class="s2">"does."</span><span class="p">,</span>
+                    <span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">vectorized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">vectorized</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">first_round</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+            <span class="n">vectorized</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">elapsed</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized_threshold</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vectorized</span> <span class="o">=</span> <span class="n">vectorized</span>
+        <span class="n">draw</span> <span class="o">=</span> <span class="n">_sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+            <span class="n">settings</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">num_reps</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">,</span>
+            <span class="n">vectorized</span><span class="o">=</span><span class="n">vectorized</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+            <span class="n">first</span><span class="o">=</span><span class="n">first</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">draw</span><span class="o">.</span><span class="n">timed_out</span><span class="p">:</span>
+            <span class="n">exit_flag</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"IBS reached max_time = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> s before every "</span>
+                <span class="sa">f</span><span class="s2">"trial completed its </span><span class="si">{</span><span class="n">num_reps</span><span class="si">}</span><span class="s2"> repeats: each trial's "</span>
+                <span class="s2">"value averages its completed repeats, and the estimate can "</span>
+                <span class="s2">"be arbitrarily biased (exit flag 2)."</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">draw</span><span class="o">.</span><span class="n">n_thresholded</span><span class="p">:</span>
+                <span class="n">threshold_value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_logl_threshold</span>
+                    <span class="k">if</span> <span class="n">return_positive</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_logl_threshold</span>
+                <span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">" The likelihood threshold ended </span><span class="si">{</span><span class="n">draw</span><span class="o">.</span><span class="n">n_thresholded</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"of the </span><span class="si">{</span><span class="n">num_reps</span><span class="si">}</span><span class="s2"> repeats; each contributes "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">threshold_value</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"to the returned estimate before averaging."</span>
+                <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">draw</span><span class="o">.</span><span class="n">n_thresholded</span><span class="p">:</span>
+            <span class="n">exit_flag</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exit_flag</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># 0.0 - x turns a log-likelihood of 0 into 0.0 rather than -0.0.</span>
+        <span class="n">neg_logl</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">-</span> <span class="n">draw</span><span class="o">.</span><span class="n">loglik</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">loglik</span> <span class="k">if</span> <span class="n">return_positive</span> <span class="k">else</span> <span class="n">neg_logl</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">loglik_var</span>
+        <span class="k">if</span> <span class="n">additional_output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">_ZERO_VARIANCE</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">additional_output</span> <span class="o">==</span> <span class="s2">"var"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">var</span>
+        <span class="k">if</span> <span class="n">additional_output</span> <span class="o">==</span> <span class="s2">"std"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">draw</span><span class="o">.</span><span class="n">n_thresholded</span><span class="p">:</span>
+            <span class="n">neg_logl_trials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="n">neg_logl_var_trials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neg_logl_trials</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">-</span> <span class="n">draw</span><span class="o">.</span><span class="n">trial_value_sums</span><span class="p">)</span> <span class="o">/</span> <span class="n">draw</span><span class="o">.</span><span class="n">trial_counts</span>
+            <span class="n">neg_logl_var_trials</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">trial_var_sums</span> <span class="o">/</span> <span class="n">draw</span><span class="o">.</span><span class="n">trial_counts</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">EstimateResult</span><span class="p">(</span>
+            <span class="n">neg_logl</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">neg_logl_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span>
+            <span class="n">neg_logl_std</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">),</span>
+            <span class="n">exit_flag</span><span class="o">=</span><span class="n">exit_flag</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">_EXIT_MESSAGES</span><span class="p">[</span><span class="n">exit_flag</span><span class="p">],</span>
+            <span class="n">elapsed_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span>
+            <span class="n">num_samples_per_trial</span><span class="o">=</span><span class="n">draw</span><span class="o">.</span><span class="n">samples</span> <span class="o">/</span> <span class="n">settings</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span>
+            <span class="n">fun_count</span><span class="o">=</span><span class="n">draw</span><span class="o">.</span><span class="n">calls</span><span class="p">,</span>
+            <span class="n">neg_logl_trials</span><span class="o">=</span><span class="n">neg_logl_trials</span><span class="p">,</span>
+            <span class="n">neg_logl_var_trials</span><span class="o">=</span><span class="n">neg_logl_var_trials</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

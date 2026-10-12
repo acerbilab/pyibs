@@ -1,0 +1,910 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyIBS Example 1: Basic usage and calibration &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_examples/pyibs_example_1_basic_usage';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/_examples/pyibs_example_1_basic_usage.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PyIBS Example 2: Maximum-likelihood estimation with PyBADS" href="pyibs_example_2_maximum_likelihood_with_pybads.html" />
+    <link rel="prev" title="Examples" href="../examples.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyibs_example_3_posterior_with_pyvbmc.html">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/acerbilab/pyibs/blob/main/examples/pyibs_example_1_basic_usage.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/edit/main/examples/pyibs_example_1_basic_usage.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2F_examples/pyibs_example_1_basic_usage.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/_examples/pyibs_example_1_basic_usage.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PyIBS Example 1: Basic usage and calibration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-simulations-to-a-log-likelihood">0. From simulations to a log-likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-model-with-a-known-likelihood">1. A model with a known likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calling-ibs">2. Calling IBS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-one-estimate-with-the-known-value">3. Comparing one estimate with the known value</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-the-mean-and-uncertainty">4. Checking the mean and uncertainty</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trading-cost-for-precision">5. Trading cost for precision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-basic-algorithm">6. Reading the basic algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-these-estimates-in-a-fit">7. Using these estimates in a fit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pyibs-example-1-basic-usage-and-calibration">
+<h1>PyIBS Example 1: Basic usage and calibration<a class="headerlink" href="#pyibs-example-1-basic-usage-and-calibration" title="Link to this heading">#</a></h1>
+<p>This notebook introduces inverse binomial sampling (IBS): estimate a model’s log-likelihood by simulating its responses, and attach an estimate of the uncertainty to each result. We use a model with a closed-form likelihood so that we can check the estimates against a known value, then explore how the number of repeats changes their noise and cost.</p>
+<p>This is the first of three examples. The <a class="reference internal" href="pyibs_example_2_maximum_likelihood_with_pybads.html"><span class="std std-doc">second</span></a> fits the same model with PyBADS; the <a class="reference internal" href="pyibs_example_3_posterior_with_pyvbmc.html"><span class="std std-doc">third</span></a> uses PyVBMC for Bayesian inference. The notebook’s code is also available as a <a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/examples/scripts/pyibs_example_1_basic_usage.py">Python script</a>.</p>
+<p>See the <a class="reference external" href="https://acerbilab.github.io/pyibs/installation.html">installation guide</a> for PyIBS and the packages needed to run this notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>  <span class="c1"># Colab lacks PyIBS: install it</span>
+    <span class="o">%</span><span class="k">pip</span> install "pyibs&gt;=1.5"
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs</span><span class="w"> </span><span class="kn">import</span> <span class="n">IBS</span><span class="p">,</span> <span class="n">ibs_basic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs.examples.psycho_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">psycho_generator</span><span class="p">,</span> <span class="n">psycho_neg_logl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="from-simulations-to-a-log-likelihood">
+<h2>0. From simulations to a log-likelihood<a class="headerlink" href="#from-simulations-to-a-log-likelihood" title="Link to this heading">#</a></h2>
+<p>For many models, generating a response is easy while computing its probability is difficult. IBS is for data with discrete responses: it estimates the log-probability of each observed response from independent simulations under that trial’s conditions. It draws responses until the first match. If the match arrives at sample <span class="math notranslate nohighlight">\(K\)</span>, the estimate for that trial is</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{\mathcal{L}}_i = -\sum_{k=1}^{K-1} \frac{1}{k}.
+\]</div>
+<p>A first-sample match gives 0. For any positive matching probability <span class="math notranslate nohighlight">\(p_i\)</span>, the expected estimate is exactly <span class="math notranslate nohighlight">\(\log p_i\)</span>: this is the unbiasedness property of IBS. Adding the independent trials’ estimates gives the data’s log-likelihood estimate. IBS also estimates its variance, and averaging several independent <em>repeats</em> reduces that variance.</p>
+<p>The expected cost of a trial is <span class="math notranslate nohighlight">\(1/p_i\)</span> simulated responses per repeat. Rare responses therefore take more work. A response with probability zero never matches.</p>
+<p>PyIBS implements this procedure in Python. It can return an estimate together with its estimated standard deviation (SD), which lets PyBADS optimize a noisy likelihood and PyVBMC infer a posterior from one. The lab’s <a class="reference external" href="https://acerbilab.org/model-fitting/">model-fitting page</a> presents the three packages together.</p>
+</section>
+<section id="a-model-with-a-known-likelihood">
+<h2>1. A model with a known likelihood<a class="headerlink" href="#a-model-with-a-known-likelihood" title="Link to this heading">#</a></h2>
+<p>The orientation discrimination model from the IBS paper describes an observer judging a stimulus of orientation <span class="math notranslate nohighlight">\(s\)</span>, in degrees. The response is rightwards (<span class="math notranslate nohighlight">\(r=1\)</span>) or leftwards (<span class="math notranslate nohighlight">\(r=-1\)</span>). The observer measures <span class="math notranslate nohighlight">\(s\)</span> with Gaussian noise of SD <span class="math notranslate nohighlight">\(\sigma\)</span> and responds rightwards when the measurement reaches the bias <span class="math notranslate nohighlight">\(\mu\)</span>. On a fraction <span class="math notranslate nohighlight">\(\gamma\)</span> of trials, called lapses, the observer responds at random. We write the parameters as <span class="math notranslate nohighlight">\(\theta=(\eta,\mu,\gamma)\)</span>, where <span class="math notranslate nohighlight">\(\eta=\log\sigma\)</span>.</p>
+<p>PyIBS includes the model in <code class="docutils literal notranslate"><span class="pre">pyibs.examples.psycho_model</span></code>. <code class="docutils literal notranslate"><span class="pre">psycho_generator(theta,</span> <span class="pre">S,</span> <span class="pre">rng)</span></code> draws one response for each orientation in <code class="docutils literal notranslate"><span class="pre">S</span></code>, using the NumPy generator <code class="docutils literal notranslate"><span class="pre">rng</span></code>. The companion function <code class="docutils literal notranslate"><span class="pre">psycho_neg_logl(theta,</span> <span class="pre">S,</span> <span class="pre">R)</span></code> evaluates the negative log-likelihood of responses <code class="docutils literal notranslate"><span class="pre">R</span></code> from the closed form</p>
+<div class="math notranslate nohighlight">
+\[
+\Pr(r=1\mid s,\theta)=\frac{\gamma}{2}+(1-\gamma)\,\Phi\!\left(\frac{s-\mu}{\sigma}\right),
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Phi\)</span> is the standard normal cumulative distribution function. A closed-form likelihood is the best choice for fitting this model. Here it supplies a reference for learning and checking IBS.</p>
+<p>We generate 600 trials with orientations drawn from a normal distribution of SD 3°, and responses at <span class="math notranslate nohighlight">\(\theta_\text{true}=(\log 1,0.2,0.03)\)</span>. This is the data-generation recipe of MATLAB IBS’s <code class="docutils literal notranslate"><span class="pre">ibs_example.m</span></code>. All three notebooks use the same data seed. Separate seeds spawned from one root seed supply independent streams for the data and the estimates, and make repeated runs reproducible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Independent seeds for the data and for the IBS estimates</span>
+<span class="n">seed_data</span><span class="p">,</span> <span class="n">seed_ibs</span><span class="p">,</span> <span class="n">seed_basic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="mi">2026</span><span class="p">)</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">theta_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">])</span>  <span class="c1"># log(sigma), bias, lapse</span>
+<span class="n">n_trials</span> <span class="o">=</span> <span class="mi">600</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed_data</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_trials</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># Orientation of each trial</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">psycho_generator</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>  <span class="c1"># Response of each trial</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"First orientations:"</span><span class="p">,</span> <span class="n">S</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"First responses:   "</span><span class="p">,</span> <span class="n">R</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rightwards responses: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>First orientations: [ 0.33  0.33  0.6  -0.58 -0.62]
+First responses:    [ 1. -1.  1.  1. -1.]
+Rightwards responses: 45.2%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="calling-ibs">
+<h2>2. Calling IBS<a class="headerlink" href="#calling-ibs" title="Link to this heading">#</a></h2>
+<p>An <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object stores the simulator, the observed responses and each trial’s conditions. <code class="docutils literal notranslate"><span class="pre">response_matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">design_matrix</span></code> each have one row per trial; here the design rows contain the orientations. When called with a parameter vector, the object asks the simulator for responses at that vector and returns an estimate.</p>
+<p>The simulator receives the design rows of the trials being sampled. A trial can appear several times in one call, and every requested row must produce an independent response. Since <code class="docutils literal notranslate"><span class="pre">psycho_generator</span></code> has a parameter named <code class="docutils literal notranslate"><span class="pre">rng</span></code>, IBS passes it the object’s generator, seeded by <code class="docutils literal notranslate"><span class="pre">random_seed</span></code>. Giving the object a seed separate from the data’s seed keeps these simulations independent of the draws that generated the data.</p>
+<p>We set <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code> to request several samples per trial in each simulator call. This suits a model that can simulate many responses cheaply at once. It also fixes the sampling schedule: the default <code class="docutils literal notranslate"><span class="pre">vectorized=None</span></code> times one sample of every trial at the object’s first call with more than one repeat, and keeps its scheduling decision for later calls. A seed alone does not fix that timing decision.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">psycho_generator</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">seed_ibs</span><span class="p">)</span>
+
+<span class="n">neg_logl</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta_true</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Negative log-likelihood estimate: </span><span class="si">{</span><span class="n">neg_logl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Negative log-likelihood estimate: 148.93
+</pre></div>
+</div>
+</div>
+</div>
+<p>A call returns the <em>negative</em> log-likelihood by default, averaged over <code class="docutils literal notranslate"><span class="pre">num_reps=10</span></code> independent repeats. This is the sign an optimizer minimizes; <code class="docutils literal notranslate"><span class="pre">return_positive=True</span></code> returns the log-likelihood.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code>, the result is a tuple <code class="docutils literal notranslate"><span class="pre">(value,</span> <span class="pre">sd)</span></code>, ready for a method that accepts noisy evaluations. <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;var&quot;</span></code> supplies the variance estimate instead. Every call uses fresh samples, so repeated calls at the same parameters give independent estimates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neg_logl</span><span class="p">,</span> <span class="n">neg_logl_sd</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"Negative log-likelihood estimate: </span><span class="si">{</span><span class="n">neg_logl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">neg_logl_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Negative log-likelihood estimate: 151.12 +/- 3.33
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">additional_output=&quot;full&quot;</span></code> returns an <code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code>, a dictionary whose keys can also be read as attributes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">neg_logl</span></code>, <code class="docutils literal notranslate"><span class="pre">neg_logl_var</span></code> and <code class="docutils literal notranslate"><span class="pre">neg_logl_std</span></code> give the estimate, its variance estimate and the square root of that variance estimate.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit_flag</span></code> and <code class="docutils literal notranslate"><span class="pre">message</span></code> describe how sampling finished. Flag 0 means every repeat completed without reaching the likelihood threshold. Flag 1 means the threshold <code class="docutils literal notranslate"><span class="pre">neg_logl_threshold</span></code> ended a repeat, and flag 2 that the time limit <code class="docutils literal notranslate"><span class="pre">max_time</span></code> stopped sampling; either biases the estimate. Both settings are disabled here, as they are by default. The <a class="reference external" href="https://acerbilab.github.io/pyibs/faq.html#faq-what-does-a-call-of-ibs-return">FAQ explains the exit flags</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">elapsed_time</span></code> measures the call’s duration in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_samples_per_trial</span></code> and <code class="docutils literal notranslate"><span class="pre">fun_count</span></code> count simulated responses per trial and simulator calls, including surplus responses after a trial’s last match.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">neg_logl_trials</span></code> and <code class="docutils literal notranslate"><span class="pre">neg_logl_var_trials</span></code> give the per-trial estimates and variance estimates. With the unit trial weights used here, they sum to the totals.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"full"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>              neg_logl: 152.69756373253406
+          neg_logl_var: 11.080884558590599
+          neg_logl_std: 3.3287962627037717
+             exit_flag: 0
+               message: 'All requested IBS repeats completed without reaching the likelihood threshold.'
+          elapsed_time: 0.0016367000062018633
+ num_samples_per_trial: 26.493333333333332
+             fun_count: 10
+       neg_logl_trials: array([0.55      , 0.48333333, 0.35      , ..., 0.        , 0.        ,
+       0.        ], shape=(600,))
+   neg_logl_var_trials: array([0.0475    , 0.04361111, 0.0325    , ..., 0.        , 0.        ,
+       0.        ], shape=(600,))
+</pre></div>
+</div>
+</div>
+</div>
+<p>For readers moving from MATLAB IBS, <code class="docutils literal notranslate"><span class="pre">num_reps</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">Nreps</span></code>, <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">ReturnStd</span></code>, and <code class="docutils literal notranslate"><span class="pre">return_positive</span></code> to <code class="docutils literal notranslate"><span class="pre">ReturnPositive</span></code>.</p>
+</section>
+<section id="comparing-one-estimate-with-the-known-value">
+<h2>3. Comparing one estimate with the known value<a class="headerlink" href="#comparing-one-estimate-with-the-known-value" title="Link to this heading">#</a></h2>
+<p>The closed-form likelihood gives the exact negative log-likelihood at the same parameter vector. Expressing the difference in units of the reported SD makes its size easier to assess.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exact</span> <span class="o">=</span> <span class="n">psycho_neg_logl</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"IBS estimate: </span><span class="si">{</span><span class="n">neg_logl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">neg_logl_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exact value:  </span><span class="si">{</span><span class="n">exact</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Difference:   </span><span class="si">{</span><span class="p">(</span><span class="n">neg_logl</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">exact</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">neg_logl_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> SDs"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>IBS estimate: 151.12 +/- 3.33
+Exact value:  152.47
+Difference:   -0.41 SDs
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="checking-the-mean-and-uncertainty">
+<h2>4. Checking the mean and uncertainty<a class="headerlink" href="#checking-the-mean-and-uncertainty" title="Link to this heading">#</a></h2>
+<p>Unbiasedness concerns the mean over repeated estimates. Variance calibration concerns the mean of the reported <em>variance</em> estimates: it should match the variance of the estimates themselves. Neither property alone makes individual estimates Gaussian.</p>
+<p>We draw 2,000 estimates at <span class="math notranslate nohighlight">\(\theta_\text{true}\)</span>, with 10 repeats each, and examine three quantities:</p>
+<ul class="simple">
+<li><p>the mean estimate, compared with the exact value and the standard error of that mean;</p></li>
+<li><p>the empirical SD of the estimates, compared with the root mean square of their reported SDs, which is the square root of the mean reported variance;</p></li>
+<li><p>the distribution of <span class="math notranslate nohighlight">\(z=(\text{estimate}-\text{exact})/\text{sd}\)</span>, compared with a standard normal curve.</p></li>
+</ul>
+<p>Here each estimate combines many independent trial contributions and repeats, so a Gaussian approximation is plausible. The histogram checks how well it works for this model, data set and parameter vector.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_estimates</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">estimates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">ibs</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_estimates</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">values</span><span class="p">,</span> <span class="n">sds</span> <span class="o">=</span> <span class="n">estimates</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">estimates</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">values</span> <span class="o">-</span> <span class="n">exact</span><span class="p">)</span> <span class="o">/</span> <span class="n">sds</span>
+
+<span class="n">standard_error</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_estimates</span><span class="p">)</span>
+<span class="n">reported_sd</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sds</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>  <span class="c1"># Root mean square of the SDs</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exact value:            </span><span class="si">{</span><span class="n">exact</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mean of the estimates:  </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">standard_error</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"SD of the estimates:    </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"RMS reported SD:        </span><span class="si">{</span><span class="n">reported_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"z-scores: mean </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, SD </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exact value:            152.47
+Mean of the estimates:  152.54 +/- 0.07
+SD of the estimates:    3.28
+RMS reported SD:        3.33
+z-scores: mean 0.013, SD 0.983
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span>
+    <span class="n">z</span><span class="p">,</span>
+    <span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">"#2a78d6"</span><span class="p">,</span>
+    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"IBS estimates"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#0b0b0b"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Standard normal"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"z-score, (estimate - exact) / SD"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Density"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4f54c026af6b65fab407676468d1895512468a8b98d780fc75911e4e8aebfff0.png" src="../_images/4f54c026af6b65fab407676468d1895512468a8b98d780fc75911e4e8aebfff0.png" />
+</div>
+</div>
+<p>In this run, the mean estimate is close to the exact value, and the empirical SD is close to the root mean square reported SD. The z-score histogram is also close to a standard normal curve. These observations support the uncertainty estimates and a Gaussian noise approximation for this example. With fewer trials, fewer repeats or many first-sample matches, the distribution can be less Gaussian; the reported SD is itself an estimate.</p>
+</section>
+<section id="trading-cost-for-precision">
+<h2>5. Trading cost for precision<a class="headerlink" href="#trading-cost-for-precision" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">num_reps</span></code> controls how many independent estimates are averaged. The variance of the average is inversely proportional to <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, and its SD is inversely proportional to its square root. The expected number of samples needed for the matches grows in proportion to the repeats. With <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>, a trial’s last call can request more samples than it needs, which adds some surplus.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"num_reps     SD   SD * sqrt(num_reps)   samples per trial   calls"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">num_reps</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">ibs</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="n">num_reps</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"full"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">num_reps</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">neg_logl_std</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">neg_logl_std</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num_reps</span><span class="p">)</span><span class="si">:</span><span class="s2">20.2f</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">num_samples_per_trial</span><span class="si">:</span><span class="s2">19.1f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">fun_count</span><span class="si">:</span><span class="s2">7d</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>num_reps     SD   SD * sqrt(num_reps)   samples per trial   calls
+       3   6.13                10.62                 7.8      11
+      10   3.31                10.45                25.1      10
+      30   1.92                10.51                86.9      10
+     100   1.05                10.53               290.3       9
+     300   0.61                10.52               792.2      10
+    1000   0.33                10.54              2116.9      24
+</pre></div>
+</div>
+</div>
+</div>
+<p>The reported <code class="docutils literal notranslate"><span class="pre">SD</span> <span class="pre">*</span> <span class="pre">sqrt(num_reps)</span></code> stays near the SD of a single repeat. The sample count grows roughly with <code class="docutils literal notranslate"><span class="pre">num_reps</span></code>, while requesting several samples per trial in each call keeps the number of simulator calls small. <code class="docutils literal notranslate"><span class="pre">num_samples_per_trial</span></code> counts all responses, including those generated after a trial has enough matches.</p>
+<p>For fitting, choose the precision where the fit matters. PyBADS works best with an SD of about 1 or less near the solution; PyVBMC works best around 1, and not much above 3, where the posterior has most of its mass. Larger noise far from the solution is usually manageable. The FAQs of <a class="reference external" href="https://acerbilab.github.io/pybads/faq.html#faq-can-pybads-handle-any-arbitrary-amount-of-noise-in-the-objective">PyBADS</a> and <a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc">PyVBMC</a> explain these recommendations. For this data set, 100 repeats give an SD near 1; both later notebooks use that setting. Expensive simulations may require fewer repeats and a noisier target.</p>
+</section>
+<section id="reading-the-basic-algorithm">
+<h2>6. Reading the basic algorithm<a class="headerlink" href="#reading-the-basic-algorithm" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code> exposes IBS as a short loop in <code class="docutils literal notranslate"><span class="pre">pyibs/ibs_basic.py</span></code>. It visits one trial at a time, simulates until a response matches, then adds the trial’s estimate. The function is intended for teaching and follows the structure of MATLAB’s <code class="docutils literal notranslate"><span class="pre">ibs_basic.m</span></code>; use <code class="docutils literal notranslate"><span class="pre">IBS</span></code> for fitting.</p>
+<p>It returns one repeat’s log-likelihood estimate and calls the simulator with one design row at a time, here a single orientation. It supplies no variance estimate.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loglik_basic</span> <span class="o">=</span> <span class="n">ibs_basic</span><span class="p">(</span>
+    <span class="n">psycho_generator</span><span class="p">,</span> <span class="n">theta_true</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">seed_basic</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ibs_basic estimate (one repeat): </span><span class="si">{</span><span class="n">loglik_basic</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exact log-likelihood:            </span><span class="si">{</span><span class="o">-</span><span class="n">exact</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ibs_basic estimate (one repeat): -145.27
+Exact log-likelihood:            -152.47
+</pre></div>
+</div>
+</div>
+</div>
+<p>A single repeat has roughly the SD shown in the <code class="docutils literal notranslate"><span class="pre">SD</span> <span class="pre">*</span> <span class="pre">sqrt(num_reps)</span></code> column above, so this estimate is appreciably noisier than the averages.</p>
+</section>
+<section id="using-these-estimates-in-a-fit">
+<h2>7. Using these estimates in a fit<a class="headerlink" href="#using-these-estimates-in-a-fit" title="Link to this heading">#</a></h2>
+<p>The simulator supplies the responses from which IBS forms its estimate, the reported variance describes its uncertainty, and the number of repeats controls the cost of reducing that uncertainty. A model with a known likelihood lets us check each part before using the same interface with a harder model.</p>
+<p>The <a class="reference internal" href="pyibs_example_2_maximum_likelihood_with_pybads.html"><span class="std std-doc">next notebook</span></a> fits this data set by maximum-likelihood estimation with PyBADS. The <a class="reference internal" href="pyibs_example_3_posterior_with_pyvbmc.html"><span class="std std-doc">third</span></a> uses PyVBMC to infer a posterior and model evidence.</p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<p>van Opheusden, B., Acerbi, L. &amp; Ma, W. J. (2020). Unbiased and efficient log-likelihood estimation with inverse binomial sampling. <em>PLOS Computational Biology</em> 16(12): e1008483. <a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1008483">https://doi.org/10.1371/journal.pcbi.1008483</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../examples.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pyibs_example_2_maximum_likelihood_with_pybads.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-simulations-to-a-log-likelihood">0. From simulations to a log-likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-model-with-a-known-likelihood">1. A model with a known likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calling-ibs">2. Calling IBS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-one-estimate-with-the-known-value">3. Comparing one estimate with the known value</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-the-mean-and-uncertainty">4. Checking the mean and uncertainty</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trading-cost-for-precision">5. Trading cost for precision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-basic-algorithm">6. Reading the basic algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-these-estimates-in-a-fit">7. Using these estimates in a fit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyIBS Example 3: Posterior and model evidence with PyVBMC &#8212; PyIBS</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa5ee683" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_examples/pyibs_example_3_posterior_with_pyvbmc';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="canonical" href="https://acerbilab.github.io/pyibs/_examples/pyibs_example_3_posterior_with_pyvbmc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentation" href="../documentation.html" />
+    <link rel="prev" title="PyIBS Example 2: Maximum-likelihood estimation with PyBADS" href="pyibs_example_2_maximum_likelihood_with_pybads.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyIBS</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">PyIBS: Frequently Asked Questions</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyibs_example_1_basic_usage.html">PyIBS Example 1: Basic usage and calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyibs_example_2_maximum_likelihood_with_pybads.html">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">PyIBS Example 3: Posterior and model evidence with PyVBMC</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../documentation.html">Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/classes/classes.html">Classes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/ibs.html"><code class="docutils literal notranslate"><span class="pre">IBS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/estimate_result.html"><code class="docutils literal notranslate"><span class="pre">EstimateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/classes/ibs_sampling_error.html"><code class="docutils literal notranslate"><span class="pre">IBSSamplingError</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/functions/functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/functions/ibs_basic.html"><code class="docutils literal notranslate"><span class="pre">ibs_basic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/functions/check_for_updates.html"><code class="docutils literal notranslate"><span class="pre">check_for_updates</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Instructions for developers and contributors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../about_us.html">About us</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/acerbilab/pyibs/blob/main/examples/pyibs_example_3_posterior_with_pyvbmc.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/edit/main/examples/pyibs_example_3_posterior_with_pyvbmc.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/acerbilab/pyibs/issues/new?title=Issue%20on%20page%20%2F_examples/pyibs_example_3_posterior_with_pyvbmc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/_examples/pyibs_example_3_posterior_with_pyvbmc.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PyIBS Example 3: Posterior and model evidence with PyVBMC</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-and-model-evidence">0. Posterior and model evidence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model-data-and-prior">1. The model, data and prior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplying-a-noisy-log-likelihood">2. Supplying a noisy log-likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-pyvbmc">3. Running PyVBMC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspecting-the-posterior">4. Inspecting the posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-numerical-reference">5. Building a numerical reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-the-workflow-to-another-model">6. Applying the workflow to another model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pyibs-example-3-posterior-and-model-evidence-with-pyvbmc">
+<h1>PyIBS Example 3: Posterior and model evidence with PyVBMC<a class="headerlink" href="#pyibs-example-3-posterior-and-model-evidence-with-pyvbmc" title="Link to this heading">#</a></h1>
+<p>This notebook uses IBS estimates of a log-likelihood with PyVBMC to infer a posterior over model parameters and estimate the model evidence. We then compare the result with numerical integration of the closed-form likelihood.</p>
+<p>It is the third example in this series, using the orientation discrimination model and data set from the <a class="reference internal" href="pyibs_example_1_basic_usage.html"><span class="std std-doc">first notebook</span></a>. The <a class="reference internal" href="pyibs_example_2_maximum_likelihood_with_pybads.html"><span class="std std-doc">second</span></a> fits the model by maximum likelihood. The code is also available as a <a class="reference external" href="https://github.com/acerbilab/pyibs/blob/main/examples/scripts/pyibs_example_3_posterior_with_pyvbmc.py">Python script</a>.</p>
+<p>See the <a class="reference external" href="https://acerbilab.github.io/pyibs/installation.html">installation guide</a> for PyIBS and the packages needed to run this notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="k">if</span> <span class="s2">"google.colab"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>  <span class="c1"># Colab lacks PyIBS and PyVBMC: install them</span>
+    <span class="o">%</span><span class="k">pip</span> install "pyibs&gt;=1.5" "pyvbmc&gt;=1.5"
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyvbmc</span><span class="w"> </span><span class="kn">import</span> <span class="n">VBMC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyvbmc.priors</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trapezoidal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs</span><span class="w"> </span><span class="kn">import</span> <span class="n">IBS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyibs.examples.psycho_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">psycho_generator</span><span class="p">,</span> <span class="n">psycho_neg_logl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="posterior-and-model-evidence">
+<h2>0. Posterior and model evidence<a class="headerlink" href="#posterior-and-model-evidence" title="Link to this heading">#</a></h2>
+<p>Bayesian inference combines a likelihood and a prior to obtain the <em>posterior</em> distribution over parameters <span class="math notranslate nohighlight">\(\theta\)</span> given data <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta\mid\mathcal{D})=\frac{p(\mathcal{D}\mid\theta)\,p(\theta)}{p(\mathcal{D})}.
+\]</div>
+<p>The normalization constant</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathcal{D})=\int p(\mathcal{D}\mid\theta)\,p(\theta)\,d\theta
+\]</div>
+<p>is the <em>model evidence</em>, or marginal likelihood. It is used to compare models under their specified priors.</p>
+<p>Variational Bayesian Monte Carlo (VBMC) uses a Gaussian process surrogate to approximate the posterior with a variational distribution while limiting costly target evaluations. It also estimates the ELBO, the evidence lower bound, which approaches the log evidence as the approximation improves. PyVBMC handles noisy log-likelihood evaluations when each returns an estimated SD, so IBS can supply its target.</p>
+</section>
+<section id="the-model-data-and-prior">
+<h2>1. The model, data and prior<a class="headerlink" href="#the-model-data-and-prior" title="Link to this heading">#</a></h2>
+<p>Our parameters are <span class="math notranslate nohighlight">\(\theta=(\eta,\mu,\gamma)\)</span>: log sensory-noise SD, response bias and lapse rate. We generate the same 600 trials as in the other notebooks, with orientations drawn from a normal distribution of SD 3° and responses at <span class="math notranslate nohighlight">\(\theta_\text{true}=(\log 1,0.2,0.03)\)</span>.</p>
+<p>The root seed supplies separate streams for data generation, IBS and PyVBMC. The data seed is shared with the other notebooks. Keeping the estimation streams separate makes the simulator draws independent of the generated data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Independent seeds for the data, the IBS estimates and PyVBMC</span>
+<span class="n">seed_data</span><span class="p">,</span> <span class="n">seed_ibs</span><span class="p">,</span> <span class="n">seed_vbmc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="mi">2026</span><span class="p">)</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">theta_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">])</span>  <span class="c1"># log(sigma), bias, lapse</span>
+<span class="n">n_trials</span> <span class="o">=</span> <span class="mi">600</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed_data</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_trials</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># Orientation of each trial</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">psycho_generator</span><span class="p">(</span><span class="n">theta_true</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>  <span class="c1"># Response of each trial</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The hard and plausible bounds describe the model’s support and likely parameter range, using the values from the previous notebook. We place an independent trapezoidal prior on each parameter: its density is flat between the plausible bounds and decreases linearly to zero at the hard bounds. PyVBMC provides this joint prior as <code class="docutils literal notranslate"><span class="pre">Trapezoidal</span></code>.</p>
+<p>The bounds, prior and data-generation recipe follow MATLAB IBS’s <code class="docutils literal notranslate"><span class="pre">ibs_example.m</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>  <span class="c1"># Lower bounds</span>
+<span class="n">UB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># Upper bounds</span>
+<span class="n">PLB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">])</span>  <span class="c1"># Plausible lower bounds</span>
+<span class="n">PUB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">5.0</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>  <span class="c1"># Plausible upper bounds</span>
+
+<span class="n">prior</span> <span class="o">=</span> <span class="n">Trapezoidal</span><span class="p">(</span><span class="n">LB</span><span class="p">,</span> <span class="n">PLB</span><span class="p">,</span> <span class="n">PUB</span><span class="p">,</span> <span class="n">UB</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="supplying-a-noisy-log-likelihood">
+<h2>2. Supplying a noisy log-likelihood<a class="headerlink" href="#supplying-a-noisy-log-likelihood" title="Link to this heading">#</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">prior=prior</span></code>, PyVBMC adds the log prior to each target evaluation. Our target therefore returns a log-likelihood estimate, using <code class="docutils literal notranslate"><span class="pre">return_positive=True</span></code>, together with its estimated SD, using <code class="docutils literal notranslate"><span class="pre">additional_output=&quot;std&quot;</span></code>. The option <code class="docutils literal notranslate"><span class="pre">specify_target_noise=True</span></code> tells PyVBMC to read this pair.</p>
+<p>The second value must be an SD, in the same units as the log-likelihood, and must be finite and positive. We use 100 repeats to obtain noise near 1 for this data set. PyVBMC works best around that level, and not much above 3, in the region carrying most posterior mass (see the <a class="reference external" href="https://acerbilab.org/pyvbmc/faq.html#faq-how-large-can-the-noise-be-to-perform-successful-inferences-with-vbmc">PyVBMC FAQ</a>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ibs</span> <span class="o">=</span> <span class="n">IBS</span><span class="p">(</span><span class="n">psycho_generator</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="n">seed_ibs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""IBS estimate of the log-likelihood, and its SD."""</span>
+    <span class="k">return</span> <span class="n">ibs</span><span class="p">(</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">num_reps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">additional_output</span><span class="o">=</span><span class="s2">"std"</span><span class="p">,</span> <span class="n">return_positive</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="running-pyvbmc">
+<h2>3. Running PyVBMC<a class="headerlink" href="#running-pyvbmc" title="Link to this heading">#</a></h2>
+<p>We start at the center of the plausible box, as <code class="docutils literal notranslate"><span class="pre">ibs_example.m</span></code> does. The <code class="docutils literal notranslate"><span class="pre">seed</span></code> argument controls PyVBMC’s random stream; the <code class="docutils literal notranslate"><span class="pre">IBS</span></code> object’s seed controls the simulator draws. PyVBMC’s results are reproducible on the same machine and numerical setup.</p>
+<p>PyVBMC takes the starting point and the bounds as arrays of shape <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">D)</span></code>, and reports when it reshapes the 1-D arrays supplied here; it calls the target with a 1-D parameter vector. <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> runs inference and prints one progress line per iteration.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="p">(</span><span class="n">PLB</span> <span class="o">+</span> <span class="n">PUB</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">vbmc</span> <span class="o">=</span> <span class="n">VBMC</span><span class="p">(</span>
+    <span class="n">log_likelihood</span><span class="p">,</span>
+    <span class="n">x0</span><span class="p">,</span>
+    <span class="n">LB</span><span class="p">,</span>
+    <span class="n">UB</span><span class="p">,</span>
+    <span class="n">PLB</span><span class="p">,</span>
+    <span class="n">PUB</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">"specify_target_noise"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="n">seed_vbmc</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">vp</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">vbmc</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reshaping x0 to row vector.
+Reshaping lower bounds to (1, 3).
+Reshaping upper bounds to (1, 3).
+Reshaping plausible lower bounds to (1, 3).
+Reshaping plausible upper bounds to (1, 3).
+Beginning variational optimization assuming NOISY observations of the log-joint
+PyVBMC is using standard performance settings. You can optionally tune these for your machine by running pyvbmc.calibrate(). Calibration takes tens of seconds and does not evaluate your model.
+Performance settings: standard settings.
+ Iteration  f-count    Mean[ELBO]    Std[ELBO]    sKL-iter[q]   K[q]  Convergence  Action
+     0         10        -166.64         3.24     14457.45        2        inf     start warm-up
+     1         15        -163.46         0.67         5.02        2        inf     
+     2         20        -162.00         0.44         0.34        2       8.53     
+     3         25        -162.20         0.33         0.08        2       2.09     
+     4         30        -161.00         0.37         1.83        2       36.9     
+     5         35        -160.24         0.34         1.15        2       23.2     
+     6         40        -160.32         0.27         0.12        2       2.57     
+     7         45        -160.30         0.30         0.19        2       4.01     end warm-up
+     8         50        -160.25         0.23         0.47        2       9.37     
+     9         55        -160.27         0.24         0.04        2       1.06     
+    10         60        -160.15         0.23         0.13        3       2.76     
+    11         65        -160.22         0.20         0.05        4       1.29     
+    12         70        -160.18         0.18         0.07        5       1.53     
+    13         75        -160.19         0.17         0.02        6      0.646     rotoscale, undo rotoscale
+    14         80        -160.20         0.17         0.00        6      0.239     
+    15         85        -160.25         0.17         0.02        9      0.627     
+    16         90        -160.17         0.17         0.02        9      0.643     
+    17         95        -160.12         0.16         0.01       12      0.419     
+    18        100        -160.14         0.16         0.00       15      0.257     
+    19        105        -160.13         0.15         0.00       17      0.167     
+    20        110        -160.12         0.14         0.00       17      0.231     
+    21        115        -160.14         0.14         0.01       17      0.285     
+    22        120        -160.12         0.14         0.00       16      0.188     
+    23        125        -160.11         0.14         0.00       15      0.229     
+    24        130        -160.08         0.13         0.00       15      0.228     rotoscale, undo rotoscale
+    25        135        -160.10         0.13         0.00       16      0.175     
+    26        140        -160.10         0.13         0.00       15       0.15     
+    27        145        -160.13         0.13         0.00       13      0.195     stable
+   inf        145        -160.14         0.13         0.00       50      0.195     finalize
+Inference terminated: variational solution stable for options.tol_stable_count fcn evaluations.
+Estimated ELBO: -160.141 +/-0.125.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspecting-the-posterior">
+<h2>4. Inspecting the posterior<a class="headerlink" href="#inspecting-the-posterior" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">vp</span></code> is the fitted variational posterior; <code class="docutils literal notranslate"><span class="pre">results</span></code> contains the estimated ELBO, its reported SD and information about the run. <code class="docutils literal notranslate"><span class="pre">vp.moments(cov_flag=True)</span></code> returns the mean and covariance of the variational posterior, from which we obtain marginal SDs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">post_mean</span><span class="p">,</span> <span class="n">post_cov</span> <span class="o">=</span> <span class="n">vp</span><span class="o">.</span><span class="n">moments</span><span class="p">(</span><span class="n">cov_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">post_mean</span> <span class="o">=</span> <span class="n">post_mean</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">post_sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">post_cov</span><span class="p">))</span>
+<span class="n">elbo</span><span class="p">,</span> <span class="n">elbo_sd</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">"elbo"</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="s2">"elbo_sd"</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ELBO: </span><span class="si">{</span><span class="n">elbo</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">elbo_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Target evaluations: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">'func_count'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">''</span><span class="si">:</span><span class="s2">16</span><span class="si">}{</span><span class="s1">'eta'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">'bias'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">'lapse'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"Posterior mean"</span><span class="p">,</span> <span class="n">post_mean</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Posterior SD"</span><span class="p">,</span> <span class="n">post_sd</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">16</span><span class="si">}</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">8.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ELBO: -160.14 +/- 0.13
+Target evaluations: 145
+
+                     eta    bias   lapse
+Posterior mean    0.0401  0.2815  0.0295
+Posterior SD      0.1031  0.0966  0.0124
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">vp.plot()</span></code> displays the one- and two-dimensional marginals. As an orientation point, we mark the maximum-likelihood reference fit obtained by minimizing the closed-form negative log-likelihood. A posterior describes parameter uncertainty and includes the prior, so its mean need not coincide with that point.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">exact_fit</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">psycho_neg_logl</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">PLB</span> <span class="o">+</span> <span class="n">PUB</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">),</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"L-BFGS-B"</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">LB</span><span class="p">,</span> <span class="n">UB</span><span class="p">)),</span>
+<span class="p">)</span>
+<span class="n">theta_ml</span> <span class="o">=</span> <span class="n">exact_fit</span><span class="o">.</span><span class="n">x</span>
+
+<span class="n">vp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">plot_style</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"corner"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"labels"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="sa">r</span><span class="s2">"$\eta$ (log noise)"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"$\mu$ (bias)"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"$\gamma$ (lapse)"</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">"truths"</span><span class="p">:</span> <span class="n">theta_ml</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c825ab2da2c13a948629622f7121f0cb0fb7dae5409b0a79d4b242ab99721d5a.png" src="../_images/c825ab2da2c13a948629622f7121f0cb0fb7dae5409b0a79d4b242ab99721d5a.png" />
+</div>
+</div>
+</section>
+<section id="building-a-numerical-reference">
+<h2>5. Building a numerical reference<a class="headerlink" href="#building-a-numerical-reference" title="Link to this heading">#</a></h2>
+<p>This three-parameter model has a cheap closed-form likelihood, so we can integrate it on a grid to obtain a numerical reference for the log evidence and posterior moments. The grid evaluates the likelihood times the normalized prior; summing it with the grid-cell volume approximates the evidence. Normalized grid weights give posterior means and SDs.</p>
+<p>We check both resolution and integration region. The first grid has 31 points per parameter in a box extending eight inferred posterior SDs either side of the posterior mean, clipped to the hard bounds. We refine it to 61 points, then widen the box to twelve SDs. The reported reference uses the refined eight-SD grid.</p>
+<p>We require the log evidence to change by less than 0.02, the means by less than 0.02 posterior SDs, and the SDs by less than 0.5%. These checks assess discretization and omitted mass for this example; they do not make the integral exact. A grid becomes costly as the number of parameters grows.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">grid_reference</span><span class="p">(</span><span class="n">n_grid</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Numerical log evidence and posterior moments on a bounded grid."""</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">width</span> <span class="o">*</span> <span class="n">s</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="n">width</span> <span class="o">*</span> <span class="n">s</span><span class="p">),</span> <span class="n">n_grid</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">LB</span><span class="p">,</span> <span class="n">UB</span><span class="p">,</span> <span class="n">post_mean</span><span class="p">,</span> <span class="n">post_sd</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">axes</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">"ij"</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># Closed-form log likelihood plus the normalized log prior</span>
+    <span class="n">log_joint</span> <span class="o">=</span> <span class="n">prior</span><span class="o">.</span><span class="n">log_pdf</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">psycho_neg_logl</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span> <span class="k">for</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">cell_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">])</span>
+    <span class="n">log_sum</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">log_joint</span><span class="p">)</span>
+    <span class="n">log_evidence</span> <span class="o">=</span> <span class="n">log_sum</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">cell_volume</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_joint</span> <span class="o">-</span> <span class="n">log_sum</span><span class="p">)</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">@</span> <span class="n">grid</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">weights</span> <span class="o">@</span> <span class="p">(</span><span class="n">grid</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">log_evidence</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">sd</span>
+
+
+<span class="n">configurations</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">61</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">61</span><span class="p">,</span> <span class="mi">12</span><span class="p">)]</span>
+<span class="n">references</span> <span class="o">=</span> <span class="p">[</span><span class="n">grid_reference</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">width</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">]</span>
+<span class="n">log_evidence</span><span class="p">,</span> <span class="n">reference_mean</span><span class="p">,</span> <span class="n">reference_sd</span> <span class="o">=</span> <span class="n">references</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Grid check: points per parameter, half-width in posterior SDs, log Z"</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span> <span class="p">(</span><span class="n">log_z</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">sd</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">configurations</span><span class="p">,</span> <span class="n">references</span><span class="p">):</span>
+    <span class="n">delta_log_z</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">log_z</span> <span class="o">-</span> <span class="n">log_evidence</span><span class="p">)</span>
+    <span class="n">delta_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean</span> <span class="o">-</span> <span class="n">reference_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">reference_sd</span><span class="p">)</span>
+    <span class="n">delta_sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sd</span> <span class="o">-</span> <span class="n">reference_sd</span><span class="p">)</span> <span class="o">/</span> <span class="n">reference_sd</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">3d</span><span class="si">}</span><span class="s2"> points, </span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2"> SDs: </span><span class="si">{</span><span class="n">log_z</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">; "</span>
+        <span class="sa">f</span><span class="s2">"changes </span><span class="si">{</span><span class="n">delta_log_z</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> in log Z, "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">delta_mean</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> SDs in mean, </span><span class="si">{</span><span class="n">delta_sd</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2"> in SD"</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">delta_log_z</span> <span class="o">&lt;</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s2">"Refine or widen the evidence grid."</span>
+    <span class="k">assert</span> <span class="n">delta_mean</span> <span class="o">&lt;</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s2">"Refine or widen the posterior grid."</span>
+    <span class="k">assert</span> <span class="n">delta_sd</span> <span class="o">&lt;</span> <span class="mf">0.005</span><span class="p">,</span> <span class="s2">"Refine or widen the posterior grid."</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ELBO (PyVBMC):          </span><span class="si">{</span><span class="n">elbo</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">elbo_sd</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Numerical log evidence: </span><span class="si">{</span><span class="n">log_evidence</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">''</span><span class="si">:</span><span class="s2">22</span><span class="si">}{</span><span class="s1">'eta'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">'bias'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}{</span><span class="s1">'lapse'</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">"Reference ML point"</span><span class="p">,</span> <span class="n">theta_ml</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"PyVBMC mean"</span><span class="p">,</span> <span class="n">post_mean</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Grid mean"</span><span class="p">,</span> <span class="n">reference_mean</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"PyVBMC SD"</span><span class="p">,</span> <span class="n">post_sd</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Grid SD"</span><span class="p">,</span> <span class="n">reference_sd</span><span class="p">),</span>
+<span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">22</span><span class="si">}</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">8.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Grid check: points per parameter, half-width in posterior SDs, log Z
+ 31 points, 8 SDs: -160.30228; changes 0.0068 in log Z, 0.0083 SDs in mean, 0.21% in SD
+ 61 points, 8 SDs: -160.29548; changes 0.0000 in log Z, 0.0000 SDs in mean, 0.00% in SD
+ 61 points, 12 SDs: -160.29882; changes 0.0033 in log Z, 0.0037 SDs in mean, 0.04% in SD
+
+ELBO (PyVBMC):          -160.14 +/- 0.13
+Numerical log evidence: -160.30
+
+                           eta    bias   lapse
+Reference ML point      0.0584  0.2828  0.0184
+PyVBMC mean             0.0401  0.2815  0.0295
+Grid mean               0.0337  0.2836  0.0307
+PyVBMC SD               0.1031  0.0966  0.0124
+Grid SD                 0.1006  0.0984  0.0127
+</pre></div>
+</div>
+</div>
+</div>
+<p>The ELBO is close to the numerical log evidence relative to its reported uncertainty, and the posterior means and SDs are close to the grid reference. The grid’s resolution and region checks change the reference much less than these differences.</p>
+<p>The mathematical ELBO is bounded above by the log evidence and equals it when the variational distribution matches the posterior. PyVBMC estimates the ELBO from a noisy target and a surrogate model, so the <em>estimated</em> value can lie above the reference. Its reported <code class="docutils literal notranslate"><span class="pre">elbo_sd</span></code> describes uncertainty in that estimate; the quality of the posterior approximation also matters when interpreting evidence. For model comparison, assess the uncertainty relative to the differences between models, and compare repeated runs when those differences are small.</p>
+<p>In this run, the posterior mean is within one posterior SD of the maximum-likelihood reference point in each parameter. The lapse-rate marginal is skewed: its lower bound is 0.01, where the prior vanishes, and its longer tail toward larger lapse rates pulls the mean above the maximum-likelihood estimate. The marginal plots make this difference visible.</p>
+</section>
+<section id="applying-the-workflow-to-another-model">
+<h2>6. Applying the workflow to another model<a class="headerlink" href="#applying-the-workflow-to-another-model" title="Link to this heading">#</a></h2>
+<p>An IBS target needs a simulator, observed responses and trial conditions. Returning its log-likelihood estimate and estimated SD lets PyVBMC combine it with a prior to approximate the posterior and model evidence. The closed-form likelihood in this example makes an independent numerical check possible. For a model without that reference, use PyVBMC’s convergence diagnostics, inspect the posterior and compare independent runs.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>van Opheusden, B., Acerbi, L. &amp; Ma, W. J. (2020). Unbiased and efficient log-likelihood estimation with inverse binomial sampling. <em>PLOS Computational Biology</em> 16(12): e1008483. <a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1008483">https://doi.org/10.1371/journal.pcbi.1008483</a></p></li>
+<li><p>Huggins, B., Li, C., Tobaben, M., Aarnos, M. &amp; Acerbi, L. (2023). PyVBMC: Efficient Bayesian inference in Python. <em>Journal of Open Source Software</em> 8(86): 5428. <a class="reference external" href="https://doi.org/10.21105/joss.05428">https://doi.org/10.21105/joss.05428</a></p></li>
+<li><p>Acerbi, L. (2018). Variational Bayesian Monte Carlo. In <em>Advances in Neural Information Processing Systems 31</em>: 8222-8232. <a class="reference external" href="https://arxiv.org/abs/1810.05558">https://arxiv.org/abs/1810.05558</a></p></li>
+<li><p>Acerbi, L. (2020). Variational Bayesian Monte Carlo with noisy likelihoods. In <em>Advances in Neural Information Processing Systems 33</em>: 8211-8222. <a class="reference external" href="https://arxiv.org/abs/2006.08655">https://arxiv.org/abs/2006.08655</a></p></li>
+</ol>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pyibs_example_2_maximum_likelihood_with_pybads.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">PyIBS Example 2: Maximum-likelihood estimation with PyBADS</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../documentation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Documentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-and-model-evidence">0. Posterior and model evidence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model-data-and-prior">1. The model, data and prior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplying-a-noisy-log-likelihood">2. Supplying a noisy log-likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-pyvbmc">3. Running PyVBMC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspecting-the-posterior">4. Inspecting the posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-numerical-reference">5. Building a numerical reference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-the-workflow-to-another-model">6. Applying the workflow to another model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Machine and Human Intelligence research group (PI: Luigi Acerbi, University of Helsinki).
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>PyIBS is one of the open-source <a href="https://acerbilab.org/model-fitting/">tools for fitting models to data</a> from <a href="https://www.helsinki.fi/en/researchgroups/machine-and-human-intelligence">Luigi Acerbi's group</a> at the University of Helsinki.</p>
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
