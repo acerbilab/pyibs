@@ -516,10 +516,11 @@ likelihood threshold <code class="docutils literal notranslate"><span class="pre
 </section>
 <section id="choose-a-sampling-schedule">
 <h2>Choose a sampling schedule<a class="headerlink" href="#choose-a-sampling-schedule" title="Link to this heading">#</a></h2>
-<p>The example sets <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>, which requests batches of independent
-responses. The default, <code class="docutils literal notranslate"><span class="pre">vectorized=None</span></code>, chooses by timing one
-simulation at the first call, which a fixed cost per simulator call or a
-first-call compilation can mislead; see
+<p>The code above sets <code class="docutils literal notranslate"><span class="pre">vectorized=True</span></code>, which requests batches of
+responses, because <code class="docutils literal notranslate"><span class="pre">psycho_generator</span></code> returns many responses cheaply in
+one call. By default (<code class="docutils literal notranslate"><span class="pre">vectorized=None</span></code>), IBS times your simulator once
+and, if simulating is slow, requests one response per trial and call, which
+wastes no samples; see
 <a class="reference internal" href="faq.html#faq-should-i-set-vectorized"><span class="std std-ref">Should I set vectorized?</span></a>.</p>
 </section>
 <section id="with-pybads-and-pyvbmc">
@@ -644,14 +645,6 @@ and the likelihood threshold, and troubleshoot a failed call.</p>
           <footer class="bd-footer-content">
             
 <div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By Author name not set
-</p>
-
-  </div>
   
   <div class="footer-item">
     
