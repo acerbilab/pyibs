@@ -1,4 +1,4 @@
-"""Voice the narration with Kokoro, and time the film from it.
+"""Voice the narration with Kokoro, or cut it from a narrator's reading, and time the film from it.
 
     python -u scripts/voice.py V [--only ID,...] [--all]
 
@@ -16,9 +16,13 @@ line's start and length, in seconds), and into V, the folder of this voice's med
     narration.wav         the clips placed on the timeline
     narration.srt         the captions, a sentence at a time
 
-Kokoro voices each line on its own and does not give the same take twice, so voicing a line again moves the timeline;
-a line is voiced when V has no clip of it, when --only names it or its scene, or with --all. Needs kokoro (0.9.4 or
-later), soundfile and SciPy; Kokoro fetches its weights from the Hugging Face hub into HF_HOME.
+The narration's "engine" says where the clips come from. With "kokoro" (the default), Kokoro voices each line on its
+own and does not give the same take twice, so voicing a line again moves the timeline; a line is voiced when V has no
+clip of it, when --only names it or its scene, or with --all. With "recorded", a narrator has read the whole script
+into one file, V/<take> of the narration's "recorded" settings ({"narrator": ..., "take": ...}), and cut_take.py cuts
+every line's clip out of it on every run, the same clips each time; --only and --all do not apply. After either, run
+scripts/words.py V, so that the page's cues follow the new takes' words. Needs kokoro (0.9.4 or later) or
+faster-whisper, soundfile and SciPy; Kokoro and Whisper fetch their weights from the Hugging Face hub into HF_HOME.
 Adapted from the PyBADS film's voice.py (acerbilab/pybads, branch feat-film, dev/film/scripts/voice.py), whose clips
 are trimmed and levelled the same way.
 """
@@ -121,7 +125,8 @@ def main():
     dflt, only = spec["defaults"], {s for s in args.only.split(",") if s}
     clips = args.v / "voice"
     clips.mkdir(parents=True, exist_ok=True)
-    todo = [
+    engine = spec.get("engine", "kokoro")
+    todo = engine == "kokoro" and [
         (i, clips / f"{i}.wav", sc.get("speed", spec["speed"]))
         for sc in spec["scenes"]
         for i in sc["lines"]
@@ -151,11 +156,28 @@ def main():
                 flush=True,
             )
 
-    timeline = {
-        "voice": f"kokoro:{spec['voice']}",
-        "speed": spec["speed"],
-        "scenes": [],
-    }
+    if engine == "recorded":
+        from cut_take import cut
+
+        cfg = spec["recorded"]
+        take = args.v / cfg["take"]
+        if not take.exists():
+            raise SystemExit(f"no reading at {take}")
+        cut(
+            take,
+            [
+                {"id": i, "text": shots[i]["line"].replace("*", "")}
+                for i in named
+            ],
+            clips,
+            args.v,
+        )
+        voice, speed = f"recorded:{cfg['narrator']}", 1.0
+    elif engine == "kokoro":
+        voice, speed = f"kokoro:{spec['voice']}", spec["speed"]
+    else:
+        raise SystemExit(f"unknown engine {engine!r}")
+    timeline = {"voice": voice, "speed": speed, "scenes": []}
     t0, placed, captions = 0.0, [], []
     for sc in spec["scenes"]:
         t, lines = sc.get("lead", dflt["lead"]), []
@@ -212,7 +234,7 @@ def main():
     with open(args.v / "narration.srt", "w", encoding="utf-8") as f:
         for k, (a, b, text) in enumerate(captions, 1):
             f.write(f"{k}\n{srt_time(a)} --> {srt_time(b)}\n{text}\n\n")
-    print(f"\n{timeline['voice']} at {spec['speed']}: {t0:.1f} s", flush=True)
+    print(f"\n{voice} at {speed}: {t0:.1f} s", flush=True)
     for s in timeline["scenes"]:
         print(
             f"  scene {s['id']:2s} {s['start']:6.1f}  +{s['seconds']:5.1f}",
