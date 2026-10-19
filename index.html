@@ -475,6 +475,13 @@
 <h2>What is it?<a class="headerlink" href="#what-is-it" title="Link to this heading">#</a></h2>
 <p>PyIBS estimates the log-likelihood of a model that you can simulate but whose likelihood you cannot compute. It implements inverse binomial sampling (IBS) for data with discrete responses [<a class="reference external" href="#references">1</a>]. For each trial, IBS simulates responses until one matches the observed response, then uses the number of draws to estimate that trial’s log-likelihood. Without a likelihood threshold or time limit, the estimate is exactly unbiased. PyIBS also estimates its variance, which measures the noise introduced by simulation. The reference implementation is <code class="docutils literal notranslate"><span class="pre">ibslike.m</span></code> in <a class="extlink-labrepos reference external" href="https://github.com/acerbilab/ibs">MATLAB IBS</a>.</p>
 <p>Use the estimates with a method that handles noisy objectives: <a class="reference external" href="https://acerbilab.org/pybads/">PyBADS</a> for maximum-likelihood or maximum-a-posteriori estimation, or <a class="reference external" href="https://acerbilab.org/pyvbmc/">PyVBMC</a> for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.</p>
+<figure class="align-center" id="id1">
+<a class="reference external image-reference" href="https://www.youtube.com/watch?v=qj2P8aDTeWs"><img alt="PyIBS: inverse binomial sampling for fitting simulator models (video)" src="_images/pyibs-film-thumbnail.jpg" style="width: 560px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Watch a <a class="reference external" href="https://www.youtube.com/watch?v=qj2P8aDTeWs">four-minute film</a> that explains how PyIBS works.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <section id="what-s-new-in-pyibs-1-5">
 <h3>What’s new in PyIBS 1.5<a class="headerlink" href="#what-s-new-in-pyibs-1-5" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -524,6 +531,10 @@ detail.</p>
 </section>
 <section id="how-does-it-work">
 <h3>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Watch a <a class="reference external" href="https://www.youtube.com/watch?v=qj2P8aDTeWs">four-minute film</a> that explains how PyIBS works.</p>
+</div>
 <p>Suppose a trial’s observed response has probability <span class="math notranslate nohighlight">\(p\)</span> under the model. IBS does not need to know <span class="math notranslate nohighlight">\(p\)</span>: it simulates responses until one matches, taking <span class="math notranslate nohighlight">\(K\)</span> draws, and estimates <span class="math notranslate nohighlight">\(\log p\)</span> as</p>
 <div class="math notranslate nohighlight">
 \[\hat{L} = -\sum_{k=1}^{K-1} \frac{1}{k}.\]</div>
