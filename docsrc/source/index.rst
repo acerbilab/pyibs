@@ -11,6 +11,14 @@ PyIBS estimates the log-likelihood of a model that you can simulate but whose li
 
 Use the estimates with a method that handles noisy objectives: `PyBADS <https://acerbilab.org/pybads/>`__ for maximum-likelihood or maximum-a-posteriori estimation, or `PyVBMC <https://acerbilab.org/pyvbmc/>`__ for posterior and model-evidence estimation. PyIBS can return the estimate and its estimated standard deviation in the format both methods accept.
 
+.. figure:: _static/pyibs-film-thumbnail.jpg
+    :target: https://www.youtube.com/watch?v=qj2P8aDTeWs
+    :alt: PyIBS: inverse binomial sampling for fitting simulator models (video)
+    :width: 560px
+    :align: center
+
+    Watch a `four-minute film <https://www.youtube.com/watch?v=qj2P8aDTeWs>`__ that explains how PyIBS works.
+
 What's new in PyIBS 1.5
 -----------------------
 
@@ -60,6 +68,10 @@ detail.
 
 How does it work?
 -----------------
+
+.. tip::
+
+   Watch a `four-minute film <https://www.youtube.com/watch?v=qj2P8aDTeWs>`__ that explains how PyIBS works.
 
 Suppose a trial's observed response has probability :math:`p` under the model. IBS does not need to know :math:`p`: it simulates responses until one matches, taking :math:`K` draws, and estimates :math:`\log p` as
 
