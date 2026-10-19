@@ -78,7 +78,7 @@
     <ol class="r">
       <li>van Opheusden, Acerbi &amp; Ma (2020). <i>Unbiased and efficient log-likelihood estimation with inverse binomial sampling.</i> PLOS Computational Biology.</li>
     </ol>
-    <div class="k">Machine and Human Intelligence Group &middot; University of Helsinki<br>Research Council of Finland &middot; ELLIS Institute Finland<br>Directed by Luigi Acerbi &middot; Made with Claude Code &middot; Voice: Kokoro</div>
+    <div class="k">Machine and Human Intelligence Group &middot; University of Helsinki<br>Research Council of Finland &middot; ELLIS Institute Finland<br>Directed and narrated by Luigi Acerbi &middot; Made with Claude Code</div>
   </div>
 </div>
 <div id="err"></div>
@@ -441,7 +441,7 @@ const SHOTS = [
       const box = appear(t, tT); if (box) rect(158, 102, 444, 52, C.ink, 0.6 * box, 1.2);
       return [{ cls: "small", x: 230, y: 95, text: "DATA", a: appear(t, tD) * (1 - appear(t, tR, 0.3)) }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: appear(t, tR + 0.2, 0.3) }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: appear(t, tS) }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: appear(t, tB) }, { cls: "term", x: 622, y: 128, text: "likelihood", a: appear(t, tB + 1.2) }, { cls: "small r", x: 148, y: 128, text: "ONE TRIAL", a: box }];
     } },
-  { id: "1.2", line: "The log-likelihood is the sum of the logs of these probabilities. It measures how well the model explains the data.",
+  { id: "1.2", line: "The log-likelihood is the sum of the logarithms of these probabilities. It measures how well the model explains the data.",
     note: "The outline of the trial goes and the column dims. On “the sum”, the log of each bar’s probability appears at the end of its row, one after another. On “of these probabilities”, a rule is drawn under the column and the log-likelihood counts up to its value, labelled log-likelihood. The column is eight of the data set’s 300 trials, and says so under its last row; the number is the toy model’s, at the top of its curve.", dur: 8,
     draw(t) {
       const tS = cue("the sum"), tP = cue("of these probabilities"), dim = lerp(1, 0.55, appear(t, 0, 0.6)), box = 1 - appear(t, 0, 0.4);
@@ -463,9 +463,9 @@ const SHOTS = [
       moreTrials(170, dim);
       line(320, 575, 640, 575, C.dim, 1.2);
       text(fmt(toyTrue(SIG0 * Math.pow(SIG1 / SIG0, f))), 640, 605, 30, C.ink, { fam: "mono", align: "right" });
-      let cp;
+      let cp; // the panel's geometry, set once it starts to fade in (after t = 0)
       faded(ax, () => { cp = curvePanel(760, 180, 360, 280, { trace, ringA: top, marker: f }); line(760, 500, 1120, 500, C.faint, 1); disc(lerp(760, 1120, f), 500, 9, C.ink); });
-      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood" }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: dim }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: dim }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: dim }, { cls: "small r", x: 640, y: 95, text: "LOG", a: 1 - appear(t, 0, 0.4) }, { cls: "small", x: 760, y: 530, text: "A PARAMETER", a: ax }, { cls: "small", x: 735, y: 160, text: "LOG-LIKELIHOOD", a: ax }, { cls: "term", x: cp.X(cp.sT) + 14, y: cp.Y(cp.vT) - 24, text: "maximum likelihood", a: top }];
+      return [{ cls: "term", x: 320, y: 605, text: "log-likelihood" }, { cls: "small r", x: 207, y: 95, text: "STIMULUS", a: dim }, { cls: "small", x: 230, y: 95, text: "RESPONSE", a: dim }, { cls: "small", x: 320, y: 95, text: "PROBABILITY UNDER THE MODEL", a: dim }, { cls: "small r", x: 640, y: 95, text: "LOG", a: 1 - appear(t, 0, 0.4) }, { cls: "small", x: 760, y: 530, text: "A PARAMETER", a: ax }, { cls: "small", x: 735, y: 160, text: "LOG-LIKELIHOOD", a: ax }].concat(cp ? [{ cls: "term", x: cp.X(cp.sT) + 14, y: cp.Y(cp.vT) - 24, text: "maximum likelihood", a: top }] : []);
     } },
   { id: "1.4", line: "The log-likelihood is also used to compare models and to compute the Bayesian posterior over the parameters.",
     note: "The curve holds with its ring, labelled maximum likelihood, and the knob goes. On “compare models”, a dashed curve draws in beside it, the log-likelihood of another model (the toy with a larger lapse rate), keyed model comparison at the top of the panel. On “the Bayesian posterior”, a purple posterior grows over the parameter axis, labelled Bayesian posterior.", dur: 8,

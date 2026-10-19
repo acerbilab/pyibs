@@ -1,10 +1,10 @@
 # The PyIBS film: storyboard
 
-Draft 8, 2026-10-10: the storyboard of the masters, with the recorded
+Draft 9, 2026-10-19: the storyboard of the masters, with the recorded
 run, the narration as revised after the independent review and the
 director's notes, the motion of every shot, timed on the words of the
-voice, and the score. The voice is Kokoro's `am_michael`, which the
-director keeps for the final.
+voice, and the score. The film is narrated by its director, Luigi
+Acerbi; Kokoro's `am_michael` was the voice of the animatics.
 
 The film line by line: the narration, what each shot shows, and where
 each claim comes from. The sources are the IBS paper [1] by its section
@@ -45,9 +45,9 @@ down, and as the trial on screen while IBS is explained. The film says
 what the model is used for, from the Nature paper, and makes no other
 claim about the game or the model beyond what [1] states.
 
-**Length.** 3,665 characters of narration in this draft. On Kokoro's
-`am_michael` at speed 1.12, the voice of the masters, the film runs 4:07
-with its end card. The soft target is 2:20, and the two previous films
+**Length.** 3,671 characters of narration in this draft. In the
+director's reading the film runs 3:46 with its end card; on Kokoro's
+`am_michael` at speed 1.12 it ran 4:07. The soft target is 2:20, and the two previous films
 ran 2:48 and 3:00. The film stays at full length for now; the cut
 candidates are listed at the end.
 
@@ -126,16 +126,17 @@ sparse lead, from that film's synthesizer.
   E5. Its mean under fixed sampling sounds F5, a semitone too high. Its
   mean under IBS sounds E5. Line 1.3's knob is a soft tone whose
   pitch follows it. In the second half, accents move to the nearest
-  thirty-second note of the beat, at most 34 ms from the picture.
+  thirty-second note of the beat, at most 35 ms from the picture.
 - The second half runs on a tempo map. Each section starts on a
   downbeat where its picture starts, or at "turns around", at "PyIBS
   works", at "a false conclusion" and at "With IBS". It holds a fixed
-  number of bars, which on the voice of the masters gives tempi from 92
-  to 103 BPM. Over the end card the tempo slows, from 110 to 76 BPM.
+  number of bars, which on the director's reading gives tempi from 92
+  to 112 BPM (92 to 103 on Kokoro's slower voice). Over the end card the
+  tempo slows, from 110 to 76 BPM.
 - Under the voice the music dips by 45 % and the events by 25 %. Over the
   film the score sits 17 LU below the voice, the PyBADS film's setting.
   The first half's music sits 1.5 LU below the second half's. Line by
-  line the voice stands 14 to 29 dB above the score. The film is
+  line the voice stands 14 to 25 dB above the score. The film is
   mastered to -16 LUFS and -1.5 dBTP.
 
 ## Scenes
@@ -158,7 +159,7 @@ and a response token.
   labelled one trial. *Source:* [1] 2.1, the likelihood as the
   probability of the observed data given the parameters, written for a
   data set of trials, each a stimulus and a response.
-- **1.2** "The log-likelihood is the sum of the logs of these
+- **1.2** "The log-likelihood is the sum of the logarithms of these
   probabilities. It measures how well the model explains the data." The
   outline of the trial goes and the column dims. On "the sum", the log
   of each probability appears at the end of its row, one after another.
@@ -519,7 +520,7 @@ cards: PyIBS 1.5 and its name, Inverse Binomial Sampling; `pip install
 --upgrade pyibs`; acerbilab.org/model-fitting; the IBS paper [1]; and
 the credits, "Machine and Human Intelligence Group · University of
 Helsinki", "Research Council of Finland · ELLIS Institute Finland",
-"Directed by Luigi Acerbi · Made with Claude Code · Voice: Kokoro".
+"Directed and narrated by Luigi Acerbi · Made with Claude Code".
 
 ## The run
 
@@ -591,15 +592,20 @@ round's lines from `storyboard/lines-round<N>.json` struck through under
 the lines that changed. The words live in `film.html` alone; this
 document restates them with their sources.
 
-The voice: `narration.json` gives the Kokoro voice and its speed, the
+The voice: `narration.json` gives where the clips come from (its
+`engine`: `"recorded"`, the narrator's reading of the whole script, named
+under `recorded`, or `"kokoro"`, with Kokoro's voice and speed), the
 scenes in order with their lines, the pauses (a lead before each scene,
 a gap between lines, a tail after each scene, and the end card's length)
-and the respellings that the voice reads in place of the written names
+and the respellings that Kokoro reads in place of the written names
 ("Pie-I-B-S" for PyIBS). The words themselves stay in `film.html`:
-`scripts/voice.py` reads them from `storyboard/shots.json`, voices each
-line into `media/<version>/voice/<id>.wav`, places the takes into
+`scripts/voice.py` reads them from `storyboard/shots.json`, cuts each
+line's clip out of the reading with `scripts/cut_take.py` (each line's
+last complete reading, false starts dropped) or voices it with Kokoro,
+into `media/<version>/voice/<id>.wav`, places the clips into
 `narration.wav` and `narration.srt`, and writes `film_timeline.js`, the
-timeline that `film.html?film=1&T=` plays. `scripts/words.py`
+timeline that `film.html?film=1&T=` plays. The director's reading is
+`media/voice-luigi/raw/take1.wav`, in the gitignored media folder. `scripts/words.py`
 transcribes each take with faster-whisper and writes `film_words.js`,
 the time of each of its words, from which a shot's `cue("phrase")` is
 the moment its take reaches that phrase; it runs again whenever a line
@@ -632,8 +638,8 @@ the second half. `scripts/mux.py` puts the mix under a recorded film at
 -16 LUFS. The score is made again from a new export of the events
 whenever a line is voiced again or a shot's timing changes. `score.py`
 needs NumPy, SciPy and soundfile, and takes about four minutes; `mux.py`
-needs ffmpeg. `voice.py` needs Kokoro, and `words.py` needs
-faster-whisper.
+needs ffmpeg. `voice.py` needs faster-whisper to cut a reading, or
+Kokoro to voice the lines, and `words.py` needs faster-whisper.
 
 The masters are recorded as the reviewed 1280 x 720 layout at a device
 pixel ratio of 1.5, 1920 x 1080 at 25 fps:
@@ -645,9 +651,12 @@ shows: a line's first sentence with the line, each later one 0.15 s
 before the voice reaches it. The web encode copies the clean master's
 picture and encodes the mix at 128 kb/s, with the same two passes of
 loudness normalization. A lower bitrate raises the true peak, so it is
-measured after the encode (-16.13 LUFS and -1.18 dBTP). The poster
-(1600 x 900), the link preview (1200 x 630) and the thumbnail
-(1280 x 720) are the clean master's frame at 79.0 s, in line 2.4.
+measured after the encode (-16.09 LUFS and -1.28 dBTP). The poster
+(1600 x 900), the link preview (1200 x 630, the poster's frame at
+1200 x 675 without its top 22 rows and bottom 23) and the thumbnail
+(1280 x 720) are the clean master's frame at 113.28 s, in line 3.5,
+where the picture holds still from 112.1 to 114.4 s: the frame that
+YouTube took as the upload's thumbnail.
 
 ## Claims to check
 
@@ -698,9 +707,12 @@ fixed number of bars between its anchors (`ANCHORS` and `SONG` in
 Cuts 2 and 3 also remove the anchor at the start of line 5.3, and cut 4
 the anchor on "PyIBS works" in line 6.1.
 
-## Open
+## Publication
 
-- The director's review of the masters.
-- The publication, after PyIBS 1.5 is released: the film's page on the
-  lab's model-fitting site, YouTube, and the links from the README and
-  the documentation.
+The film is on YouTube since 2026-10-19
+(https://www.youtube.com/watch?v=qj2P8aDTeWs), with the frame of the
+masters' images as its thumbnail. The PyIBS entry of the lab's
+model-fitting page (https://acerbilab.org/model-fitting/#ibs) plays the
+web encode, and the introduction of `README.md` and
+`docsrc/source/index.rst` shows the thumbnail with a play button,
+linking the upload.

@@ -1,5 +1,6 @@
 {
-  "engine": "kokoro",
+  "engine": "recorded",
+  "recorded": {"narrator": "Luigi Acerbi", "take": "raw/take1.wav"},
   "voice": "am_michael",
   "speed": 1.12,
   "defaults": {"lead": 0.4, "gap": 0.3, "tail": 0.3},
